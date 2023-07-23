@@ -1,12 +1,11 @@
-using Extensions.Custom;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Custom.Extensions;
 
 public class CameraControl : MonoBehaviour
 {
-    /*
     private static CameraControl _singleton;
     public static CameraControl Singleton
     {
@@ -24,18 +23,18 @@ public class CameraControl : MonoBehaviour
             }
         }
     }
-    */
     private Camera _camera;
     [Range(5, 100)][SerializeField] private float zoomMinimum = 5.0f;
     [Range(5, 100)][SerializeField] private float zoomMaximum = 100.0f;
     [Range(1, 2)][SerializeField] private float zoomSpeed = 1.2f;
     [Range(0, 10)][SerializeField] private float zoomUpdateSpeed = 5.0f;
-    [Range(0, 10)][SerializeField] private float moveSpeed = 1.5f;
-    [SerializeField] private Vector2 xCameraBounds = Vector2.up;
-    [SerializeField] private Vector2 yCameraBounds = Vector2.up;
+    [Range(0, 10)][SerializeField] private float moveSpeed = 2.0f;
+    [SerializeField] private Vector2 xCameraBounds = new Vector2(-200.0f, 200.0f);
+    [SerializeField] private Vector2 yCameraBounds = new Vector2(-100.0f, 100.0f);
     private Vector2 directionInput = Vector2.zero;
-    private float scrollDelta = 0;
-    private float targetZoom;
+    private Vector3 mousePositionScreen = Vector3.zero;
+    private float scrollDelta = 0.0f;
+    private float targetZoom = 0.0f;
     private void OnValidate()
     {
         if (zoomMinimum > zoomMaximum)
@@ -47,7 +46,7 @@ public class CameraControl : MonoBehaviour
     }
     private void OnEnable()
     {
-        //Singleton = this;
+        Singleton = this;
         _camera = GetComponent<Camera>();
     }
     private void Start()
@@ -66,7 +65,9 @@ public class CameraControl : MonoBehaviour
     private void Zoom()
     {
         targetZoom *= Mathf.Pow(zoomSpeed, scrollDelta);
+        Vector3 mousePositionWorld = MousePositionWorld();
         _camera.orthographicSize = Mathf.Lerp(_camera.orthographicSize, targetZoom, Time.deltaTime * zoomUpdateSpeed);
+        transform.position += mousePositionWorld - MousePositionWorld();
     }
     private void Move()
     {
@@ -75,6 +76,10 @@ public class CameraControl : MonoBehaviour
         position.Clamp2D(xCameraBounds, yCameraBounds);
         transform.position = position;
     }
+    public Vector3 MousePositionWorld()
+    {
+        return _camera.ScreenToWorldPoint(mousePositionScreen);
+    }
     private void OnMovement(InputValue inputValue)
     {
         directionInput = inputValue.Get<Vector2>();
@@ -82,5 +87,9 @@ public class CameraControl : MonoBehaviour
     private void OnZoom(InputValue inputValue)
     {
         scrollDelta = -inputValue.Get<Vector2>().y / 120f;
+    }
+    private void OnMousePosition(InputValue inputValue)
+    {
+        mousePositionScreen = inputValue.Get<Vector2>();
     }
 }
