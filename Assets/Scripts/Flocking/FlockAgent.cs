@@ -6,7 +6,9 @@ using Custom.Interfaces;
 public class FlockAgent : MonoBehaviour, ITeam, ISelectable
 {
     public static Dictionary<Collider2D, FlockAgent> agents { get; private set; } = new Dictionary<Collider2D, FlockAgent>();
+    public Vector3 lookEndDirection = Vector3.zero;
     [SerializeField] int teamID = 0;
+    SpriteRenderer ISelectable.spriteRenderer { get; set; }
     int ITeam.Team
     {
         get
@@ -22,6 +24,7 @@ public class FlockAgent : MonoBehaviour, ITeam, ISelectable
     private void OnEnable()
     {
         agents.Add(GetComponent<Collider2D>(), this);
+        ((ISelectable)this).spriteRenderer = GetComponent<SpriteRenderer>();
     }
     private void OnDisable()
     {
@@ -38,6 +41,10 @@ public class FlockAgent : MonoBehaviour, ITeam, ISelectable
         {
             MoveForward(distance);
             RotateTowards(targetDestination);
+        }
+        else
+        {
+            RotateTowards(lookEndDirection);
         }
     }
     private void MoveForward(float distance)

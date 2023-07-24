@@ -10,6 +10,10 @@ namespace Custom.Interfaces
     }
     public interface ISelectable
     {
-
+        SpriteRenderer spriteRenderer { get; set; }
+        public void SetColour(Color colour)
+        {
+            spriteRenderer.color = colour;
+        }
     }
 }
