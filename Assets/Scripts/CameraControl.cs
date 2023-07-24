@@ -34,6 +34,7 @@ public class CameraControl : MonoBehaviour
     private Vector2 directionInput = Vector2.zero;
     private Vector3 mousePositionScreen = Vector3.zero;
     private float scrollDelta = 0.0f;
+    private bool isPanning = false;
     private float targetZoom = 0.0f;
     private void OnValidate()
     {
@@ -66,7 +67,8 @@ public class CameraControl : MonoBehaviour
     {
         targetZoom *= Mathf.Pow(zoomSpeed, scrollDelta);
         Vector3 mousePositionWorld = MousePositionWorld();
-        _camera.orthographicSize = Mathf.Lerp(_camera.orthographicSize, targetZoom, Time.deltaTime * zoomUpdateSpeed);
+        float blend = 1 - Mathf.Pow(0.5f, Time.deltaTime * zoomUpdateSpeed);
+        _camera.orthographicSize = Mathf.Lerp(_camera.orthographicSize, targetZoom, blend);
         transform.position += mousePositionWorld - MousePositionWorld();
     }
     private void Move()
@@ -78,7 +80,11 @@ public class CameraControl : MonoBehaviour
     }
     public Vector3 MousePositionWorld()
     {
-        return _camera.ScreenToWorldPoint(mousePositionScreen);
+        return MousePositionWorld(mousePositionScreen);
+    }
+    public Vector3 MousePositionWorld(Vector3 screenPosition)
+    {
+        return _camera.ScreenToWorldPoint(screenPosition);
     }
     private void OnMovement(InputValue inputValue)
     {
@@ -90,6 +96,20 @@ public class CameraControl : MonoBehaviour
     }
     private void OnMousePosition(InputValue inputValue)
     {
-        mousePositionScreen = inputValue.Get<Vector2>();
+        Vector2 newMousePosition = inputValue.Get<Vector2>();
+        if (!isPanning)
+        {
+            mousePositionScreen = newMousePosition;
+            return;
+        }
+        Vector3 position = transform.position;
+        position += (MousePositionWorld(mousePositionScreen) - MousePositionWorld(newMousePosition));
+        position.Clamp2D(xCameraBounds, yCameraBounds);
+        transform.position = position;
+        mousePositionScreen = newMousePosition;
+    }
+    private void OnPan(InputValue inputValue)
+    {
+        isPanning = inputValue.Get<float>() > 0;
     }
 }

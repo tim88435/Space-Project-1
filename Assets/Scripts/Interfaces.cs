@@ -8,8 +8,8 @@ namespace Custom.Interfaces
     {
         int Team { get; protected set; }
     }
-    public interface IFlock
+    public interface ISelectable
     {
-        Flock Flock { get;}
+
     }
 }
