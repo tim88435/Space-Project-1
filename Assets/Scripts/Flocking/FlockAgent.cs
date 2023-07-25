@@ -6,8 +6,10 @@ using Custom.Interfaces;
 public class FlockAgent : MonoBehaviour, ITeam, ISelectable
 {
     public static Dictionary<Collider2D, FlockAgent> agents { get; private set; } = new Dictionary<Collider2D, FlockAgent>();
+    public Flock flock;
     public Vector3 lookEndDirection = Vector3.zero;
     [SerializeField] int teamID = 0;
+    [SerializeField] float speed = 0;
     SpriteRenderer ISelectable.spriteRenderer { get; set; }
     int ITeam.Team
     {
@@ -40,20 +42,21 @@ public class FlockAgent : MonoBehaviour, ITeam, ISelectable
         if (distance > 0.1f)
         {
             MoveForward(distance);
-            RotateTowards(targetDestination);
+            RotateTowards(targetDestination, distance);
         }
         else
         {
-            RotateTowards(lookEndDirection);
+            RotateTowards(lookEndDirection, distance * 0.5f);
         }
     }
     private void MoveForward(float distance)
     {
-        transform.Translate(Vector2.up * Time.deltaTime * Mathf.Min(distance * 7.0f, 5.0f));
+        speed = Mathf.Min(distance * 3.0f, 5.0f);
+        transform.Translate(Vector2.up * Time.deltaTime * speed);
     }
-    private void RotateTowards(Vector3 location)
+    private void RotateTowards(Vector3 location, float distance)
     {
-        float blend = 1 - Mathf.Pow(0.5f, Time.deltaTime * 10.0f);
+        float blend = 1 - Mathf.Pow(0.5f, Time.deltaTime * speed * 10.0f);
         Quaternion rotation = Quaternion.LookRotation(transform.forward, location - transform.position);
         transform.rotation = Quaternion.Lerp(transform.rotation, rotation, blend);
     }
