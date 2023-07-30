@@ -6,6 +6,15 @@
             "id": "c0925588-3b40-4e9e-88c3-50c4538cf93a",
             "actions": [
                 {
+                    "name": "Mouse Position",
+                    "type": "Value",
+                    "id": "dab268d9-52b7-4f7e-8ee3-d3e299d61ae9",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "Zoom",
                     "type": "Value",
                     "id": "70cd79f5-988a-4c5f-836e-9a1c53306a66",
@@ -18,15 +27,6 @@
                     "name": "Movement",
                     "type": "Value",
                     "id": "a4cfcad5-6c33-4971-97c8-778581cb7408",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "Mouse Position",
-                    "type": "Value",
-                    "id": "dab268d9-52b7-4f7e-8ee3-d3e299d61ae9",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
@@ -199,23 +199,23 @@
                 },
                 {
                     "name": "",
-                    "id": "fc794bfc-eb76-4e45-8856-af366869e58f",
-                    "path": "<Mouse>/position",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Mouse Position",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "9ef06260-1b69-4987-ac49-3f2ddf573d24",
                     "path": "<Mouse>/middleButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Pan",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fc794bfc-eb76-4e45-8856-af366869e58f",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Mouse Position",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -226,19 +226,19 @@
             "id": "4a1527bf-3f75-4a7d-96d5-43bfd3e580e3",
             "actions": [
                 {
-                    "name": "MoveUnit",
+                    "name": "Mouse Position",
                     "type": "Value",
-                    "id": "6d0ff7ca-70d2-4db9-9896-da969111bda9",
-                    "expectedControlType": "Button",
+                    "id": "ed93e9a5-6dea-45cb-b4dc-088653d99be2",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Mouse Position",
+                    "name": "MoveUnit",
                     "type": "Value",
-                    "id": "ffc599f7-957e-4b57-b359-74c590c704cb",
-                    "expectedControlType": "Vector2",
+                    "id": "6d0ff7ca-70d2-4db9-9896-da969111bda9",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -278,7 +278,7 @@
                 },
                 {
                     "name": "",
-                    "id": "ab973a0b-469b-4953-ba14-a8dfea446ecd",
+                    "id": "f71cf43c-7a07-4b45-a05b-89174eecab3e",
                     "path": "<Mouse>/position",
                     "interactions": "",
                     "processors": "",

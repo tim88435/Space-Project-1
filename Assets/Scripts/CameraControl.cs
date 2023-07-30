@@ -98,6 +98,7 @@ public class CameraControl : MonoBehaviour
     private void OnMousePosition(InputValue inputValue)
     {
         Vector2 newMousePosition = inputValue.Get<Vector2>();
+        //if (newMousePosition == Vector2.zero) return; //hack to fix issue with application being focused
         if (!isPanning)
         {
             mousePositionScreen = newMousePosition;

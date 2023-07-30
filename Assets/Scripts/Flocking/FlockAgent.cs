@@ -6,23 +6,11 @@ using Custom.Interfaces;
 public class FlockAgent : MonoBehaviour, ITeam, ISelectable
 {
     public static Dictionary<Collider2D, FlockAgent> agents { get; private set; } = new Dictionary<Collider2D, FlockAgent>();
-    public Flock flock;
-    public Vector3 lookEndDirection = Vector3.zero;
-    [SerializeField] int teamID = 0;
+    public Vector3 lookEndDirection;
     [SerializeField] float speed = 0;
     SpriteRenderer ISelectable.spriteRenderer { get; set; }
-    int ITeam.Team
-    {
-        get
-        {
-            return teamID;
-        }
-        set
-        {
-            teamID = value;
-        }
-    }
-    [System.NonSerialized] public Vector3 targetDestination = Vector3.zero;
+    int ITeam.Team { get; set; }
+    [System.NonSerialized] public Vector3 targetDestination;
     private void OnEnable()
     {
         agents.Add(GetComponent<Collider2D>(), this);
@@ -34,6 +22,7 @@ public class FlockAgent : MonoBehaviour, ITeam, ISelectable
     }
     private void Start()
     {
+        lookEndDirection = transform.up + transform.position;
         targetDestination = transform.position;
     }
     private void Update()

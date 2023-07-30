@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Flock
+public static class Flock
 {
-    internal void SetDestination(Vector3 position, List<FlockAgent> flockAgents)
+    public static List<FlockAgent> flockAgents = new List<FlockAgent>();
+    public static void SetDestination(Vector3 position, List<FlockAgent> flockAgents)
     {
         float targetRatio = 2.0f;
         Vector2Int endSize = new Vector2Int(Mathf.RoundToInt(Mathf.Sqrt(flockAgents.Count * targetRatio)), Mathf.RoundToInt(Mathf.Sqrt(flockAgents.Count / targetRatio)));
@@ -43,7 +44,7 @@ public class Flock
             flockAgents[i].lookEndDirection = flockAgents[i].targetDestination + up * Vector3.up;
         }
     }
-    private Quaternion GetFormationUp(Vector3 lookPosition, List<FlockAgent> flockAgents)
+    private static Quaternion GetFormationUp(Vector3 lookPosition, List<FlockAgent> flockAgents)
     {
         Vector3 result = Vector3.zero;
         for (int i = 0; i < flockAgents.Count; i++)

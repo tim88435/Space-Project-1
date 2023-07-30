@@ -12,4 +12,12 @@ namespace Custom.Extensions
             self.y = Mathf.Clamp(self.y, yClamp.x, yClamp.y);
         }
     }
+    public class GenericListComparer<T>
+    {
+        internal static bool Compare(List<T> firstCollection, List<T> secondCollection)
+        {
+            return firstCollection.TrueForAll(secondCollection.Contains) &&
+                   secondCollection.TrueForAll(firstCollection.Contains);
+        }
+    }
 }
