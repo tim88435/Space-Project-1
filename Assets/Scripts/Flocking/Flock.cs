@@ -4,7 +4,6 @@ using UnityEngine;
 
 public static class Flock
 {
-    public static List<FlockAgent> flockAgents = new List<FlockAgent>();
     public static void SetDestination(Vector3 position, List<FlockAgent> flockAgents)
     {
         float targetRatio = 2.0f;
@@ -18,7 +17,6 @@ public static class Flock
         offset *= 0.5f;
         offset.y += 0.5f;
         offset.x += 0.5f;
-        //Debug.Log(position + offset);
         int flockIndex = 0;
         for (int j = 0; j < endSize.y; j++)
         {
@@ -35,7 +33,6 @@ public static class Flock
             {
                 if (flockIndex >= flockAgents.Count) { break; }
                 flockAgents[flockIndex].targetDestination = position + up * (new Vector3(i, j, 0.0f) + offset);
-                //Debug.Log($"i = {i}\nj = {j}");
                 flockIndex++;
             }
         }
@@ -49,7 +46,7 @@ public static class Flock
         Vector3 result = Vector3.zero;
         for (int i = 0; i < flockAgents.Count; i++)
         {
-            result += flockAgents[0].transform.position;
+            result += flockAgents[i].transform.position;
         }
         result /= flockAgents.Count;
         lookPosition -= result;

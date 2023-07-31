@@ -24,8 +24,8 @@ public class CameraControl : MonoBehaviour
         }
     }
     private Camera _camera;
-    [Range(5, 100)][SerializeField] private float zoomMinimum = 5.0f;
-    [Range(5, 100)][SerializeField] private float zoomMaximum = 100.0f;
+    [Range(5, 150)][SerializeField] private float zoomMinimum = 5.0f;
+    [Range(5, 150)][SerializeField] private float zoomMaximum = 150.0f;
     [Range(1, 2)][SerializeField] private float zoomSpeed = 1.2f;
     [Range(0, 10)][SerializeField] private float zoomUpdateSpeed = 5.0f;
     [Range(0, 10)][SerializeField] private float moveSpeed = 2.0f;
@@ -98,7 +98,7 @@ public class CameraControl : MonoBehaviour
     private void OnMousePosition(InputValue inputValue)
     {
         Vector2 newMousePosition = inputValue.Get<Vector2>();
-        //if (newMousePosition == Vector2.zero) return; //hack to fix issue with application being focused
+        if (newMousePosition == Vector2.zero) return; //hack to fix issue with application being focused
         if (!isPanning)
         {
             mousePositionScreen = newMousePosition;
