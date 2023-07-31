@@ -21,12 +21,14 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    [System.NonSerialized] public Canvas canvas;
     private void OnEnable()
     {
         Singleton = this;
     }
     private void Start()
     {
+        canvas = GetComponent<Canvas>();
         Application.targetFrameRate = 60;
     }
     private void Update()

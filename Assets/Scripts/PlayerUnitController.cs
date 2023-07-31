@@ -15,19 +15,16 @@ public class PlayerUnitController : MonoBehaviour
     private bool selectedChecked = false;
     private float moveSetCooldown = 1f;
     private Vector2? selectionStartScreen;
-    Vector3 mousePosition = Vector2.zero;
+    Vector3 mousePositionScreen = Vector2.zero;
     private void Update()
     {
         if (selectionStartScreen != null)
         {
             selectedChecked = false;
-            RectTransform selectionBoxTransform = selectionBox.rectTransform;
-            selectionBoxTransform.position = ((Vector3)selectionStartScreen + mousePosition) * 0.5f;
-            selectionBoxTransform.sizeDelta = (Vector2)selectionStartScreen - (Vector2)mousePosition;
-            selectionBoxTransform.sizeDelta += new Vector2(selectionBoxTransform.sizeDelta.x >= 0.0f ? 0.0f : selectionBoxTransform.sizeDelta.x * -2.0f, selectionBoxTransform.sizeDelta.y >= 0.0f ? 0.0f : selectionBoxTransform.sizeDelta.y * -2.0f);
+            UpdateSelectionBox();
             foreach (FlockAgent item in selected) { ((ISelectable)item).SetColour(Color.white); }
             selected.Clear();
-            Collider2D[] selectedColliders2D = Physics2D.OverlapAreaAll(CameraControl.Singleton.MousePositionWorld((Vector2)selectionStartScreen), (Vector2)CameraControl.Singleton.MousePositionWorld(mousePosition));
+            Collider2D[] selectedColliders2D = Physics2D.OverlapAreaAll(CameraControl.Singleton.MousePositionWorld((Vector2)selectionStartScreen), (Vector2)CameraControl.Singleton.MousePositionWorld(mousePositionScreen));
             SelectColliders(selectedColliders2D);
         }
         moveSetCooldown -= Time.deltaTime;
@@ -43,7 +40,7 @@ public class PlayerUnitController : MonoBehaviour
         {
             selected.Clear();
             selectionBox.enabled = true;
-            selectionStartScreen = CameraControl.Singleton.MousePositionScreen();
+            selectionStartScreen = mousePositionScreen;
             Collider2D[] selectedColliders2D = Physics2D.OverlapPointAll(CameraControl.Singleton.MousePositionWorld((Vector2)selectionStartScreen));
             SelectColliders(selectedColliders2D);
             return;
@@ -76,7 +73,7 @@ public class PlayerUnitController : MonoBehaviour
     }
     private void OnMousePosition(InputValue inputValue)
     {
-        mousePosition = inputValue.Get<Vector2>();
+        mousePositionScreen = inputValue.Get<Vector2>();
     }
     private void MoveUnit()
     {
@@ -97,7 +94,14 @@ public class PlayerUnitController : MonoBehaviour
             selected = selected.OrderBy(agent => agent.gameObject.GetInstanceID()).ToList();
             selectedChecked = true;
         }
-        Flock.SetDestination(CameraControl.Singleton.MousePositionWorld(mousePosition), selected);
+        Flock.SetDestination(CameraControl.Singleton.MousePositionWorld(mousePositionScreen), selected);
         moveSetCooldown = 0.1f;
+    }
+    private void UpdateSelectionBox()
+    {
+        RectTransform selectionBoxTransform = selectionBox.rectTransform;
+        selectionBoxTransform.anchoredPosition = ((Vector3)selectionStartScreen + mousePositionScreen) * 0.5f / GameManager.Singleton.canvas.scaleFactor;
+        selectionBoxTransform.sizeDelta = ((Vector2)mousePositionScreen - (Vector2)selectionStartScreen) / GameManager.Singleton.canvas.scaleFactor;
+        selectionBoxTransform.sizeDelta = new Vector2(Mathf.Abs(selectionBoxTransform.sizeDelta.x), Mathf.Abs(selectionBoxTransform.sizeDelta.y));
     }
 }
