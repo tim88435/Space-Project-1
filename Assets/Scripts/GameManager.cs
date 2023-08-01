@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
         }
     }
     [System.NonSerialized] public Canvas canvas;
+    public Material defaultLineMaterial;
     private void OnEnable()
     {
         Singleton = this;

@@ -45,11 +45,11 @@ public class UnitIcons : MonoBehaviour
     {
         foreach (Collider2D collider in collider2Ds)
         {
-            if (!FlockAgent.agents.ContainsKey(collider))
+            if (!FlockAgent.ships.ContainsKey(collider))
             {
                 return;
             }
-            if (FlockAgent.agents[collider] != null)
+            if (FlockAgent.ships[collider] != null)
             {
                 //selected.Add(FlockAgent.agents[collider]);
                 //((ISelectable)FlockAgent.agents[collider]).SetColour(Color.yellow);

@@ -6,16 +6,38 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Custom.Interfaces;
 using Custom.Extensions;
+using Custom.StaticClasses;
 
 public class PlayerUnitController : MonoBehaviour
 {
+    private static PlayerUnitController _singleton;
+    public static PlayerUnitController Singleton
+    {
+        get { return _singleton; }
+        set
+        {
+            if (_singleton == null)
+            {
+                _singleton = value;
+                return;
+            }
+            if (_singleton != value)
+            {
+                Debug.LogWarning($"Component {nameof(Singleton)} already exists in current scene\nRemoving duplicate");
+            }
+        }
+    }
     [SerializeField] private Image selectionBox;
-    private List<FlockAgent> selected = new List<FlockAgent>();
+    public List<FlockAgent> selected = new List<FlockAgent>();
     private bool isSelectingPosition;
     private bool selectedChecked = false;
     private float moveSetCooldown = 1f;
     private Vector2? selectionStartScreen;
-    Vector3 mousePositionScreen = Vector2.zero;
+    private Vector3 mousePositionScreen = Vector2.zero;
+    private void OnEnable()
+    {
+        Singleton = this;
+    }
     private void Update()
     {
         if (selectionStartScreen != null)
@@ -24,7 +46,7 @@ public class PlayerUnitController : MonoBehaviour
             UpdateSelectionBox();
             foreach (FlockAgent item in selected) { ((ISelectable)item).SetColour(Color.white); }
             selected.Clear();
-            Collider2D[] selectedColliders2D = Physics2D.OverlapAreaAll(CameraControl.Singleton.MousePositionWorld((Vector2)selectionStartScreen), (Vector2)CameraControl.Singleton.MousePositionWorld(mousePositionScreen));
+            Collider2D[] selectedColliders2D = Physics2D.OverlapAreaAll(CameraControl.Singleton.MousePositionWorld((Vector2)selectionStartScreen), (Vector2)CameraControl.Singleton.MousePositionWorld(mousePositionScreen), (LayerMask)(1 << 7));
             SelectColliders(selectedColliders2D);
         }
         moveSetCooldown -= Time.deltaTime;
@@ -35,13 +57,21 @@ public class PlayerUnitController : MonoBehaviour
     }
     private void OnSelect(InputValue inputValue)
     {
-        foreach (FlockAgent item in selected) { ((ISelectable)item).SetColour(Color.white); }
+        foreach (FlockAgent item in selected)
+        {
+            if (item == null)
+            {
+                selected.Remove(item);
+                continue;
+            }
+            ((ISelectable)item).SetColour(Color.white);
+        }
         if (inputValue.Get<float>() > 0)
         {
             selected.Clear();
             selectionBox.enabled = true;
             selectionStartScreen = mousePositionScreen;
-            Collider2D[] selectedColliders2D = Physics2D.OverlapPointAll(CameraControl.Singleton.MousePositionWorld((Vector2)selectionStartScreen));
+            Collider2D[] selectedColliders2D = Physics2D.OverlapPointAll(CameraControl.Singleton.MousePositionWorld((Vector2)selectionStartScreen), (LayerMask)((1 << 6)));
             SelectColliders(selectedColliders2D);
             return;
         }
@@ -54,21 +84,37 @@ public class PlayerUnitController : MonoBehaviour
     }
     private void OnMoveUnit(InputValue inputValue)
     {
+        if (!isSelectingPosition)
+        {
+            bool dogFighting = false;
+            Collider2D collider2D = CameraControl.CameraCast(mousePositionScreen);
+            if (collider2D != null)
+            {
+                if (FlockAgent.ships.TryGetValue(collider2D, out FlockAgent flockAgent))
+                {
+                    if (flockAgent.Team != 1)
+                    {
+                        dogFighting = true;
+                    }
+                }
+                for (int i = 0; i < selected.Count; i++)
+                {
+                    selected[i].dogFighting = dogFighting;
+                }
+            }
+        }
         isSelectingPosition = inputValue.Get<float>() > 0;
     }
     private void SelectColliders(Collider2D[] collider2Ds)
     {
         foreach (Collider2D collider in collider2Ds)
         {
-            if (!FlockAgent.agents.ContainsKey(collider))
+            if (!FlockAgent.ships.TryGetValue(collider, out FlockAgent ship))
             {
                 return;
             }
-            if (FlockAgent.agents[collider] != null)
-            {
-                selected.Add(FlockAgent.agents[collider]);
-                ((ISelectable)FlockAgent.agents[collider]).SetColour(Color.yellow);
-            }
+            selected.Add(ship);
+            ((ISelectable)ship).SetColour(Color.yellow);
         }
     }
     private void OnMousePosition(InputValue inputValue)
