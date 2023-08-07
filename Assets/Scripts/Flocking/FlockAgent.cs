@@ -9,9 +9,10 @@ public class FlockAgent : MonoBehaviour, ISelectable, IDamagable, IWeapon
     public static Dictionary<Collider2D, FlockAgent> ships { get; private set; } = new Dictionary<Collider2D, FlockAgent>();
     public bool dogFighting = true;
     public Vector3 lookEndDirection;
-    [SerializeField] float speed = 0;
     SpriteRenderer ISelectable.spriteRenderer { get; set; }
     [SerializeField] private int _team = 0;
+    [System.NonSerialized] public Vector3 targetDestination;
+    private Vector2 velocity = Vector2.zero;
     public int Team
     {
         get { return _team; }
@@ -28,7 +29,6 @@ public class FlockAgent : MonoBehaviour, ISelectable, IDamagable, IWeapon
     public float NextAttackTime { get; set; } = 0;
     public float Range { get; set; } = 15f;
 
-    [System.NonSerialized] public Vector3 targetDestination;
     private void OnEnable()
     {
         Team = Team;//set layer
@@ -56,74 +56,19 @@ public class FlockAgent : MonoBehaviour, ISelectable, IDamagable, IWeapon
     {
         if (dogFighting)
         {
-            float distance;
-            FlockAgent closestFlockAgent;
-            if (EnemiesInRange(out Vector3 averagePosition, out Collider2D[] collider2D, Range * 2f))
+            Collider2D[] selectedColliders2D = Physics2D.OverlapCircleAll(transform.position, Range);
+            if (selectedColliders2D.Length > 1)
             {
-                distance = Vector3.Distance(targetDestination, averagePosition);
-                if (distance < Range * 2.0f)
-                {
-                    MoveForward(10);//max speed
-                    RotateTowards(averagePosition, 0.1f);
-                    if (EnemyInRange(out closestFlockAgent, collider2D, Range))
-                    {
-                        if (NextAttackTime < Time.time)
-                        {
-                            Attack(closestFlockAgent);
-                        }
-                    }
-                    return;
-                }
-            }
-            distance = Vector2.Distance(transform.position, targetDestination);
-            if (distance > 0.1f)
-            {
-                MoveForward(distance);
-                RotateTowards(targetDestination, 1);
+                DogFight(Range * 2, selectedColliders2D);
+                MoveForward();
             }
             else
             {
-                RotateTowards(lookEndDirection, 1);
-            }
-            if (EnemyInRange(out closestFlockAgent, collider2D, Range))
-            {
-                if (NextAttackTime < Time.time)
-                {
-                    Attack(closestFlockAgent);
-                }
+                float blend = 1 - Mathf.Pow(0.5f, Time.deltaTime);
+                velocity = Vector2.Lerp(velocity, Vector2.zero, blend);
+                MoveForward();
             }
         }
-        else
-        {
-            float distance = Vector2.Distance(transform.position, targetDestination);
-            if (distance > 0.1f)
-            {
-                MoveForward(distance);
-                RotateTowards(targetDestination, 1);
-            }
-            else
-            {
-                RotateTowards(lookEndDirection, 1);
-            }
-            if (EnemyInRange(out FlockAgent closestFlockAgent, Range))
-            {
-                if (NextAttackTime < Time.time)
-                {
-                    Attack(closestFlockAgent);
-                }
-            }
-        }
-    }
-    private void MoveForward(float distance)
-    {
-        speed = Mathf.Min(distance * 3.0f, 5.0f);
-        transform.Translate(Vector2.up * Time.deltaTime * speed);
-    }
-    private void RotateTowards(Vector3 location, float strength)
-    {
-        float blend = 1 - Mathf.Pow(0.5f, Time.deltaTime * speed * 10.0f) * strength;
-        Quaternion rotation = Quaternion.LookRotation(transform.forward, location - transform.position);
-        transform.rotation = Quaternion.Lerp(transform.rotation, rotation, blend);
     }
     private void Attack(FlockAgent agent)
     {
@@ -142,33 +87,47 @@ public class FlockAgent : MonoBehaviour, ISelectable, IDamagable, IWeapon
         lineRenderer.SetPositions(new Vector3[] { transform.position, hitPosition });
         Destroy(lineRenderer.gameObject, 0.5f);
     }
-    private bool EnemyInRange(out FlockAgent closestFlockAgent, Collider2D[] collider2Ds, float Range)
+    private void DogFight(float Range, Collider2D[] colliders2D)
     {
-        if (collider2Ds.Length == 0) { closestFlockAgent = null; return false; }
-        Collider2D closestCollider2D = collider2Ds.Aggregate((collider1, collider2) => Vector3.Distance(transform.position, collider2.transform.position) > Vector3.Distance(transform.position, collider2.transform.position) ? collider2 : collider1);
-        if (closestCollider2D == null || Vector3.Distance(transform.position, closestCollider2D.transform.position) > Range) { closestFlockAgent = null; return false; }
-        closestFlockAgent = ships[closestCollider2D];
-        return true;
-    }
-    private bool EnemyInRange(out FlockAgent closestFlockAgent, float Range)
-    {
-        Collider2D[] selectedColliders2D = Physics2D.OverlapCircleAll(transform.position, Range, (LayerMask)~(1 << 6 + ((ITeam)this).Team));
-        if (selectedColliders2D.Length == 0) { closestFlockAgent = null; return false; }
-        Collider2D closestCollider2D = selectedColliders2D.FirstOrDefault(a => Vector3.Distance(transform.position, a.transform.position) < Range);
-        if (closestCollider2D == null) { closestFlockAgent = null; return false; }
-        closestFlockAgent = ships[closestCollider2D];
-        return true;
-    }
-    private bool EnemiesInRange(out Vector3 averagePosition, out Collider2D[] selectedColliders2D, float Range)
-    {
-        selectedColliders2D = Physics2D.OverlapCircleAll(transform.position, Range, (LayerMask)~(1 << 6 + ((ITeam)this).Team));
-        averagePosition = Vector3.zero;
-        for (int i = 0; i < selectedColliders2D.Length; i++)
+        IEnumerable<IGrouping<int, FlockAgent>> shipsSorted = colliders2D
+            .Where(x => ships.ContainsKey(x))
+            .Select(y => ships[y])
+            .GroupBy(a => a.Team);
+        Vector2 avoidancePosition = Vector2.zero;
+        Vector2 cohesionUp = Vector2.zero;
+        Vector2 chasePosition = Vector2.zero;
+        int friendlyCount = shipsSorted.Where(a => a.Key == Team).Count();
+        int enemyCount = shipsSorted.Count() - friendlyCount;
+        foreach (IGrouping<int, FlockAgent> team in shipsSorted)
         {
-            averagePosition += selectedColliders2D[i].transform.position;
+            foreach (FlockAgent ship in team)
+            {
+                if (ship == this) { continue; }
+                avoidancePosition += ((Vector2)ship.transform.position / (friendlyCount + enemyCount)) * Mathf.Pow(0.99f, Vector2.Distance((Vector2)transform.position, (Vector2)ship.transform.position));// * 50f;
+                if (ship.Team == Team)
+                {
+                    cohesionUp += (Vector2)ship.transform.up / friendlyCount;
+                }
+                else
+                {
+                    chasePosition += (Vector2)ship.transform.position / enemyCount;
+                }
+            }
         }
-        averagePosition /= selectedColliders2D.Length;
-        return selectedColliders2D.Length > 0;
+        cohesionUp.Normalize();
+        Vector2 finalPositionMove = chasePosition - avoidancePosition;
+        //finalPositionMove += cohesionUp;
+        float blend = 1 - Mathf.Pow(0.5f, Time.deltaTime);
+        velocity = Vector2.Lerp(velocity, finalPositionMove - (Vector2)transform.position, blend);
+        if (Team != 1)
+        {
+            Debug.Log(finalPositionMove);
+        }
+    }
+    private void MoveForward()
+    {
+        transform.up = velocity;
+        transform.Translate(velocity * Time.deltaTime, Space.World);
     }
     public void Destroy()
     {
