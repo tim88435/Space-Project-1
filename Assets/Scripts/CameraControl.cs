@@ -84,7 +84,7 @@ public class CameraControl : MonoBehaviour
     }
     public Vector3 MousePositionWorld(Vector3 screenPosition)
     {
-        return _camera.ScreenToWorldPoint(screenPosition);
+        return _camera.ScreenToWorldPoint(screenPosition).Flatten2D();
     }
     public Vector3 MousePositionScreen() { return mousePositionScreen; }
     private void OnMovement(InputValue inputValue)

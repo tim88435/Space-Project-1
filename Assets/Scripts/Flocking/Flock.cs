@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Flock : MonoBehaviour
@@ -40,7 +39,7 @@ public class Flock : MonoBehaviour
         }
         for (int i = 0; i < flockAgents.Count; i++)
         {
-            flockAgents[i].lookEndDirection = flockAgents[i].targetDestination + up * Vector3.up;
+            flockAgents[i].lookEndDirection = up * Vector3.up;
         }
     }
     private static Quaternion GetFormationUp(Vector3 lookPosition, List<FlockAgent> flockAgents)

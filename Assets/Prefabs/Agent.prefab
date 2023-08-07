@@ -98,9 +98,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b78b98c6525d984297a63ccc8c77902, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dogFighting: 1
   lookEndDirection: {x: 0, y: 0, z: 0}
-  speed: 0
   _team: 1
+  speed: 10
 --- !u!60 &-3480644376481221027
 PolygonCollider2D:
   m_ObjectHideFlags: 0

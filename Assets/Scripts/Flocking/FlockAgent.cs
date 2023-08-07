@@ -49,29 +49,39 @@ public class FlockAgent : MonoBehaviour, ISelectable, IDamagable, IWeapon
     }
     private void Start()
     {
-        lookEndDirection = transform.up + transform.position;
+        lookEndDirection = transform.up;
         targetDestination = transform.position;
     }
     private void Update()
     {
         if (dogFighting)
         {
-            Collider2D[] selectedColliders2D = Physics2D.OverlapCircleAll(transform.position, Range);
-            if (selectedColliders2D.Length > 1)
+            IEnumerable<FlockAgent> shipsInRange = Physics2D.OverlapCircleAll(transform.position, Range)
+                .Where(x => ships.ContainsKey(x) && ships[x] != this)
+                .Select(y => ships[y]);
+            if (shipsInRange.Any(x => x.Team != Team))
             {
-                DogFight(Range * 2, selectedColliders2D);
+                DogFightMove(Range * 2, shipsInRange);
+                if (NextAttackTime < Time.time)
+                {
+                    Attack(shipsInRange.FirstOrDefault(x => (Vector3.Distance(transform.position, x.transform.position) < Range) && x.Team != Team));
+                }
                 MoveForward();
-            }
-            else
-            {
-                float blend = 1 - Mathf.Pow(0.5f, Time.deltaTime);
-                velocity = Vector2.Lerp(velocity, Vector2.zero, blend);
-                MoveForward();
+                return;
             }
         }
+        float blend = 1 - Mathf.Pow(0.5f, Time.deltaTime * 3.0f);
+        velocity = Vector2.Lerp(velocity, targetDestination - transform.position, blend);
+        if (Vector3.Distance(targetDestination, transform.position) < 0.1f)
+        {
+            LookTowards(lookEndDirection);
+            return;
+        }
+        MoveForward();
     }
     private void Attack(FlockAgent agent)
     {
+        if (agent == null) { return; }
         Vector3 hitPosition = agent.transform.position;
         if (!((IWeapon)this).TryHit(agent))
         {
@@ -87,47 +97,28 @@ public class FlockAgent : MonoBehaviour, ISelectable, IDamagable, IWeapon
         lineRenderer.SetPositions(new Vector3[] { transform.position, hitPosition });
         Destroy(lineRenderer.gameObject, 0.5f);
     }
-    private void DogFight(float Range, Collider2D[] colliders2D)
+    private void DogFightMove(float Range, IEnumerable<FlockAgent> shipsInRange)
     {
-        IEnumerable<IGrouping<int, FlockAgent>> shipsSorted = colliders2D
-            .Where(x => ships.ContainsKey(x))
-            .Select(y => ships[y])
-            .GroupBy(a => a.Team);
-        Vector2 avoidancePosition = Vector2.zero;
-        Vector2 cohesionUp = Vector2.zero;
-        Vector2 chasePosition = Vector2.zero;
-        int friendlyCount = shipsSorted.Where(a => a.Key == Team).Count();
-        int enemyCount = shipsSorted.Count() - friendlyCount;
-        foreach (IGrouping<int, FlockAgent> team in shipsSorted)
-        {
-            foreach (FlockAgent ship in team)
-            {
-                if (ship == this) { continue; }
-                avoidancePosition += ((Vector2)ship.transform.position / (friendlyCount + enemyCount)) * Mathf.Pow(0.99f, Vector2.Distance((Vector2)transform.position, (Vector2)ship.transform.position));// * 50f;
-                if (ship.Team == Team)
-                {
-                    cohesionUp += (Vector2)ship.transform.up / friendlyCount;
-                }
-                else
-                {
-                    chasePosition += (Vector2)ship.transform.position / enemyCount;
-                }
-            }
-        }
-        cohesionUp.Normalize();
-        Vector2 finalPositionMove = chasePosition - avoidancePosition;
-        //finalPositionMove += cohesionUp;
+        Vector2 positionMove =
+            GameManager.Singleton.flockBehaviour.CalculateMove(
+            this,
+            shipsInRange.Where(x => x.Team == Team).ToArray(),
+            shipsInRange.Where(x => x.Team != Team).ToArray()
+            );
         float blend = 1 - Mathf.Pow(0.5f, Time.deltaTime);
-        velocity = Vector2.Lerp(velocity, finalPositionMove - (Vector2)transform.position, blend);
-        if (Team != 1)
-        {
-            Debug.Log(finalPositionMove);
-        }
+        velocity = Vector2.Lerp(velocity, positionMove.normalized * 3.0f, blend);
+        velocity = velocity.normalized * Mathf.Lerp(velocity.magnitude, 3.0f, blend);
     }
     private void MoveForward()
     {
+        velocity = velocity.normalized * Mathf.Clamp(velocity.magnitude, 0.0f, 4.0f);
         transform.up = velocity;
         transform.Translate(velocity * Time.deltaTime, Space.World);
+    }
+    private void LookTowards(Vector3 up)
+    {
+        float blend = 1 - Mathf.Pow(0.5f, Time.deltaTime);
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(transform.forward, up), blend);
     }
     public void Destroy()
     {

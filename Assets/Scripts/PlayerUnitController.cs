@@ -84,25 +84,6 @@ public class PlayerUnitController : MonoBehaviour
     }
     private void OnMoveUnit(InputValue inputValue)
     {
-        if (!isSelectingPosition)
-        {
-            bool dogFighting = false;
-            Collider2D collider2D = CameraControl.CameraCast(mousePositionScreen);
-            if (collider2D != null)
-            {
-                if (FlockAgent.ships.TryGetValue(collider2D, out FlockAgent flockAgent))
-                {
-                    if (flockAgent.Team != 1)
-                    {
-                        dogFighting = true;
-                    }
-                }
-                for (int i = 0; i < selected.Count; i++)
-                {
-                    selected[i].dogFighting = dogFighting;
-                }
-            }
-        }
         isSelectingPosition = inputValue.Get<float>() > 0;
     }
     private void SelectColliders(Collider2D[] collider2Ds)
@@ -139,6 +120,22 @@ public class PlayerUnitController : MonoBehaviour
         {
             selected = selected.OrderBy(agent => agent.gameObject.GetInstanceID()).ToList();
             selectedChecked = true;
+        }
+        bool dogFighting = false;
+        Collider2D collider2D = CameraControl.CameraCast(mousePositionScreen);
+        if (collider2D != null)
+        {
+            if (FlockAgent.ships.TryGetValue(collider2D, out FlockAgent flockAgent))
+            {
+                if (flockAgent.Team != 1)
+                {
+                    dogFighting = true;
+                }
+            }
+        }
+        for (int i = 0; i < selected.Count; i++)
+        {
+            selected[i].dogFighting = dogFighting;
         }
         Flock.SetDestination(CameraControl.Singleton.MousePositionWorld(mousePositionScreen), selected);
         moveSetCooldown = 0.1f;

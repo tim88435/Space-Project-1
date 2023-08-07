@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,11 @@ namespace Custom.Extensions
             self.x = Mathf.Clamp(self.x, xClamp.x, xClamp.y);
             self.y = Mathf.Clamp(self.y, yClamp.x, yClamp.y);
         }
+        public static Vector3 Flatten2D(this Vector3 self)
+        {
+            self.z = 0;
+            return self;
+        }
     }
     public class GenericListComparer<T>
     {
@@ -20,4 +26,5 @@ namespace Custom.Extensions
                    secondCollection.TrueForAll(firstCollection.Contains);
         }
     }
+    
 }

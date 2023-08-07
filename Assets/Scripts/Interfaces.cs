@@ -29,6 +29,7 @@ namespace Custom.Interfaces
             {
                 return false;
             }
+            NextAttackTime = CooldownSeconds + Time.time;
             if (Random.value <= damagable.Evasion)
             {
                 return false;
@@ -38,7 +39,6 @@ namespace Custom.Interfaces
             {
                 damagable.Destroy();
             }
-            NextAttackTime = CooldownSeconds + Time.time;
             return true;
         }
     }

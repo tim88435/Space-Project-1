@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     }
     [System.NonSerialized] public Canvas canvas;
     public Material defaultLineMaterial;
+    public FlockBehaviour flockBehaviour;
     private void OnEnable()
     {
         Singleton = this;
