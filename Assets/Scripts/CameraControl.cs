@@ -114,8 +114,4 @@ public class CameraControl : MonoBehaviour
     {
         isPanning = inputValue.Get<float>() > 0;
     }
-    public static Collider2D CameraCast(Vector2 positionScreen)
-    {
-        return Physics2D.Raycast(Singleton._camera.ScreenToWorldPoint(positionScreen), Vector2.zero).collider;
-    }
 }

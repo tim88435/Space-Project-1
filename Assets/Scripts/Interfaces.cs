@@ -7,8 +7,9 @@ namespace Custom.Interfaces
     public interface ITeam
     {
         public int Team { get; set; }
+        public float Health { get; set; }
     }
-    public interface ISelectable : ITeam
+    public interface IShip : ITeam
     {
         SpriteRenderer spriteRenderer { get; set; }
         public void SetColour(Color colour)

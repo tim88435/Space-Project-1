@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Custom.Interfaces;
 using Custom.Extensions;
-using Custom.StaticClasses;
 
 public class PlayerUnitController : MonoBehaviour
 {
@@ -28,9 +27,13 @@ public class PlayerUnitController : MonoBehaviour
         }
     }
     [SerializeField] private Image selectionBox;
+    //both lists because stuff can die
     public List<FlockAgent> selected = new List<FlockAgent>();
+    public List<FlockAgent> finalSelected = new List<FlockAgent>();
     private bool isSelectingPosition;
     private bool selectedChecked = false;
+    private int lastCheckedCount = 0;
+    private bool specificSelection;
     private float moveSetCooldown = 1f;
     private Vector2? selectionStartScreen;
     private Vector3 mousePositionScreen = Vector2.zero;
@@ -42,12 +45,11 @@ public class PlayerUnitController : MonoBehaviour
     {
         if (selectionStartScreen != null)
         {
-            selectedChecked = false;
             UpdateSelectionBox();
-            foreach (FlockAgent item in selected) { ((ISelectable)item).SetColour(Color.white); }
+            selected.SetColour(Color.white);
             selected.Clear();
             Collider2D[] selectedColliders2D = Physics2D.OverlapAreaAll(CameraControl.Singleton.MousePositionWorld((Vector2)selectionStartScreen), (Vector2)CameraControl.Singleton.MousePositionWorld(mousePositionScreen), (LayerMask)(1 << 7));
-            SelectColliders(selectedColliders2D);
+            GetAgents(selectedColliders2D, ref selected);
         }
         moveSetCooldown -= Time.deltaTime;
         if (isSelectingPosition)
@@ -55,47 +57,62 @@ public class PlayerUnitController : MonoBehaviour
             MoveUnit();
         }
     }
+    private void LateUpdate()
+    {
+        if (specificSelection)
+        {
+            finalSelected.Where(x => !selected.Contains(x)).SetColour(Color.cyan);
+            selected.Where(x => !finalSelected.Contains(x)).SetColour(Color.cyan);
+            return;
+        }
+        selected.SetColour(Color.yellow);
+        finalSelected.SetColour(Color.cyan);
+    }
     private void OnSelect(InputValue inputValue)
     {
-        foreach (FlockAgent item in selected)
-        {
-            if (item == null)
-            {
-                selected.Remove(item);
-                continue;
-            }
-            ((ISelectable)item).SetColour(Color.white);
-        }
         if (inputValue.Get<float>() > 0)
         {
-            selected.Clear();
             selectionBox.enabled = true;
             selectionStartScreen = mousePositionScreen;
             Collider2D[] selectedColliders2D = Physics2D.OverlapPointAll(CameraControl.Singleton.MousePositionWorld((Vector2)selectionStartScreen), (LayerMask)((1 << 6)));
-            SelectColliders(selectedColliders2D);
+            selected.Clear();
+            GetAgents(selectedColliders2D, ref selected);
             return;
         }
-        selectionBox.enabled = false;
-        for (int i = 0; i < selected.Count; i++)
-        {
-            ((ISelectable)selected[i]).SetColour(Color.cyan);
-        }
         selectionStartScreen = null;
+        selectionBox.enabled = false;
+        finalSelected.SetColour(Color.white);
+        if (specificSelection)
+        {
+            finalSelected = finalSelected
+                .Where(x => !selected.Contains(x))
+                .Concat(selected.Where(x => !finalSelected.Contains(x)))
+                .ToList();
+        }
+        else
+        {
+            finalSelected.Clear();
+            finalSelected = new List<FlockAgent>(selected);
+        }
+        selectedChecked = false;
+        selected.Clear();
     }
     private void OnMoveUnit(InputValue inputValue)
     {
         isSelectingPosition = inputValue.Get<float>() > 0;
     }
-    private void SelectColliders(Collider2D[] collider2Ds)
+    private void GetAgents(Collider2D[] collider2Ds, ref List<FlockAgent> flockAgents)
     {
         foreach (Collider2D collider in collider2Ds)
         {
             if (!FlockAgent.ships.TryGetValue(collider, out FlockAgent ship))
             {
-                return;
+                continue;
             }
-            selected.Add(ship);
-            ((ISelectable)ship).SetColour(Color.yellow);
+            if (!flockAgents.Contains(ship))
+            {
+                flockAgents.Add(ship);
+            }
         }
     }
     private void OnMousePosition(InputValue inputValue)
@@ -104,11 +121,26 @@ public class PlayerUnitController : MonoBehaviour
     }
     private void MoveUnit()
     {
-        if (moveSetCooldown >= 0)
+        Collider2D[] selectedColliders2D = Physics2D.OverlapPointAll(CameraControl.Singleton.MousePositionWorld((Vector2)mousePositionScreen), (LayerMask)~(1 << 6));
+        FlockAgent selectedTarget = null;
+        for (int i = 0; i < selectedColliders2D.Length; i++)
+        {
+            if (!FlockAgent.ships.ContainsKey(selectedColliders2D[i]))
+            {
+                continue;
+            }
+            if (FlockAgent.ships[selectedColliders2D[i]].Team == 1)
+            {
+                continue;
+            }
+            selectedTarget = FlockAgent.ships[selectedColliders2D[i]];
+            break;
+        }
+        if (moveSetCooldown >= 0 && selectedTarget == null)
         {
             return;
         }
-        if (selected.Count <= 0)
+        if (finalSelected.Count <= 0)
         {
             return;
         }
@@ -116,29 +148,18 @@ public class PlayerUnitController : MonoBehaviour
         {
             return;
         }
-        if (!selectedChecked)
+        if (!selectedChecked || lastCheckedCount != finalSelected.Count)
         {
-            selected = selected.OrderBy(agent => agent.gameObject.GetInstanceID()).ToList();
+            finalSelected = finalSelected.OrderBy(agent => agent.gameObject.GetInstanceID()).ToList();
             selectedChecked = true;
+            lastCheckedCount = finalSelected.Count;
         }
-        bool dogFighting = false;
-        Collider2D collider2D = CameraControl.CameraCast(mousePositionScreen);
-        if (collider2D != null)
+        for (int i = 0; i < finalSelected.Count; i++)
         {
-            if (FlockAgent.ships.TryGetValue(collider2D, out FlockAgent flockAgent))
-            {
-                if (flockAgent.Team != 1)
-                {
-                    dogFighting = true;
-                }
-            }
+            finalSelected[i].dogFighting = selectedTarget != null;
         }
-        for (int i = 0; i < selected.Count; i++)
-        {
-            selected[i].dogFighting = dogFighting;
-        }
-        Flock.SetDestination(CameraControl.Singleton.MousePositionWorld(mousePositionScreen), selected);
-        moveSetCooldown = 0.1f;
+        Flock.SetDestination(CameraControl.Singleton.MousePositionWorld(mousePositionScreen), finalSelected);
+        moveSetCooldown = 1f;
     }
     private void UpdateSelectionBox()
     {
@@ -146,5 +167,17 @@ public class PlayerUnitController : MonoBehaviour
         selectionBoxTransform.anchoredPosition = ((Vector3)selectionStartScreen + mousePositionScreen) * 0.5f / GameManager.Singleton.canvas.scaleFactor;
         selectionBoxTransform.sizeDelta = ((Vector2)mousePositionScreen - (Vector2)selectionStartScreen) / GameManager.Singleton.canvas.scaleFactor;
         selectionBoxTransform.sizeDelta = new Vector2(Mathf.Abs(selectionBoxTransform.sizeDelta.x), Mathf.Abs(selectionBoxTransform.sizeDelta.y));
+    }
+    private void OnDeselect(InputValue inputValue)
+    {
+        if (inputValue.Get<float>() == 0) { return; }
+        foreach (FlockAgent item in finalSelected) { ((IShip)item).SetColour(Color.white); }
+        finalSelected.Clear();
+        selectionStartScreen = null;
+        selectionBox.enabled = false;
+    }
+    private void OnSpecificSelect(InputValue inputValue)
+    {
+        specificSelection = inputValue.Get<float>() > 0;
     }
 }

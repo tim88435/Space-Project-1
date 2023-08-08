@@ -235,7 +235,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "MoveUnit",
+                    "name": "Move Unit",
                     "type": "Value",
                     "id": "6d0ff7ca-70d2-4db9-9896-da969111bda9",
                     "expectedControlType": "Button",
@@ -251,6 +251,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Deselect",
+                    "type": "Value",
+                    "id": "344033b4-04ab-40bf-836b-1bed46b2d4c8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Specific Select",
+                    "type": "Value",
+                    "id": "d79a7f75-fb64-4213-9181-be60178e9da6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -261,7 +279,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "MoveUnit",
+                    "action": "Move Unit",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -284,6 +302,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Mouse Position",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3f04c6ad-b9a2-4150-a0c7-d19ca26ef369",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Deselect",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b9de7357-8201-4d47-87a0-ca40894295b1",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Specific Select",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

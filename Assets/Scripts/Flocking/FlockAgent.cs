@@ -4,12 +4,12 @@ using UnityEngine;
 using Custom.Interfaces;
 using System.Linq;
 
-public class FlockAgent : MonoBehaviour, ISelectable, IDamagable, IWeapon
+public class FlockAgent : MonoBehaviour, IShip, IDamagable, IWeapon
 {
     public static Dictionary<Collider2D, FlockAgent> ships { get; private set; } = new Dictionary<Collider2D, FlockAgent>();
     public bool dogFighting = true;
     public Vector3 lookEndDirection;
-    SpriteRenderer ISelectable.spriteRenderer { get; set; }
+    SpriteRenderer IShip.spriteRenderer { get; set; }
     [SerializeField] private int _team = 0;
     [System.NonSerialized] public Vector3 targetDestination;
     private Vector2 velocity = Vector2.zero;
@@ -33,10 +33,10 @@ public class FlockAgent : MonoBehaviour, ISelectable, IDamagable, IWeapon
     {
         Team = Team;//set layer
         ships.Add(GetComponent<Collider2D>(), this);
-        ((ISelectable)this).spriteRenderer = GetComponent<SpriteRenderer>();
+        ((IShip)this).spriteRenderer = GetComponent<SpriteRenderer>();
         if (Team != 1)
         {
-            ((ISelectable)this).spriteRenderer.color = Color.magenta;
+            ((IShip)this).spriteRenderer.color = Color.magenta;
         }
     }
     private void OnDisable()
@@ -46,6 +46,10 @@ public class FlockAgent : MonoBehaviour, ISelectable, IDamagable, IWeapon
         {
             PlayerUnitController.Singleton.selected.Remove(this);
         }
+        if (PlayerUnitController.Singleton.finalSelected.Contains(this))
+        {
+            PlayerUnitController.Singleton.finalSelected.Remove(this);
+        }
     }
     private void Start()
     {
@@ -54,18 +58,18 @@ public class FlockAgent : MonoBehaviour, ISelectable, IDamagable, IWeapon
     }
     private void Update()
     {
+        IEnumerable<FlockAgent> shipsInRange = Physics2D.OverlapCircleAll(transform.position, Range)
+            .Where(x => ships.ContainsKey(x) && ships[x] != this)
+            .Select(y => ships[y]);
+        if (NextAttackTime < Time.time)
+        {
+            Attack(shipsInRange.FirstOrDefault(x => (Vector3.Distance(transform.position, x.transform.position) < Range) && x.Team != Team));
+        }
         if (dogFighting)
         {
-            IEnumerable<FlockAgent> shipsInRange = Physics2D.OverlapCircleAll(transform.position, Range)
-                .Where(x => ships.ContainsKey(x) && ships[x] != this)
-                .Select(y => ships[y]);
             if (shipsInRange.Any(x => x.Team != Team))
             {
-                DogFightMove(Range * 2, shipsInRange);
-                if (NextAttackTime < Time.time)
-                {
-                    Attack(shipsInRange.FirstOrDefault(x => (Vector3.Distance(transform.position, x.transform.position) < Range) && x.Team != Team));
-                }
+                DogFightVelocity(Range * 2, shipsInRange);
                 MoveForward();
                 return;
             }
@@ -97,7 +101,7 @@ public class FlockAgent : MonoBehaviour, ISelectable, IDamagable, IWeapon
         lineRenderer.SetPositions(new Vector3[] { transform.position, hitPosition });
         Destroy(lineRenderer.gameObject, 0.5f);
     }
-    private void DogFightMove(float Range, IEnumerable<FlockAgent> shipsInRange)
+    private void DogFightVelocity(float Range, IEnumerable<FlockAgent> shipsInRange)
     {
         Vector2 positionMove =
             GameManager.Singleton.flockBehaviour.CalculateMove(

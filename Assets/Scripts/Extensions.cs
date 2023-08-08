@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Custom.Interfaces;
 
 namespace Custom.Extensions
 {
@@ -16,6 +17,20 @@ namespace Custom.Extensions
         {
             self.z = 0;
             return self;
+        }
+        public static void SetColour(this List<FlockAgent> flockAgents, Color color)
+        {
+            for (int i = 0; i < flockAgents.Count; i++)
+            {
+                ((IShip)flockAgents[i]).SetColour(color);
+            }
+        }
+        public static void SetColour(this IEnumerable<FlockAgent> flockAgents, Color color)
+        {
+            foreach (FlockAgent agent in flockAgents)
+            {
+                ((IShip)agent).SetColour(color);
+            }
         }
     }
     public class GenericListComparer<T>
