@@ -6,15 +6,19 @@ Shader "Sprites/Circle"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
-
-		Cull Off
-		Lighting Off
-		ZWrite Off
-		Blend One OneMinusSrcAlpha
+        Tags
+        {
+            "Queue" = "Transparent"
+            //"RenderType" = "Transparent"
+        }
 
         Pass
         {
+            //ZTest Off
+            ZWrite Off
+            Cull Off
+            Lighting Off
+            Blend One OneMinusSrcAlpha
             CGPROGRAM
             #pragma vertex vert
 #pragma fragment frag
