@@ -2,7 +2,9 @@ using Custom.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class GameManager : MonoBehaviour
 {
@@ -28,6 +30,7 @@ public class GameManager : MonoBehaviour
     public FlockBehaviour flockBehaviour;
     [SerializeField] private GameObject healthBarPrefab;
     private HealthBar healthBar;
+    public bool isHoveringOverUI = false;
     private void OnEnable()
     {
         Singleton = this;
@@ -41,7 +44,13 @@ public class GameManager : MonoBehaviour
     }
     private void Update()
     {
-        if (!GetHoveredHealthObject(out ITeam teamObjects, out Transform transform))
+        isHoveringOverUI = EventSystem.current.IsPointerOverGameObject();
+        if (isHoveringOverUI)
+        {
+            healthBar.gameObject.SetActive(false);
+            return;
+        }
+        if (!GetHoveredHealthObject(out ITeam teamObject, out Transform transform))
         {
             healthBar.gameObject.SetActive(false);
             return;
@@ -49,7 +58,7 @@ public class GameManager : MonoBehaviour
         healthBar.gameObject.SetActive(true);
         healthBar.transform.position = transform.position;
         healthBar.transform.localScale = transform.localScale;
-        healthBar.Set(teamObjects.Health / 10);
+        healthBar.Set(teamObject.Health / 10);
     }
     private bool GetHoveredHealthObjects(out ITeam[] teamObjects, out Transform[] transforms)
     {
@@ -70,6 +79,8 @@ public class GameManager : MonoBehaviour
     }
     private bool GetHoveredHealthObject(out ITeam teamObject, out Transform transform)
     {
+        teamObject = null;
+        transform = null;
         Collider2D[] hoveredColliders = Physics2D.OverlapPointAll(CameraControl.Singleton.MousePositionWorld());
         for (int i = 0; i < hoveredColliders.Length; i++)
         {
@@ -77,11 +88,13 @@ public class GameManager : MonoBehaviour
             {
                 teamObject = teamOwned;
                 transform = hoveredColliders[i].transform;
-                return true;
+                if (teamOwned as Planet == null)
+                {
+                    //change maybe? idk
+                    return true;
+                }
             }
         }
-        teamObject = null;
-        transform = null;
-        return false;
+        return teamObject != null;
     }
 }

@@ -67,14 +67,14 @@ public class CameraControl : MonoBehaviour
     {
         targetZoom *= Mathf.Pow(zoomSpeed, scrollDelta);
         Vector3 mousePositionWorld = MousePositionWorld();
-        float blend = 1 - Mathf.Pow(0.5f, Time.deltaTime * zoomUpdateSpeed);
+        float blend = 1 - Mathf.Pow(0.5f, Time.unscaledDeltaTime * zoomUpdateSpeed);
         _camera.orthographicSize = Mathf.Lerp(_camera.orthographicSize, targetZoom, blend);
         transform.position += mousePositionWorld - MousePositionWorld();
     }
     private void Move()
     {
         Vector3 position= transform.position;
-        position += (Vector3)directionInput * Time.deltaTime * _camera.orthographicSize * moveSpeed;
+        position += (Vector3)directionInput * Time.unscaledDeltaTime * _camera.orthographicSize * moveSpeed;
         position.Clamp2D(xCameraBounds, yCameraBounds);
         transform.position = position;
     }

@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Custom.Interfaces;
 using Custom.Extensions;
+using UnityEngine.EventSystems;
 
 public class PlayerUnitController : MonoBehaviour
 {
@@ -72,6 +73,7 @@ public class PlayerUnitController : MonoBehaviour
     {
         if (inputValue.Get<float>() > 0)
         {
+            if (GameManager.Singleton.isHoveringOverUI) return;
             selectionBox.enabled = true;
             selectionStartScreen = mousePositionScreen;
             Collider2D[] selectedColliders2D = Physics2D.OverlapPointAll(CameraControl.Singleton.MousePositionWorld((Vector2)selectionStartScreen), (LayerMask)((1 << 6)));
@@ -171,13 +173,17 @@ public class PlayerUnitController : MonoBehaviour
     private void OnDeselect(InputValue inputValue)
     {
         if (inputValue.Get<float>() == 0) { return; }
-        foreach (FlockAgent item in finalSelected) { ((IShip)item).SetColour(Color.white); }
-        finalSelected.Clear();
-        selectionStartScreen = null;
-        selectionBox.enabled = false;
+        DeselectAllFleets();
     }
     private void OnSpecificSelect(InputValue inputValue)
     {
         specificSelection = inputValue.Get<float>() > 0;
+    }
+    public static void DeselectAllFleets()
+    {
+        foreach (FlockAgent item in Singleton.finalSelected) { ((IShip)item).SetColour(Color.white); }
+        Singleton.finalSelected.Clear();
+        Singleton.selectionStartScreen = null;
+        Singleton.selectionBox.enabled = false;
     }
 }
