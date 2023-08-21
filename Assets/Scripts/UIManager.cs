@@ -1,28 +1,49 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class UIManager : MonoBehaviour
 {
+    private static UIManager _singleton;
+    public static UIManager Singleton
+    {
+        get { return _singleton; }
+        set
+        {
+            if (_singleton == null)
+            {
+                _singleton = value;
+                return;
+            }
+            if (_singleton != value)
+            {
+                Debug.LogWarning($"Component {nameof(Singleton)} already exists in current scene\nRemoving duplicate");
+            }
+        }
+    }
+    public static bool BuildingSelected { get { return Singleton.buildingZoneSelected != null; } }
     BuildingZone buildingZoneSelected;
     SpriteRenderer buildingZoneRenderer;
     Collider2D selectedBuildingCollider;
     SpriteRenderer lastCollidedBuildingChildRenderer;
-    private bool possiblePlacement;
+    private bool possiblePlacement = false;
+    private bool isTryingToPlace = false;
     Color halfred;
+    private void OnEnable()
+    {
+        Singleton = this;
+    }
     private void Start()
     {
-        halfred = Color.Lerp(Color.red, Color.clear, 0.5f);
+        halfred = Color.Lerp(Color.red, Color.white, 0.5f);
     }
     private void Update()
     {
         if (lastCollidedBuildingChildRenderer != null)
         {
             lastCollidedBuildingChildRenderer.color = Color.white;
-            lastCollidedBuildingChildRenderer = null;
         }
         if (buildingZoneRenderer == null)
         {
@@ -41,7 +62,9 @@ public class UIManager : MonoBehaviour
                 possiblePlacement = false;
                 return;
             }
+            lastCollidedBuildingChildRenderer = null;
             possiblePlacement = true;
+            TryPlace(planet);
             return;
         }
         possiblePlacement = false;
@@ -60,11 +83,10 @@ public class UIManager : MonoBehaviour
     }
     private float ZoneDistanceFromPlanetCentre(float radius, float width)
     {
-        return Mathf.Sqrt(radius * radius - width * width / 4.0f) + width * 0.5f;
+        return Mathf.Sqrt(radius * radius - width * width / 4.0f) + width * 0.5f - 0.01f;
     }
     public void SelectBuilding(BuildingZone buildingZone)
     {
-        PlayerUnitController.DeselectAllFleets();
         if (buildingZoneRenderer != null)
         {
             Destroy(buildingZoneRenderer.gameObject);
@@ -77,16 +99,39 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            buildingZoneRenderer.enabled = false;
+            if (buildingZoneRenderer != null)
+            {
+                buildingZoneRenderer.enabled = false;
+            }
         }
+    }
+    private void OnMove(InputValue inputValue)
+    {
+        if (inputValue.isPressed)
+        {
+            SelectBuilding(null);
+        }
+    }
+    private void OnDeselect(InputValue inputValue)
+    {
+        if (!inputValue.isPressed) { return; }
+        PlayerUnitController.DeselectAllFleets();
     }
     private void OnSelect(InputValue inputValue)
     {
-        if (!inputValue.isPressed)
+        isTryingToPlace = inputValue.isPressed;
+    }
+    private void TryPlace(Planet planet)
+    {
+        if (buildingZoneSelected == null)
         {
             return;
         }
-        if (buildingZoneSelected == null)
+        if (!isTryingToPlace)
+        {
+            return;
+        }
+        if (!possiblePlacement)
         {
             return;
         }
@@ -97,7 +142,7 @@ public class UIManager : MonoBehaviour
         }
         if (possiblePlacement)
         {
-            PlaceBuilding();
+            PlaceBuilding(planet);
             return;
         }
     }
@@ -121,9 +166,17 @@ public class UIManager : MonoBehaviour
                 }
             }
         }
-        return planet != null;
+        if (planet == null)
+        {
+            return false;
+        }
+        if (planet.Team != 1)
+        {
+            return false;
+        }
+        return true; ;
     }
-    private void PlaceBuilding()
+    private void PlaceBuilding(Planet planet)
     {
         if (buildingZoneSelected == null)
         {
@@ -132,17 +185,29 @@ public class UIManager : MonoBehaviour
         Building building = buildingZoneRenderer.GetComponent<Building>();
         buildingZoneRenderer.GetComponent<Collider2D>().enabled = true;
         //building stuff
+        planet.AddBuilding(building);
         building.enabled = true;
+        building.Team = 1;
+        building.transform.parent = planet.transform;
         buildingZoneRenderer.color = Color.cyan;
         buildingZoneRenderer = null;
         buildingZoneSelected = null;
     }
     private bool AnotherBuildingIsColliding(Collider2D collider2D, out SpriteRenderer spriteRenderer)
     {
-        Collider2D[] results = new Collider2D[0];
-        Physics2D.OverlapCollider(collider2D, new ContactFilter2D(), results);
-        Debug.Log(results.Length);
-        for (int i = 0; i < results.Length; i++)
+        List<Collider2D> results = new List<Collider2D>();
+        collider2D.enabled = true; //OverlapCollider does not work with a turned off collider
+        Physics2D.OverlapCollider(collider2D, new ContactFilter2D().NoFilter(), results);
+        collider2D.enabled = false;
+        if (lastCollidedBuildingChildRenderer != null)
+        {
+            if (results.Any(x => lastCollidedBuildingChildRenderer.transform.parent == x.transform))
+            {
+                spriteRenderer = lastCollidedBuildingChildRenderer;
+                return true;
+            }
+        }
+        for (int i = 0; i < results.Count; i++)
         {
             if (results[i].TryGetComponent(out Building building))
             {

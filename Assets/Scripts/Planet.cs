@@ -7,7 +7,9 @@ using System.Linq;
 public class Planet : MonoBehaviour, ITeam
 {
     public int Team { get; set; } = 0;
-    public float Health { get; set; } = 10f;
+    public float Health { get; set; } = 100f;
+    public float MaxHealth { get; set; } = 100f;
+
     [SerializeField] private SpriteRenderer outlineRenderer;
     private List<Building> buildings = new List<Building>();
     private void OnEnable()
@@ -19,21 +21,22 @@ public class Planet : MonoBehaviour, ITeam
     }
     private void Update()
     {
-        if (buildings.Count == 0)
+        FlockAgent[] shipsInRange = OrbitingShips();
+        float healthChange = PlanetDamage(shipsInRange);
+        if (buildings.Count != 0)
         {
-            float healthRate = Mathf.Clamp(OrbitingShips(out FlockAgent[] shipsInRange), -10.0f, 1.0f) * 10.0f + 1.0f;
-            Health = Mathf.Clamp(Health + healthRate * Time.deltaTime * 0.1f, 0.0f, 10.0f);
-            if (Health == 0)
-            {
-                Team = shipsInRange//give to team with highest ships in orbit
-                    .GroupBy(i => i.Team)
-                    .OrderByDescending(grp => grp.Count())
-                    .First().Key;
-                SetTeamColour();
-            }
-            return;
+            buildings[0].Health = Mathf.Clamp(buildings[0].Health + healthChange * Time.deltaTime * 2.0f, 0.0f, 10.0f);
+            healthChange = Mathf.Max(healthChange, 0.0f);//if there are buildings, planet does not take damage
         }
-        Health = 100;
+        Health = Mathf.Clamp(Health + healthChange * Time.deltaTime, 0.0f, MaxHealth);
+        if (Health == 0)
+        {
+            Team = shipsInRange//give to team with highest ships in orbit
+                .GroupBy(i => i.Team)
+                .OrderByDescending(grp => grp.Count())
+                .First().Key;
+            SetTeamColour();
+        }
     }
     private void SetTeamColour()
     {
@@ -46,22 +49,37 @@ public class Planet : MonoBehaviour, ITeam
             outlineRenderer.color = Color.magenta;
         }
     }
-    private float OrbitingShips(out FlockAgent[] shipsInRange)
+    private FlockAgent[] OrbitingShips()
     {
-        shipsInRange = Physics2D.OverlapCircleAll(transform.position, transform.lossyScale.x)//assume it's a circle, right?
+        return Physics2D.OverlapCircleAll(transform.position, transform.lossyScale.x)//assume it's a circle, right?
             .Where(x => FlockAgent.ships.ContainsKey(x))
             .Select(y => FlockAgent.ships[y])
             .ToArray();
-        if (shipsInRange.Length == 0)
+    }
+    private float PlanetDamage(FlockAgent[] flockAgents)
+    {
+        if (MaxHealth <= 0)
         {
-            return 0;
+            Debug.LogError("Max health is or below 0");
+        }
+        if (flockAgents.Length == 0)
+        {
+            return (50.0f / MaxHealth);
         }
         float orbitingValue = 0;//negative is enemy forces, positive is friendly
-        for (int i = 0; i < shipsInRange.Length; i++)
+        for (int i = 0; i < flockAgents.Length; i++)
         {
-            orbitingValue += shipsInRange[i].Team == Team ? 1 : -0.5f;
+            orbitingValue += flockAgents[i].Team == Team ? 0.5f : -0.25f;
         }
-        orbitingValue /= shipsInRange.Length;
+        orbitingValue = Mathf.Clamp(orbitingValue, -10.0f, 1.0f) * (50.0f / MaxHealth);
         return orbitingValue;
+    }
+    public void AddBuilding(Building building)
+    {
+        if (buildings.Contains(building))
+        {
+            return;
+        }
+        buildings.Add(building);
     }
 }

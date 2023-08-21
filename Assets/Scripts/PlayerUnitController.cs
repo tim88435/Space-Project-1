@@ -73,7 +73,16 @@ public class PlayerUnitController : MonoBehaviour
     {
         if (inputValue.Get<float>() > 0)
         {
-            if (GameManager.Singleton.isHoveringOverUI) return;
+            if (UIManager.BuildingSelected)
+            {
+                DeselectAllFleets();
+                return;
+            }
+            if (GameManager.Singleton.isHoveringOverUI)
+            {
+                DeselectAllFleets();
+                return;
+            }
             selectionBox.enabled = true;
             selectionStartScreen = mousePositionScreen;
             Collider2D[] selectedColliders2D = Physics2D.OverlapPointAll(CameraControl.Singleton.MousePositionWorld((Vector2)selectionStartScreen), (LayerMask)((1 << 6)));
@@ -99,7 +108,7 @@ public class PlayerUnitController : MonoBehaviour
         selectedChecked = false;
         selected.Clear();
     }
-    private void OnMoveUnit(InputValue inputValue)
+    private void OnMove(InputValue inputValue)
     {
         isSelectingPosition = inputValue.Get<float>() > 0;
     }
@@ -161,7 +170,11 @@ public class PlayerUnitController : MonoBehaviour
             finalSelected[i].dogFighting = selectedTarget != null;
         }
         Flock.SetDestination(CameraControl.Singleton.MousePositionWorld(mousePositionScreen), finalSelected);
-        moveSetCooldown = 1f;
+        moveSetCooldown = 0.1f;
+        if (selectedTarget != null)
+        {
+            moveSetCooldown = 1f;
+        }
     }
     private void UpdateSelectionBox()
     {

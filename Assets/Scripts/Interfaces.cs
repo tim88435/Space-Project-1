@@ -7,6 +7,7 @@ namespace Custom.Interfaces
     public interface ITeam
     {
         public int Team { get; set; }
+        public float MaxHealth { get; set; }
         public float Health { get; set; }
     }
     public interface IShip : ITeam
@@ -24,24 +25,6 @@ namespace Custom.Interfaces
         float CooldownSeconds { get; set; }
         float NextAttackTime { get; set; }
         float Range { get; set; }
-        internal protected bool TryHit(IDamagable damagable)
-        {
-            if (damagable.Team == Team)
-            {
-                return false;
-            }
-            NextAttackTime = CooldownSeconds + Time.time;
-            if (Random.value <= damagable.Evasion)
-            {
-                return false;
-            }
-            damagable.Health -= DamagePerHit;
-            if (damagable.Health <= 0 )
-            {
-                damagable.Destroy();
-            }
-            return true;
-        }
     }
     public interface IDamagable : ITeam
     {
@@ -49,7 +32,20 @@ namespace Custom.Interfaces
         /// Evasion of a ship between a value of 0 and 1
         /// </summary>
         float Evasion { get; set; }
-        float Health { get; set; }
         public void Destroy();
+        public bool TryHitWith(IWeapon weapon)
+        {
+            weapon.NextAttackTime = weapon.CooldownSeconds + Time.time;
+            if (Random.value <= Evasion)
+            {
+                return false;
+            }
+            Health -= weapon.DamagePerHit;
+            if (Health <= 0)
+            {
+                Destroy();
+            }
+            return true;
+        }
     }
 }

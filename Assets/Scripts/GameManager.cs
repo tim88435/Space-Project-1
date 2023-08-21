@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour
         healthBar.gameObject.SetActive(true);
         healthBar.transform.position = transform.position;
         healthBar.transform.localScale = transform.localScale;
-        healthBar.Set(teamObject.Health / 10);
+        healthBar.Set(teamObject.Health / teamObject.MaxHealth);
     }
     private bool GetHoveredHealthObjects(out ITeam[] teamObjects, out Transform[] transforms)
     {

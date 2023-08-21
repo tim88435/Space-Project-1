@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1762540938892997112}
   - component: {fileID: 3013740320148852855}
   m_Layer: 0
-  m_Name: Building
+  m_Name: Ship Building
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -94,12 +94,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5324324105632808340}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1f7a76a9a418cb40a09a74720092dab, type: 3}
+  m_Script: {fileID: 11500000, guid: 62972c7e421fbd842a89c7b91c2b94ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zone: {fileID: 0}
+  shipBuildCooldown: 10
+  shipPrefab: {fileID: 564692489642200261, guid: 37d7cee443ad4fd4b8a1c156aea24b60, type: 3}
 --- !u!61 &3013740320148852855
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -124,7 +125,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.98, y: 0.98}
   m_EdgeRadius: 0
 --- !u!1 &5324324105763050420
 GameObject:

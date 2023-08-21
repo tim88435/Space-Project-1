@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9da38df7382946a448d4b13a14f6b7f8, type: 3}
-  m_Name: Test Building Zone
+  m_Name: Ship Zone
   m_EditorClassIdentifier: 
-  name: 
-  prefab: {fileID: 5324324105632808340, guid: b5f38d10518e62545ae2b8e489cd37e3, type: 3}
-  description: 
+  name: Shipyard Zone
+  prefab: {fileID: 5324324105632808340, guid: 145e77f9c0589cd47a9ddd8a9b470216, type: 3}
+  description: Shipyard Zone Description

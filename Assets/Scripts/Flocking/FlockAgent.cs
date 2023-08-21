@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Custom.Interfaces;
 using System.Linq;
+using System.Data;
 
 public class FlockAgent : MonoBehaviour, IShip, IDamagable, IWeapon
 {
@@ -11,7 +12,7 @@ public class FlockAgent : MonoBehaviour, IShip, IDamagable, IWeapon
     public Vector3 lookEndDirection;
     SpriteRenderer IShip.spriteRenderer { get; set; }
     [SerializeField] private int _team = 0;
-    [System.NonSerialized] public Vector3 targetDestination;
+    [System.NonSerialized] public Vector3 targetDestination = Vector3.back;
     private Vector2 velocity = Vector2.zero;
     public int Team
     {
@@ -23,6 +24,7 @@ public class FlockAgent : MonoBehaviour, IShip, IDamagable, IWeapon
         }
     }
     public float Health { get; set; } = 10f;
+    public float MaxHealth { get; set; } = 10f;
     public float Evasion { get; set; } = 0.3f;
     public float DamagePerHit { get; set; } = 1;
     public float CooldownSeconds { get; set; } = 3;
@@ -54,7 +56,10 @@ public class FlockAgent : MonoBehaviour, IShip, IDamagable, IWeapon
     private void Start()
     {
         lookEndDirection = transform.up;
-        targetDestination = transform.position;
+        if (targetDestination == Vector3.back)
+        {
+            targetDestination = transform.position;
+        }
     }
     private void Update()
     {
@@ -63,7 +68,7 @@ public class FlockAgent : MonoBehaviour, IShip, IDamagable, IWeapon
             .Select(y => ships[y]);
         if (NextAttackTime < Time.time)
         {
-            Attack(shipsInRange.FirstOrDefault(x => (Vector3.Distance(transform.position, x.transform.position) < Range) && x.Team != Team));
+            AttackAgent(shipsInRange.FirstOrDefault(x => (Vector3.Distance(transform.position, x.transform.position) < Range) && x.Team != Team));
         }
         if (dogFighting)
         {
@@ -83,15 +88,23 @@ public class FlockAgent : MonoBehaviour, IShip, IDamagable, IWeapon
         }
         MoveForward();
     }
-    private void Attack(FlockAgent agent)
+    private void AttackAgent(FlockAgent agent)
     {
         if (agent == null) { return; }
-        Vector3 hitPosition = agent.transform.position;
-        if (!((IWeapon)this).TryHit(agent))
+        Attack(agent, agent.transform.position);
+    }
+    private void Attack(IDamagable damagable, Vector3 hitPosition)
+    {
+        if (damagable == null) { return; }
+        if (damagable.TryHitWith(this))
         {
             hitPosition.x += Random.Range(0.66f, 2) * Random.Range(0, 2) * 2 - 1;
             hitPosition.y += Random.Range(0.66f, 2) * Random.Range(0, 2) * 2 - 1;
         }
+        DrawLaser(hitPosition);
+    }
+    private void DrawLaser(Vector3 hitPosition)
+    {
         LineRenderer lineRenderer = new GameObject().AddComponent<LineRenderer>();
         lineRenderer.startColor = Color.red;
         lineRenderer.endColor = Color.red;

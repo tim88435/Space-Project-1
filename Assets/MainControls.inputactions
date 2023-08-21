@@ -235,7 +235,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Move Unit",
+                    "name": "Move",
                     "type": "Value",
                     "id": "6d0ff7ca-70d2-4db9-9896-da969111bda9",
                     "expectedControlType": "Button",
@@ -288,7 +288,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move Unit",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
