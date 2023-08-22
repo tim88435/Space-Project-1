@@ -1,3 +1,4 @@
+using Custom.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,7 @@ public class UIManager : MonoBehaviour
     public static bool BuildingSelected { get { return Singleton.buildingZoneSelected != null; } }
     BuildingZone buildingZoneSelected;
     SpriteRenderer buildingZoneRenderer;
-    Collider2D selectedBuildingCollider;
+    Building selectedBuilding;
     SpriteRenderer lastCollidedBuildingChildRenderer;
     private bool possiblePlacement = false;
     private bool isTryingToPlace = false;
@@ -52,17 +53,22 @@ public class UIManager : MonoBehaviour
         Vector3 mousePosition = CameraControl.Singleton.MousePositionWorld();
         if (ClosestPlanet(mousePosition, out Planet planet))
         {
-            Vector3 buildingPositionFromPlanet = (mousePosition - planet.transform.position).normalized * ZoneDistanceFromPlanetCentre(planet.transform.lossyScale.x * 0.5f, buildingZoneRenderer.transform.lossyScale.x);
+            IPlanetAngle placable = selectedBuilding;
+            placable.SetEdgeAngle(buildingZoneRenderer.transform.lossyScale.x / 0.5f, planet.Radius);
+            Vector3 buildingPositionFromPlanet = (mousePosition - planet.transform.position).normalized * planet.ZoneDistanceFromPlanetCentre(selectedBuilding.transform.lossyScale.x);
             buildingZoneRenderer.transform.position = planet.transform.position + buildingPositionFromPlanet;
             buildingZoneRenderer.transform.rotation = Quaternion.LookRotation(Vector3.forward, buildingPositionFromPlanet);
-            if (AnotherBuildingIsColliding(selectedBuildingCollider, out SpriteRenderer spriteRenderer))
+            if (AnotherBuildingIsColliding(selectedBuilding,planet, out lastCollidedBuildingChildRenderer))
             {
-                lastCollidedBuildingChildRenderer = spriteRenderer;
-                spriteRenderer.color = halfred;
+                lastCollidedBuildingChildRenderer.color = halfred;
                 possiblePlacement = false;
                 return;
             }
-            lastCollidedBuildingChildRenderer = null;
+            if (!selectedBuilding.ResourceCheck(planet))
+            {
+                possiblePlacement = false;
+                return;
+            }
             possiblePlacement = true;
             TryPlace(planet);
             return;
@@ -81,10 +87,6 @@ public class UIManager : MonoBehaviour
             TogglePause();
         }
     }
-    private float ZoneDistanceFromPlanetCentre(float radius, float width)
-    {
-        return Mathf.Sqrt(radius * radius - width * width / 4.0f) + width * 0.5f - 0.01f;
-    }
     public void SelectBuilding(BuildingZone buildingZone)
     {
         if (buildingZoneRenderer != null)
@@ -95,7 +97,7 @@ public class UIManager : MonoBehaviour
         if (buildingZone != null)
         {
             buildingZoneRenderer = Instantiate(buildingZone.prefab).GetComponent<SpriteRenderer>();
-            selectedBuildingCollider = buildingZoneRenderer.GetComponent<Collider2D>();
+            selectedBuilding = buildingZoneRenderer.GetComponent<Building>();
         }
         else
         {
@@ -182,38 +184,34 @@ public class UIManager : MonoBehaviour
         {
             return;
         }
-        Building building = buildingZoneRenderer.GetComponent<Building>();
-        buildingZoneRenderer.GetComponent<Collider2D>().enabled = true;
         //building stuff
-        planet.AddBuilding(building);
-        building.enabled = true;
-        building.Team = 1;
-        building.transform.parent = planet.transform;
+        planet.AddBuilding(selectedBuilding);
+        selectedBuilding.enabled = true;
+        selectedBuilding.Team = 1;
+        selectedBuilding.transform.parent = planet.transform;
         buildingZoneRenderer.color = Color.cyan;
         buildingZoneRenderer = null;
         buildingZoneSelected = null;
     }
-    private bool AnotherBuildingIsColliding(Collider2D collider2D, out SpriteRenderer spriteRenderer)
+    private bool AnotherBuildingIsColliding(Building building, Planet planet, out SpriteRenderer spriteRenderer)
     {
-        List<Collider2D> results = new List<Collider2D>();
-        collider2D.enabled = true; //OverlapCollider does not work with a turned off collider
-        Physics2D.OverlapCollider(collider2D, new ContactFilter2D().NoFilter(), results);
-        collider2D.enabled = false;
-        if (lastCollidedBuildingChildRenderer != null)
+        if (planet.BuildingsIntersecting(building, out Building[] outBuildings))
         {
-            if (results.Any(x => lastCollidedBuildingChildRenderer.transform.parent == x.transform))
+            if (lastCollidedBuildingChildRenderer == null)
             {
-                spriteRenderer = lastCollidedBuildingChildRenderer;
+                spriteRenderer = outBuildings[0].GetComponent<SpriteRenderer>();
                 return true;
             }
-        }
-        for (int i = 0; i < results.Count; i++)
-        {
-            if (results[i].TryGetComponent(out Building building))
+            for (int i = 0; i < outBuildings.Length; i++)
             {
-                spriteRenderer = building.transform.GetChild(0).GetComponent<SpriteRenderer>();
-                return true;
+                if (outBuildings[i].transform == lastCollidedBuildingChildRenderer.transform.parent)
+                {
+                    spriteRenderer = lastCollidedBuildingChildRenderer;
+                    return true;
+                }
             }
+            spriteRenderer = outBuildings[0].GetComponent<SpriteRenderer>();
+            return true;
         }
         spriteRenderer = null;
         return false;

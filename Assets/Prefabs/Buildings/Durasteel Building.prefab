@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5324324105632808341}
   - component: {fileID: 2763025160893741823}
-  - component: {fileID: -3100049703105961517}
+  - component: {fileID: 3118020028333053200}
   m_Layer: 0
-  m_Name: Ship Building
+  m_Name: Durasteel Building
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -86,7 +86,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &-3100049703105961517
+--- !u!114 &3118020028333053200
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -95,12 +95,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 5324324105632808340}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62972c7e421fbd842a89c7b91c2b94ff, type: 3}
+  m_Script: {fileID: 11500000, guid: b7fb3ee2bdff5bb41ab10154ef0d1fd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Type: 1
-  shipBuildCooldown: 30
-  shipPrefab: {fileID: 564692489642200261, guid: 37d7cee443ad4fd4b8a1c156aea24b60, type: 3}
 --- !u!1 &5324324105763050420
 GameObject:
   m_ObjectHideFlags: 0

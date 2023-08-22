@@ -7,6 +7,7 @@ public class ShipyardBuilding : Building
     private float nextShipBuildTime = 0.0f;
     [SerializeField] private float shipBuildCooldown = 30.0f;
     [SerializeField] private GameObject shipPrefab;
+
     private void Start()
     {
         nextShipBuildTime = Time.time + shipBuildCooldown;

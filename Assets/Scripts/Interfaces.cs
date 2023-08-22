@@ -26,7 +26,7 @@ namespace Custom.Interfaces
         float NextAttackTime { get; set; }
         float Range { get; set; }
     }
-    public interface IDamagable : ITeam
+    public interface IDamagable : ITeam//not used much?
     {
         /// <summary>
         /// Evasion of a ship between a value of 0 and 1
@@ -46,6 +46,23 @@ namespace Custom.Interfaces
                 Destroy();
             }
             return true;
+        }
+    }
+    public interface IPlanetAngle
+    {
+        float edgeAngle { get; set; }
+        public Transform transform { get; }//what? this works????
+        public void SetEdgeAngle(float buildingWidth, float planetRadius)
+        {
+            edgeAngle = Mathf.Asin(buildingWidth / 2 / planetRadius) * Mathf.Rad2Deg;
+        }
+        public bool IsIntersecting(IPlanetAngle other)
+        {
+            return IsIntersecting(other.transform.rotation, other.edgeAngle);
+        }
+        public bool IsIntersecting(Quaternion otherRotation, float otherEdgeAngle)
+        {
+            return Quaternion.Angle(transform.rotation, otherRotation) < edgeAngle + otherEdgeAngle;
         }
     }
 }

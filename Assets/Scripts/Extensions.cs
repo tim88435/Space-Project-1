@@ -41,5 +41,4 @@ namespace Custom.Extensions
                    secondCollection.TrueForAll(firstCollection.Contains);
         }
     }
-    
 }

@@ -2,9 +2,9 @@ using Custom.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -25,6 +25,13 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    [System.Serializable]
+    public struct ResourceData
+    {
+        public GameObject resourcePrefab;
+        [Range(0, 1)] public float chance;
+    }
+    public ResourceData[] resourceData;
     [System.NonSerialized] public Canvas canvas;
     public Material defaultLineMaterial;
     public FlockBehaviour flockBehaviour;
