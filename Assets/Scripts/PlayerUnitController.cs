@@ -38,6 +38,7 @@ public class PlayerUnitController : MonoBehaviour
     private float moveSetCooldown = 1f;
     private Vector2? selectionStartScreen;
     private Vector3 mousePositionScreen = Vector2.zero;
+    private Color selectionColour = Color.Lerp(Color.cyan, Color.blue, 0.5f);
     private void OnEnable()
     {
         Singleton = this;
@@ -47,7 +48,7 @@ public class PlayerUnitController : MonoBehaviour
         if (selectionStartScreen != null)
         {
             UpdateSelectionBox();
-            selected.SetColour(Color.white);
+            selected.SetColour(GameManager.Singleton.teamColours[1]);
             selected.Clear();
             Collider2D[] selectedColliders2D = Physics2D.OverlapAreaAll(CameraControl.Singleton.MousePositionWorld((Vector2)selectionStartScreen), (Vector2)CameraControl.Singleton.MousePositionWorld(mousePositionScreen), (LayerMask)(1 << 7));
             GetAgents(selectedColliders2D, ref selected);
@@ -62,12 +63,12 @@ public class PlayerUnitController : MonoBehaviour
     {
         if (specificSelection)
         {
-            finalSelected.Where(x => !selected.Contains(x)).SetColour(Color.cyan);
-            selected.Where(x => !finalSelected.Contains(x)).SetColour(Color.cyan);
+            finalSelected.Where(x => !selected.Contains(x)).SetColour(selectionColour);
+            selected.Where(x => !finalSelected.Contains(x)).SetColour(selectionColour);
             return;
         }
         selected.SetColour(Color.yellow);
-        finalSelected.SetColour(Color.cyan);
+        finalSelected.SetColour(selectionColour);
     }
     private void OnSelect(InputValue inputValue)
     {
@@ -92,7 +93,7 @@ public class PlayerUnitController : MonoBehaviour
         }
         selectionStartScreen = null;
         selectionBox.enabled = false;
-        finalSelected.SetColour(Color.white);
+        finalSelected.SetColour(GameManager.Singleton.teamColours[1]);
         if (specificSelection)
         {
             finalSelected = finalSelected
@@ -194,7 +195,7 @@ public class PlayerUnitController : MonoBehaviour
     }
     public static void DeselectAllFleets()
     {
-        foreach (FlockAgent item in Singleton.finalSelected) { ((IShip)item).SetColour(Color.white); }
+        foreach (FlockAgent item in Singleton.finalSelected) { ((IShip)item).SetColour(GameManager.Singleton.teamColours[1]); }
         Singleton.finalSelected.Clear();
         Singleton.selectionStartScreen = null;
         Singleton.selectionBox.enabled = false;

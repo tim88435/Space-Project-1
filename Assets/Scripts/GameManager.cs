@@ -31,11 +31,12 @@ public class GameManager : MonoBehaviour
         public GameObject resourcePrefab;
         [Range(0, 1)] public float chance;
     }
+    public Color[] teamColours = new Color[0];
     public ResourceData[] resourceData;
     [System.NonSerialized] public Canvas canvas;
     public Material defaultLineMaterial;
     public FlockBehaviour flockBehaviour;
-    [SerializeField] private GameObject healthBarPrefab;
+    public GameObject healthBarPrefab;
     private HealthBar healthBar;
     public bool isHoveringOverUI = false;
     private void OnEnable()
@@ -48,6 +49,11 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         Application.targetFrameRate = 60;
+        Resource[] AllResources = Resources.FindObjectsOfTypeAll<Resource>();
+        for (int i = 0; i < AllResources.Length; i++)
+        {
+            AllResources[i].Value = 5.0f;
+        }
     }
     private void Update()
     {
@@ -57,15 +63,15 @@ public class GameManager : MonoBehaviour
             healthBar.gameObject.SetActive(false);
             return;
         }
-        if (!GetHoveredHealthObject(out ITeam teamObject, out Transform transform))
+        if (!GetHoveredShip(out FlockAgent ship))
         {
             healthBar.gameObject.SetActive(false);
             return;
         }
         healthBar.gameObject.SetActive(true);
-        healthBar.transform.position = transform.position;
-        healthBar.transform.localScale = transform.localScale;
-        healthBar.Set(teamObject.Health / teamObject.MaxHealth);
+        healthBar.transform.position = ship.transform.position;
+        //healthBar.transform.localScale = ship.transform.localScale;
+        healthBar.Set(ship.Health / ship.MaxHealth);
     }
     private bool GetHoveredHealthObjects(out ITeam[] teamObjects, out Transform[] transforms)
     {
@@ -103,5 +109,26 @@ public class GameManager : MonoBehaviour
             }
         }
         return teamObject != null;
+    }
+    private bool GetHoveredShip(out FlockAgent ship)
+    {
+        Collider2D[] hoveredColliders = Physics2D.OverlapPointAll(CameraControl.Singleton.MousePositionWorld());
+        ship = hoveredColliders
+            .Where(x => FlockAgent.ships.ContainsKey(x))
+            .Select(x => FlockAgent.ships[x])
+            .FirstOrDefault();
+        return ship != null;
+    }
+    public Color TeamToColour(ITeam Team)
+    {
+        return TeamToColour(Team.Team);
+    }
+    public Color TeamToColour(int team)
+    {
+        if (teamColours.Length < team + 1)
+        {
+            return Color.white;
+        }
+        return teamColours[team];
     }
 }

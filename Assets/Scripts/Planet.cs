@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-
+[SelectionBase]
 public class Planet : MonoBehaviour, ITeam
 {
     public int Team { get; set; } = 0;
@@ -12,8 +12,9 @@ public class Planet : MonoBehaviour, ITeam
     public float Radius { get { return transform.lossyScale.x; } }
 
     [SerializeField] private SpriteRenderer outlineRenderer;
-    private List<Building> buildings = new List<Building>();
-    public ResourceSource[] resources = new ResourceSource[0];
+    [HideInInspector] public List<Building> buildings = new List<Building>();
+    [HideInInspector] public ResourceSource[] resources = new ResourceSource[0];
+    private HealthBar healthBar;
 
     private void OnEnable()
     {
@@ -31,16 +32,23 @@ public class Planet : MonoBehaviour, ITeam
                 .OrderByDescending(grp => grp.Count())
                 .First().Key;
         SetTeamColour();
+        transform.localScale = Vector3.one * (Random.Range(1.0f, 10.0f) + Random.Range(1.0f, 10.0f));
         SetResources();
+        healthBar = Instantiate(GameManager.Singleton.healthBarPrefab, transform.position, Quaternion.identity).GetComponent<HealthBar>();
+        healthBar.transform.localScale = transform.localScale;
+        healthBar.transform.parent = transform;
     }
     private void Update()
     {
+        healthBar.gameObject.SetActive(Health != MaxHealth);
+        healthBar.Set(Health / MaxHealth);
         FlockAgent[] shipsInRange = OrbitingShips();
         float healthChange = PlanetDamage(shipsInRange);
         if (buildings.Count != 0)
         {
             buildings[0].Health = Mathf.Clamp(buildings[0].Health + healthChange * Time.deltaTime * 2.0f, 0.0f, 10.0f);
             healthChange = Mathf.Max(healthChange, 0.0f);//if there are buildings, planet does not take damage
+            return;
         }
         Health = Mathf.Clamp(Health + healthChange * Time.deltaTime, 0.0f, MaxHealth);
         if (Health == 0)
@@ -55,14 +63,7 @@ public class Planet : MonoBehaviour, ITeam
 
     private void SetTeamColour()
     {
-        if (Team == 1)//TODO: revamp this with art
-        {
-            outlineRenderer.color = Color.cyan;
-        }
-        else
-        {
-            outlineRenderer.color = Color.magenta;
-        }
+        outlineRenderer.color = GameManager.Singleton.teamColours[Team];
     }
     private FlockAgent[] OrbitingShips()
     {
@@ -108,7 +109,7 @@ public class Planet : MonoBehaviour, ITeam
         {
             return;
         }
-        resources = new ResourceSource[(int)Radius / 2];
+        resources = new ResourceSource[(int)(Radius / 1.5f)];
         for (int i = 0; i < resources.Length; i++)
         {
             GameManager.ResourceData resourceData = GameManager.Singleton.resourceData[Random.Range(0, GameManager.Singleton.resourceData.Length)];

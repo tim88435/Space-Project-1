@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5324324105632808341}
   - component: {fileID: 2763025160893741823}
   - component: {fileID: -3100049703105961517}
+  - component: {fileID: 5810041386685128458}
   m_Layer: 0
   m_Name: Ship Building
   m_TagString: Untagged
@@ -93,14 +94,41 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5324324105632808340}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62972c7e421fbd842a89c7b91c2b94ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Type: 1
   shipBuildCooldown: 30
   shipPrefab: {fileID: 564692489642200261, guid: 37d7cee443ad4fd4b8a1c156aea24b60, type: 3}
+  shipResource: {fileID: 11400000, guid: 2120669f1b3b61c4f9f77acaaaa78229, type: 2}
+  requiredResourceAmount: 10
+--- !u!61 &5810041386685128458
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5324324105632808340}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 0.03, y: 0.03}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!1 &5324324105763050420
 GameObject:
   m_ObjectHideFlags: 0

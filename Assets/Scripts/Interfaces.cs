@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Custom.Interfaces
 {
@@ -47,6 +49,14 @@ namespace Custom.Interfaces
             }
             return true;
         }
+        public void DealDirectDamage(float damage)
+        {
+            Health -= damage;
+            if (Health <= 0)
+            {
+                Destroy();
+            }
+        }
     }
     public interface IPlanetAngle
     {
@@ -63,6 +73,26 @@ namespace Custom.Interfaces
         public bool IsIntersecting(Quaternion otherRotation, float otherEdgeAngle)
         {
             return Quaternion.Angle(transform.rotation, otherRotation) < edgeAngle + otherEdgeAngle;
+        }
+    }
+    public interface IHoverable : IPointerEnterHandler, IPointerExitHandler
+    {
+        string Name { get; }
+        string Description { get; }
+        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
+        {
+            UIManager.Singleton.hoveredOver.Add(this);
+        }
+
+        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
+        {
+            UIManager.Singleton.hoveredOver.Remove(this);
+        }
+        string GetHoverText()
+        {
+            string a = $"   <b>{Name}</b>\n";//three spaces for mouse
+            a += Description;
+            return a;
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -31,6 +32,8 @@ public class UIManager : MonoBehaviour
     SpriteRenderer lastCollidedBuildingChildRenderer;
     private bool possiblePlacement = false;
     private bool isTryingToPlace = false;
+    [SerializeField] private Text hoverBoxChildText;
+    public List<IHoverable> hoveredOver = new List<IHoverable>();
     Color halfred;
     private void OnEnable()
     {
@@ -42,9 +45,10 @@ public class UIManager : MonoBehaviour
     }
     private void Update()
     {
+        UpdateHoveredOver();
         if (lastCollidedBuildingChildRenderer != null)
         {
-            lastCollidedBuildingChildRenderer.color = Color.white;
+            lastCollidedBuildingChildRenderer.color = GameManager.Singleton.teamColours[1];
         }
         if (buildingZoneRenderer == null)
         {
@@ -189,7 +193,7 @@ public class UIManager : MonoBehaviour
         selectedBuilding.enabled = true;
         selectedBuilding.Team = 1;
         selectedBuilding.transform.parent = planet.transform;
-        buildingZoneRenderer.color = Color.cyan;
+        buildingZoneRenderer.color = GameManager.Singleton.teamColours[1];
         buildingZoneRenderer = null;
         buildingZoneSelected = null;
     }
@@ -215,5 +219,16 @@ public class UIManager : MonoBehaviour
         }
         spriteRenderer = null;
         return false;
+    }
+    private void UpdateHoveredOver()
+    {
+        if (hoveredOver.Count == 0)
+        {
+            hoverBoxChildText.transform.parent.gameObject.SetActive(false);
+            return;
+        }
+        hoverBoxChildText.transform.parent.gameObject.SetActive(true);
+        hoverBoxChildText.transform.parent.position = CameraControl.Singleton.MousePositionScreen();
+        hoverBoxChildText.text = hoveredOver[0].GetHoverText();
     }
 }

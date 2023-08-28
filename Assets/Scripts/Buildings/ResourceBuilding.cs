@@ -8,9 +8,10 @@ using System.Numerics;
 public class ResourceBuilding : Building
 {
     [SerializeField] Resource type;
+    [SerializeField] private float baseAmount = 0.1f;
     private void Update()
     {
-        type.Value += Time.deltaTime;
+        type.Value += Time.deltaTime * baseAmount;
     }
     public override bool ResourceCheck(Planet planet)
     {

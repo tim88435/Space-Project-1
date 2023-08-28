@@ -1,12 +1,14 @@
+using Custom.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-[CreateAssetMenu(menuName = "Buildings/Zone")]
-public class BuildingZone : ScriptableObject
+[SelectionBase]
+[CreateAssetMenu(menuName = "Buildings/New Zone")]
+public class BuildingZone : ScriptableObject, IHoverable
 {
-    [SerializeField] private new string name;
     [SerializeField] public GameObject prefab;
-    [SerializeField] [TextArea(1, 15)] private string description;
+    [SerializeField] [TextArea(1, 15)] private string _description;
+    public string Name => name;
+    public string Description => _description;
 }

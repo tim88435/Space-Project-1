@@ -32,7 +32,7 @@ public class CameraControl : MonoBehaviour
     [SerializeField] private Vector2 xCameraBounds = new Vector2(-200.0f, 200.0f);
     [SerializeField] private Vector2 yCameraBounds = new Vector2(-100.0f, 100.0f);
     private Vector2 directionInput = Vector2.zero;
-    public Vector3 mousePositionScreen = Vector3.zero;
+    private Vector3 mousePositionScreen = Vector3.zero;
     private float scrollDelta = 0.0f;
     private bool isPanning = false;
     private float targetZoom = 0.0f;

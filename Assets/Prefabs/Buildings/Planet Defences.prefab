@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 5324324105632808341}
   - component: {fileID: 2763025160893741823}
-  - component: {fileID: 3118020028333053200}
-  - component: {fileID: 4446679994226817165}
+  - component: {fileID: 2185586565317720630}
+  - component: {fileID: 7949123576171017902}
   m_Layer: 0
-  m_Name: Durasteel Building
+  m_Name: Planet Defences
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -87,7 +87,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &3118020028333053200
+--- !u!114 &2185586565317720630
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -96,12 +96,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5324324105632808340}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7fb3ee2bdff5bb41ab10154ef0d1fd4, type: 3}
+  m_Script: {fileID: 11500000, guid: cd91516c685980d4098875359445466b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: {fileID: 11400000, guid: 2120669f1b3b61c4f9f77acaaaa78229, type: 2}
-  baseAmount: 0.1
---- !u!61 &4446679994226817165
+--- !u!61 &7949123576171017902
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

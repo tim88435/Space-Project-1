@@ -4,7 +4,7 @@ using UnityEngine;
 using Custom.Interfaces;
 using System.Linq;
 using System.Data;
-
+[SelectionBase]
 public class FlockAgent : MonoBehaviour, IShip, IDamagable, IWeapon
 {
     public static Dictionary<Collider2D, FlockAgent> ships { get; private set; } = new Dictionary<Collider2D, FlockAgent>();
@@ -36,10 +36,6 @@ public class FlockAgent : MonoBehaviour, IShip, IDamagable, IWeapon
         Team = Team;//set layer
         ships.Add(GetComponent<Collider2D>(), this);
         ((IShip)this).spriteRenderer = GetComponent<SpriteRenderer>();
-        if (Team != 1)
-        {
-            ((IShip)this).spriteRenderer.color = Color.magenta;
-        }
     }
     private void OnDisable()
     {
@@ -55,6 +51,7 @@ public class FlockAgent : MonoBehaviour, IShip, IDamagable, IWeapon
     }
     private void Start()
     {
+        ((IShip)this).spriteRenderer.color = GameManager.Singleton.teamColours[Team];
         lookEndDirection = transform.up;
         if (targetDestination == Vector3.back)
         {
@@ -106,12 +103,13 @@ public class FlockAgent : MonoBehaviour, IShip, IDamagable, IWeapon
     private void DrawLaser(Vector3 hitPosition)
     {
         LineRenderer lineRenderer = new GameObject().AddComponent<LineRenderer>();
-        lineRenderer.startColor = Color.red;
-        lineRenderer.endColor = Color.red;
+        lineRenderer.startColor = GameManager.Singleton.teamColours[Team];
+        lineRenderer.endColor = GameManager.Singleton.teamColours[Team];
         lineRenderer.startWidth = 0.05f;
         lineRenderer.endWidth = 0.05f;
         lineRenderer.material = GameManager.Singleton.defaultLineMaterial;
         lineRenderer.SetPositions(new Vector3[] { transform.position, hitPosition });
+        lineRenderer.sortingOrder = 1;
         Destroy(lineRenderer.gameObject, 0.5f);
     }
     private void DogFightVelocity(float Range, IEnumerable<FlockAgent> shipsInRange)
