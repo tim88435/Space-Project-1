@@ -7,10 +7,10 @@ using System.Numerics;
 
 public class ResourceBuilding : Building
 {
-    [SerializeField] Resource.Type type = Resource.Durasteel;
+    [SerializeField] Resource type;
     private void Update()
     {
-        type.value++;
+        type.Value += Time.deltaTime;
     }
     public override bool ResourceCheck(Planet planet)
     {
@@ -18,6 +18,5 @@ public class ResourceBuilding : Building
             .Where(x => x != null)
             .Where(x => ((IPlanetAngle)this).IsIntersecting(x))
             .Any(x => x.type == type);
-        //foreach (var resource in planet.resources ) { }
     }
 }

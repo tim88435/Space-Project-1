@@ -5,6 +5,6 @@ using UnityEngine;
 
 public class ResourceSource : MonoBehaviour, IPlanetAngle
 {
-    public Resource.Type type = Resource.Durasteel;
+    public Resource type;
     public float edgeAngle { get; set; } = 0.0f;
 }

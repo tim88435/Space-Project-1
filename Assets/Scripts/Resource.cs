@@ -2,21 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class Resource
+[CreateAssetMenu(menuName = "Resources")]
+public class Resource : ScriptableObject
 {
-    public struct Type
-    {
-        public string name;
-        public float value;
-        public static bool operator ==(Type c1, Type c2)
-        {
-            return c1.name == c2.name;
-        }
-        public static bool operator !=(Type c1, Type c2)
-        {
-            return c1.name != c2.name;
-        }
-    }
-    public static Type Rocks = new Type() { name = "Rocks", value = 0 };
-    public static Type Durasteel = new Type() { name = "Durasteel", value = 0 };
+    [SerializeField] private float _max = 9999.0f;
+    public float Max { get => _max; set => _max = value; }
+    [SerializeField] private float _min = 0.0f;
+    public float Min { get => _min; set => _min = value; }
+    [SerializeField] private float _value = 0.0f;
+    public float Value { get => _value; set => _value = value; }
 }
