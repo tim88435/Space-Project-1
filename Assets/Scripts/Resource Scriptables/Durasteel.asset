@@ -13,9 +13,5 @@ MonoBehaviour:
   m_Name: Durasteel
   m_EditorClassIdentifier: 
   _max: 9999
-  _value: 0
-  _description: 'steel but better
-
-
-
-    Yeet'
+  _value: 5
+  _description: Used to make ships, collected by durasteel mines

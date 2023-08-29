@@ -186,12 +186,12 @@ public class PlayerUnitController : MonoBehaviour
     }
     private void OnDeselect(InputValue inputValue)
     {
-        if (inputValue.Get<float>() == 0) { return; }
+        if (!inputValue.isPressed) { return; }
         DeselectAllFleets();
     }
     private void OnSpecificSelect(InputValue inputValue)
     {
-        specificSelection = inputValue.Get<float>() > 0;
+        specificSelection = inputValue.isPressed;
     }
     public static void DeselectAllFleets()
     {

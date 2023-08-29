@@ -13,6 +13,4 @@ MonoBehaviour:
   m_Name: Planetary Defences
   m_EditorClassIdentifier: 
   prefab: {fileID: 5324324105632808340, guid: f1e791bf378587e409b7431b5fdc89fc, type: 3}
-  _description: 'Defends planets
-
-'
+  _description: Defends planets from enemy ships

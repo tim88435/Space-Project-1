@@ -32,6 +32,7 @@ public class UIManager : MonoBehaviour
     SpriteRenderer lastCollidedBuildingChildRenderer;
     private bool possiblePlacement = false;
     private bool isTryingToPlace = false;
+    public static bool multiplePlace = false;
     [SerializeField] private Text hoverBoxChildText;
     public List<IHoverable> hoveredOver = new List<IHoverable>();
     Color halfred;
@@ -45,6 +46,11 @@ public class UIManager : MonoBehaviour
     }
     private void Update()
     {
+        if (!CameraControl.enableCamera)
+        {
+            hoverBoxChildText.transform.parent.gameObject.SetActive(false);
+            return;
+        }
         UpdateHoveredOver();
         if (lastCollidedBuildingChildRenderer != null)
         {
@@ -120,8 +126,8 @@ public class UIManager : MonoBehaviour
     }
     private void OnDeselect(InputValue inputValue)
     {
-        if (!inputValue.isPressed) { return; }
-        PlayerUnitController.DeselectAllFleets();
+        //if (!inputValue.isPressed) { return; }
+        //PlayerUnitController.DeselectAllFleets();
     }
     private void OnSelect(InputValue inputValue)
     {
@@ -194,8 +200,16 @@ public class UIManager : MonoBehaviour
         selectedBuilding.Team = 1;
         selectedBuilding.transform.parent = planet.transform;
         buildingZoneRenderer.color = GameManager.Singleton.teamColours[1];
+        Transform previousBuildingTransform = buildingZoneRenderer.transform;
         buildingZoneRenderer = null;
-        buildingZoneSelected = null;
+        if (!multiplePlace)
+        {
+            buildingZoneSelected = null;
+            return;
+        }
+        SelectBuilding(buildingZoneSelected);
+        buildingZoneRenderer.transform.position = previousBuildingTransform.position;
+        buildingZoneRenderer.transform.rotation = previousBuildingTransform.rotation;
     }
     private bool AnotherBuildingIsColliding(Building building, Planet planet, out SpriteRenderer spriteRenderer)
     {
@@ -230,5 +244,9 @@ public class UIManager : MonoBehaviour
         hoverBoxChildText.transform.parent.gameObject.SetActive(true);
         hoverBoxChildText.transform.parent.position = CameraControl.Singleton.MousePositionScreen();
         hoverBoxChildText.text = hoveredOver[0].GetHoverText();
+    }
+    private void OnSpecificSelect(InputValue inputValue)
+    {
+        multiplePlace = inputValue.isPressed;
     }
 }

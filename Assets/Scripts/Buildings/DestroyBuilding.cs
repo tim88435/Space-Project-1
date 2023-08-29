@@ -64,11 +64,18 @@ public class DestroyBuilding : MonoBehaviour, IHoverable
             .FirstOrDefault(x => x.Team == 1);
         if (selectedBuilding == null)
         {
-            gameObject.SetActive(false);
+            if (!UIManager.multiplePlace)
+            {
+                gameObject.SetActive(false);
+            }
             return;
         }
         Destroy(selectedBuilding.gameObject);
         selectedBuilding.transform.parent.GetComponent<Planet>().buildings.Remove(selectedBuilding);
+        if (UIManager.multiplePlace)
+        {
+            return;
+        }
         gameObject.SetActive(false);
         Name = "Destroy Target Building";
         Description = "No refunds";

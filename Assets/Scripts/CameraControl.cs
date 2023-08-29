@@ -36,6 +36,7 @@ public class CameraControl : MonoBehaviour
     private float scrollDelta = 0.0f;
     private bool isPanning = false;
     private float targetZoom = 0.0f;
+    public static bool enableCamera = false;
     private void OnValidate()
     {
         if (zoomMinimum > zoomMaximum)
@@ -56,10 +57,12 @@ public class CameraControl : MonoBehaviour
     }
     private void Update()
     {
+        if (!enableCamera) return;
         targetZoom = Mathf.Clamp(targetZoom, zoomMinimum, zoomMaximum);
     }
     private void LateUpdate()
     {
+        if (!enableCamera) return;
         Zoom();
         Move();
     }

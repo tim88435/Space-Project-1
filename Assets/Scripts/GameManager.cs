@@ -38,7 +38,9 @@ public class GameManager : MonoBehaviour
     public FlockBehaviour flockBehaviour;
     public GameObject healthBarPrefab;
     private HealthBar healthBar;
-    public bool isHoveringOverUI = false;
+    [HideInInspector] public bool isHoveringOverUI = false;
+    [SerializeField] private float _gameLengthSeconds = 600.0f;
+    public static float GameLengthSeconds { get { return Singleton._gameLengthSeconds; } }
     private void OnEnable()
     {
         Singleton = this;
@@ -48,6 +50,7 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
+        Time.timeScale = 0.0f;
         Application.targetFrameRate = 60;
         Resource[] AllResources = Resources.FindObjectsOfTypeAll<Resource>();
         for (int i = 0; i < AllResources.Length; i++)
@@ -130,5 +133,13 @@ public class GameManager : MonoBehaviour
             return Color.white;
         }
         return teamColours[team];
+    }
+    public void SetTimeScale(float timeScale)
+    {
+        Time.timeScale = timeScale;
+    }
+    public void EnableCameraControl(bool enable)
+    {
+        CameraControl.enableCamera = enable;
     }
 }

@@ -12,6 +12,7 @@ public class Planet : MonoBehaviour, ITeam
     public float Radius { get { return transform.lossyScale.x; } }
 
     [SerializeField] private SpriteRenderer outlineRenderer;
+    [SerializeField] private GameObject circlePrefab;
     [HideInInspector] public List<Building> buildings = new List<Building>();
     [HideInInspector] public ResourceSource[] resources = new ResourceSource[0];
     private HealthBar healthBar;
@@ -25,12 +26,7 @@ public class Planet : MonoBehaviour, ITeam
     }
     private void Start()
     {
-        FlockAgent[] shipsInRange = OrbitingShips();
-        if (shipsInRange.Length == 0) return;
-        Team = shipsInRange//give to team with highest ships in orbit
-                .GroupBy(i => i.Team)
-                .OrderByDescending(grp => grp.Count())
-                .First().Key;
+        SetTeam();
         SetTeamColour();
         transform.localScale = Vector3.one * (Random.Range(1.0f, 10.0f) + Random.Range(1.0f, 10.0f));
         SetResources();
@@ -48,7 +44,6 @@ public class Planet : MonoBehaviour, ITeam
         {
             buildings[0].Health = Mathf.Clamp(buildings[0].Health + healthChange * Time.deltaTime * 2.0f, 0.0f, 10.0f);
             healthChange = Mathf.Max(healthChange, 0.0f);//if there are buildings, planet does not take damage
-            return;
         }
         Health = Mathf.Clamp(Health + healthChange * Time.deltaTime, 0.0f, MaxHealth);
         if (Health == 0)
@@ -58,6 +53,8 @@ public class Planet : MonoBehaviour, ITeam
                 .OrderByDescending(grp => grp.Count())
                 .First().Key;
             SetTeamColour();
+            Instantiate(circlePrefab, transform.position, Quaternion.identity, transform)
+                .GetComponent<SpriteRenderer>().color = GameManager.Singleton.TeamToColour(Team);
         }
     }
 
@@ -137,5 +134,14 @@ public class Planet : MonoBehaviour, ITeam
     public float ZoneDistanceFromPlanetCentre(float width)//TODO: fix distance
     {
         return Mathf.Sqrt((Radius * Radius - width * width) / 4.0f) + width * 0.5f - 0.02f;
+    }
+    private void SetTeam()
+    {
+        FlockAgent[] shipsInRange = OrbitingShips();
+        if (shipsInRange.Length == 0) return;
+        Team = shipsInRange//give to team with highest ships in orbit
+                .GroupBy(i => i.Team)
+                .OrderByDescending(grp => grp.Count())
+                .First().Key;
     }
 }
