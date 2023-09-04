@@ -84,11 +84,12 @@ public class PlayerUnitController : MonoBehaviour
                 .ShowHealthBar(true);
             selected
                 .Where(x => !finalSelected.Contains(x))
-                .SetColour(selectionColour)
+                .SetColour(Color.yellow)
                 .ShowHealthBar(true);
             return;
         }
-        selected.SetColour(Color.yellow)
+        selected
+            .SetColour(Color.yellow)
             .ShowHealthBar(true);
         finalSelected
             .SetColour(selectionColour)
@@ -227,5 +228,14 @@ public class PlayerUnitController : MonoBehaviour
         Singleton.finalSelected.Clear();
         Singleton.selectionStartScreen = null;
         Singleton.selectionBox.enabled = false;
+    }
+    private Bounds GetSelectedBounds(IEnumerable<FlockAgent> enumerable)
+    {
+        if (!enumerable.Any())
+        {
+            return new Bounds(Vector3.zero, Vector3.zero);
+        }
+        Vector4 limits = Vector4.zero;
+        return default;
     }
 }
