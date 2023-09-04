@@ -18,19 +18,37 @@ namespace Custom.Extensions
             self.z = 0;
             return self;
         }
-        public static void SetColour(this List<FlockAgent> flockAgents, Color color)
+        public static List<FlockAgent> SetColour(this List<FlockAgent> flockAgents, Color color)
         {
             for (int i = 0; i < flockAgents.Count; i++)
             {
                 ((IShip)flockAgents[i]).SetColour(color);
             }
+            return flockAgents;
         }
-        public static void SetColour(this IEnumerable<FlockAgent> flockAgents, Color color)
+        public static IEnumerable<FlockAgent> SetColour(this IEnumerable<FlockAgent> flockAgents, Color color)
         {
             foreach (FlockAgent agent in flockAgents)
             {
                 ((IShip)agent).SetColour(color);
             }
+            return flockAgents;
+        }
+        public static List<FlockAgent> ShowHealthBar(this List<FlockAgent> flockAgents, bool shouldShow)
+        {
+            for (int i = 0; i < flockAgents.Count; i++)
+            {
+                flockAgents[i].ShowHealthBar(shouldShow);
+            }
+            return flockAgents;
+        }
+        public static IEnumerable<FlockAgent> ShowHealthBar(this IEnumerable<FlockAgent> flockAgents, bool shouldShow)
+        {
+            foreach (FlockAgent agent in flockAgents)
+            {
+                agent.ShowHealthBar(shouldShow);
+            }
+            return flockAgents;
         }
     }
     public class GenericListComparer<T>

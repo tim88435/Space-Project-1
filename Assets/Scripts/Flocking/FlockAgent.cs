@@ -14,6 +14,7 @@ public class FlockAgent : MonoBehaviour, IShip, IDamagable, IWeapon
     [SerializeField] private int _team = 0;
     [System.NonSerialized] public Vector3 targetDestination = Vector3.back;
     private Vector2 velocity = Vector2.zero;
+    private HealthBar healthBar;
     public int Team
     {
         get { return _team; }
@@ -60,6 +61,10 @@ public class FlockAgent : MonoBehaviour, IShip, IDamagable, IWeapon
     }
     private void Update()
     {
+        if (healthBar != null)
+        {
+            healthBar.Set(Health / MaxHealth);
+        }
         IEnumerable<FlockAgent> shipsInRange = Physics2D.OverlapCircleAll(transform.position, Range)
             .Where(x => ships.ContainsKey(x) && ships[x] != this)
             .Select(y => ships[y]);
@@ -138,5 +143,22 @@ public class FlockAgent : MonoBehaviour, IShip, IDamagable, IWeapon
     public void Destroy()
     {
         Destroy(gameObject);
+    }
+    public void ShowHealthBar(bool shouldShow)
+    {
+        if (shouldShow)
+        {
+            if (healthBar == null)
+            {
+                healthBar = Instantiate(GameManager.prefabList.healthBarPrefab, transform).GetComponent<HealthBar>();
+            }
+            healthBar.transform.up = Vector3.up;
+            healthBar.gameObject.SetActive(true);
+            return;
+        }
+        if (healthBar != null)
+        {
+            healthBar.gameObject.SetActive(false);
+        }
     }
 }

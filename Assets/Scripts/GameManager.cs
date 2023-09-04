@@ -31,22 +31,17 @@ public class GameManager : MonoBehaviour
         public GameObject resourcePrefab;
         [Range(0, 1)] public float chance;
     }
+    public static PrefabList prefabList;
     public Color[] teamColours = new Color[0];
     public ResourceData[] resourceData;
-    [System.NonSerialized] public Canvas canvas;
     public Material defaultLineMaterial;
     public FlockBehaviour flockBehaviour;
-    public GameObject healthBarPrefab;
-    private HealthBar healthBar;
-    [HideInInspector] public bool isHoveringOverUI = false;
     [SerializeField] private float _gameLengthSeconds = 600.0f;
     public static float GameLengthSeconds { get { return Singleton._gameLengthSeconds; } }
     private void OnEnable()
     {
         Singleton = this;
-        canvas = GetComponent<Canvas>();
-        healthBar = Instantiate(healthBarPrefab).GetComponent<HealthBar>();
-        if (healthBar == null ) { Debug.LogWarning("Health bar not attached to health bar prefab"); }
+        prefabList = prefabList ?? Resources.Load<PrefabList>("Default Prefab List");
     }
     private void Start()
     {
@@ -60,22 +55,8 @@ public class GameManager : MonoBehaviour
     }
     private void Update()
     {
-        isHoveringOverUI = EventSystem.current.IsPointerOverGameObject();
-        if (isHoveringOverUI)
-        {
-            healthBar.gameObject.SetActive(false);
-            return;
-        }
-        if (!GetHoveredShip(out FlockAgent ship))
-        {
-            healthBar.gameObject.SetActive(false);
-            return;
-        }
-        healthBar.gameObject.SetActive(true);
-        healthBar.transform.position = ship.transform.position;
-        //healthBar.transform.localScale = ship.transform.localScale;
-        healthBar.Set(ship.Health / ship.MaxHealth);
     }
+    /*
     private bool GetHoveredHealthObjects(out ITeam[] teamObjects, out Transform[] transforms)
     {
         Collider2D[] hoveredColliders = Physics2D.OverlapPointAll(CameraControl.Singleton.MousePositionWorld());
@@ -113,15 +94,7 @@ public class GameManager : MonoBehaviour
         }
         return teamObject != null;
     }
-    private bool GetHoveredShip(out FlockAgent ship)
-    {
-        Collider2D[] hoveredColliders = Physics2D.OverlapPointAll(CameraControl.Singleton.MousePositionWorld());
-        ship = hoveredColliders
-            .Where(x => FlockAgent.ships.ContainsKey(x))
-            .Select(x => FlockAgent.ships[x])
-            .FirstOrDefault();
-        return ship != null;
-    }
+    */
     public Color TeamToColour(ITeam Team)
     {
         return TeamToColour(Team.Team);

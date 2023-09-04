@@ -30,7 +30,7 @@ public class Planet : MonoBehaviour, ITeam
         SetTeamColour();
         transform.localScale = Vector3.one * (Random.Range(1.0f, 10.0f) + Random.Range(1.0f, 10.0f));
         SetResources();
-        healthBar = Instantiate(GameManager.Singleton.healthBarPrefab, transform.position, Quaternion.identity).GetComponent<HealthBar>();
+        healthBar = Instantiate(GameManager.prefabList.healthBarPrefab, transform.position, Quaternion.identity).GetComponent<HealthBar>();
         healthBar.transform.localScale = transform.localScale;
         healthBar.transform.parent = transform;
     }

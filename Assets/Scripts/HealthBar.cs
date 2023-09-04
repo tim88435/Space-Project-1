@@ -22,4 +22,10 @@ public class HealthBar : MonoBehaviour
         this.health = health;
         ManualUpdate();
     }
+    /*
+     * WTF WHY IS UPDATE NOT WORKING
+     * IT JUST IS NOT CALLING UPDATE ON AN ENABLED SCRIPT
+     * I HAVE JSUT SPENT 3 HOURS TRYING TO FIX THIS
+     * WHY UNITY WHY??????
+     */
 }

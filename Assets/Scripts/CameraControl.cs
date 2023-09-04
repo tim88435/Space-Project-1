@@ -37,6 +37,7 @@ public class CameraControl : MonoBehaviour
     private bool isPanning = false;
     private float targetZoom = 0.0f;
     public static bool enableCamera = false;
+    public static float currentZoom { get { return Singleton._camera.orthographicSize; } }
     private void OnValidate()
     {
         if (zoomMinimum > zoomMaximum)

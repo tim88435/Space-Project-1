@@ -81,12 +81,12 @@ namespace Custom.Interfaces
         string Description { get; }
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
-            UIManager.Singleton.hoveredOver.Add(this);
+            HoverObject.hoveredOver.Add(this);
         }
 
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
-            UIManager.Singleton.hoveredOver.Remove(this);
+            HoverObject.hoveredOver.Remove(this);
         }
         string GetHoverText()
         {

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 [SelectionBase]
 public class ResourceSource : MonoBehaviour, IPlanetAngle, IHoverable
@@ -15,19 +16,21 @@ public class ResourceSource : MonoBehaviour, IPlanetAngle, IHoverable
     public string Description => type.Description;
     void OnMouseEnter()
     {
-        UIManager.Singleton.hoveredOver.Add(this);
+        HoverObject.hoveredOver.Add(this);
     }
     void OnMouseExit()
     {
-        UIManager.Singleton.hoveredOver.Remove(this);
+        HoverObject.hoveredOver.Remove(this);
     }
     void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
     {
         //not a UI element so this won't be called
+        Debug.Log("Resource Source getting OnPointerEnter Event!");
     }
 
     void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
     {
         //not a UI element so this won't be called
+        Debug.Log("Resource Source getting OnPointerExit Event!");
     }
 }

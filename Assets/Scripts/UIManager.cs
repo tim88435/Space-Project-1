@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
@@ -33,8 +34,7 @@ public class UIManager : MonoBehaviour
     private bool possiblePlacement = false;
     private bool isTryingToPlace = false;
     public static bool multiplePlace = false;
-    [SerializeField] private Text hoverBoxChildText;
-    public List<IHoverable> hoveredOver = new List<IHoverable>();
+    public static bool isHoveringOverUI = false;
     Color halfred;
     private void OnEnable()
     {
@@ -46,12 +46,7 @@ public class UIManager : MonoBehaviour
     }
     private void Update()
     {
-        if (!CameraControl.enableCamera)
-        {
-            hoverBoxChildText.transform.parent.gameObject.SetActive(false);
-            return;
-        }
-        UpdateHoveredOver();
+        isHoveringOverUI = EventSystem.current.IsPointerOverGameObject();
         if (lastCollidedBuildingChildRenderer != null)
         {
             lastCollidedBuildingChildRenderer.color = GameManager.Singleton.teamColours[1];
@@ -147,7 +142,7 @@ public class UIManager : MonoBehaviour
         {
             return;
         }
-        if (GameManager.Singleton.isHoveringOverUI)
+        if (isHoveringOverUI)
         {
             SelectBuilding(null);
             return;
@@ -233,17 +228,6 @@ public class UIManager : MonoBehaviour
         }
         spriteRenderer = null;
         return false;
-    }
-    private void UpdateHoveredOver()
-    {
-        if (hoveredOver.Count == 0)
-        {
-            hoverBoxChildText.transform.parent.gameObject.SetActive(false);
-            return;
-        }
-        hoverBoxChildText.transform.parent.gameObject.SetActive(true);
-        hoverBoxChildText.transform.parent.position = CameraControl.Singleton.MousePositionScreen();
-        hoverBoxChildText.text = hoveredOver[0].GetHoverText();
     }
     private void OnSpecificSelect(InputValue inputValue)
     {

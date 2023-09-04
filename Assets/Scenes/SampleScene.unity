@@ -1157,7 +1157,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1414788331459180084, guid: f3ef3d69db8a86a44ac8166363b57335, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1414788331459180084, guid: f3ef3d69db8a86a44ac8166363b57335, type: 3}
       propertyPath: m_AnchorMax.x
@@ -1353,10 +1353,10 @@ RectTransform:
   - {fileID: 2131047154}
   - {fileID: 1033480812}
   - {fileID: 936611905}
-  - {fileID: 1798472726}
-  - {fileID: 1323123972}
+  - {fileID: 1567585862}
   - {fileID: 921278507}
   - {fileID: 1560116018}
+  - {fileID: 1323123972}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1431,8 +1431,6 @@ MonoBehaviour:
     chance: 0.098
   defaultLineMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   flockBehaviour: {fileID: 11400000, guid: cb6604eaa0ceb064eac1357ea530ee51, type: 2}
-  healthBarPrefab: {fileID: 2208598402774641264, guid: 6ffb82223076b734cac0d7c1049b45e7, type: 3}
-  isHoveringOverUI: 0
   _gameLengthSeconds: 400
 --- !u!114 &360204020
 MonoBehaviour:
@@ -1446,7 +1444,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f3ab8ef09b49164faf5da91e67382a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverBoxChildText: {fileID: 397703097}
 --- !u!222 &360204022
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1466,8 +1463,9 @@ GameObject:
   - component: {fileID: 397703096}
   - component: {fileID: 397703098}
   - component: {fileID: 397703097}
+  - component: {fileID: 397703099}
   m_Layer: 5
-  m_Name: GameObject
+  m_Name: HoverBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1480,19 +1478,19 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 397703095}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1798472726}
-  m_RootOrder: 0
+  m_Father: {fileID: 1567585862}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 150, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &397703097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1535,6 +1533,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 397703095}
   m_CullTransparentMesh: 1
+--- !u!114 &397703099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 397703095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 2
+  m_VerticalFit: 2
 --- !u!1001 &406770095
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3417,7 +3429,7 @@ RectTransform:
   m_Children:
   - {fileID: 446175973}
   m_Father: {fileID: 360204016}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -6395,7 +6407,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 360204016}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1560116019
 MonoBehaviour:
@@ -6488,6 +6500,60 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 37d7cee443ad4fd4b8a1c156aea24b60, type: 3}
+--- !u!1 &1567585861
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1567585862}
+  - component: {fileID: 1567585863}
+  m_Layer: 5
+  m_Name: Hover Parent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1567585862
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1567585861}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1798472726}
+  - {fileID: 397703096}
+  m_Father: {fileID: 360204016}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1567585863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1567585861}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65ae16aeb3c999a4a9c2512763966651, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverbox: {fileID: 1798472726}
+  hoverText: {fileID: 397703097}
+  healthBar: {fileID: 0}
 --- !u!1001 &1570931561
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7503,7 +7569,7 @@ GameObject:
   - component: {fileID: 1798472728}
   - component: {fileID: 1798472727}
   m_Layer: 5
-  m_Name: HoverBox
+  m_Name: HoverBox Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7516,19 +7582,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1798472725}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 397703096}
-  m_Father: {fileID: 360204016}
-  m_RootOrder: 3
+  m_Children: []
+  m_Father: {fileID: 1567585862}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 150, y: 50}
+  m_SizeDelta: {x: 238.5187, y: 10.02179}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1798472727
 MonoBehaviour:

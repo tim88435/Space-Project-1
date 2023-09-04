@@ -28,9 +28,11 @@ public class PlayerUnitController : MonoBehaviour
         }
     }
     [SerializeField] private Image selectionBox;
-    //both lists because stuff can die
+    private Canvas canvas; // for scale factor
+    //both are lists because stuff can die
     public List<FlockAgent> selected = new List<FlockAgent>();
     public List<FlockAgent> finalSelected = new List<FlockAgent>();
+    public HealthBar healthBar;
     private bool isSelectingPosition;
     private bool selectedChecked = false;
     private int lastCheckedCount = 0;
@@ -42,16 +44,29 @@ public class PlayerUnitController : MonoBehaviour
     private void OnEnable()
     {
         Singleton = this;
+        if (canvas == null) canvas = GetComponent<Canvas>();
+    }
+    private void Start()
+    {
+        if (healthBar == null) { healthBar = Instantiate(GameManager.prefabList.healthBarPrefab).GetComponent<HealthBar>(); }
     }
     private void Update()
     {
         if (selectionStartScreen != null)
         {
             UpdateSelectionBox();
+            healthBar.gameObject.SetActive(false);
+            healthBar.transform.position = CameraControl.Singleton.MousePositionWorld(selectionBox.transform.position);
+            healthBar.transform.localScale = Vector3.one * (selected.Count > 0 ? selected : finalSelected).Count;
             selected.SetColour(GameManager.Singleton.teamColours[1]);
+            selected.ShowHealthBar(false);
             selected.Clear();
             Collider2D[] selectedColliders2D = Physics2D.OverlapAreaAll(CameraControl.Singleton.MousePositionWorld((Vector2)selectionStartScreen), (Vector2)CameraControl.Singleton.MousePositionWorld(mousePositionScreen), (LayerMask)(1 << 7));
             GetAgents(selectedColliders2D, ref selected);
+        }
+        else
+        {
+            healthBar.gameObject.SetActive(false);
         }
         moveSetCooldown -= Time.deltaTime;
         if (isSelectingPosition)
@@ -63,23 +78,32 @@ public class PlayerUnitController : MonoBehaviour
     {
         if (specificSelection)
         {
-            finalSelected.Where(x => !selected.Contains(x)).SetColour(selectionColour);
-            selected.Where(x => !finalSelected.Contains(x)).SetColour(selectionColour);
+            finalSelected
+                .Where(x => !selected.Contains(x))
+                .SetColour(selectionColour)
+                .ShowHealthBar(true);
+            selected
+                .Where(x => !finalSelected.Contains(x))
+                .SetColour(selectionColour)
+                .ShowHealthBar(true);
             return;
         }
-        selected.SetColour(Color.yellow);
-        finalSelected.SetColour(selectionColour);
+        selected.SetColour(Color.yellow)
+            .ShowHealthBar(true);
+        finalSelected
+            .SetColour(selectionColour)
+            .ShowHealthBar(true);
     }
     private void OnSelect(InputValue inputValue)
     {
-        if (inputValue.Get<float>() > 0)
+        if (inputValue.isPressed)
         {
             if (UIManager.BuildingSelected)
             {
                 DeselectAllFleets();
                 return;
             }
-            if (GameManager.Singleton.isHoveringOverUI)
+            if (UIManager.isHoveringOverUI)
             {
                 DeselectAllFleets();
                 return;
@@ -93,7 +117,9 @@ public class PlayerUnitController : MonoBehaviour
         }
         selectionStartScreen = null;
         selectionBox.enabled = false;
-        finalSelected.SetColour(GameManager.Singleton.teamColours[1]);
+        finalSelected
+            .SetColour(GameManager.Singleton.teamColours[1])
+            .ShowHealthBar(false);
         if (specificSelection)
         {
             finalSelected = finalSelected
@@ -180,8 +206,8 @@ public class PlayerUnitController : MonoBehaviour
     private void UpdateSelectionBox()
     {
         RectTransform selectionBoxTransform = selectionBox.rectTransform;
-        selectionBoxTransform.anchoredPosition = ((Vector3)selectionStartScreen + mousePositionScreen) * 0.5f / GameManager.Singleton.canvas.scaleFactor;
-        selectionBoxTransform.sizeDelta = ((Vector2)mousePositionScreen - (Vector2)selectionStartScreen) / GameManager.Singleton.canvas.scaleFactor;
+        selectionBoxTransform.anchoredPosition = ((Vector3)selectionStartScreen + mousePositionScreen) * 0.5f / canvas.scaleFactor;
+        selectionBoxTransform.sizeDelta = ((Vector2)mousePositionScreen - (Vector2)selectionStartScreen) / canvas.scaleFactor;
         selectionBoxTransform.sizeDelta = new Vector2(Mathf.Abs(selectionBoxTransform.sizeDelta.x), Mathf.Abs(selectionBoxTransform.sizeDelta.y));
     }
     private void OnDeselect(InputValue inputValue)
@@ -195,7 +221,9 @@ public class PlayerUnitController : MonoBehaviour
     }
     public static void DeselectAllFleets()
     {
-        foreach (FlockAgent item in Singleton.finalSelected) { ((IShip)item).SetColour(GameManager.Singleton.teamColours[1]); }
+        Singleton.finalSelected
+            .SetColour(GameManager.Singleton.teamColours[1])
+            .ShowHealthBar(false);
         Singleton.finalSelected.Clear();
         Singleton.selectionStartScreen = null;
         Singleton.selectionBox.enabled = false;

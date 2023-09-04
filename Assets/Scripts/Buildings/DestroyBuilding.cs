@@ -31,11 +31,11 @@ public class DestroyBuilding : MonoBehaviour, IHoverable
     private void OnEnable()
     {
         Singleton = this;
-        UIManager.Singleton.hoveredOver.Add(this);
+        HoverObject.hoveredOver.Add(this);
     }
     private void OnDisable()
     {
-        UIManager.Singleton.hoveredOver.Remove(this);
+        HoverObject.hoveredOver.Remove(this);
     }
     public void Update()
     {
