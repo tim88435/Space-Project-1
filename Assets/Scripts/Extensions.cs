@@ -22,7 +22,7 @@ namespace Custom.Extensions
         {
             for (int i = 0; i < flockAgents.Count; i++)
             {
-                ((IShip)flockAgents[i]).SetColour(color);
+                ((IColourable)flockAgents[i]).SetColour(color);
             }
             return flockAgents;
         }
@@ -30,7 +30,7 @@ namespace Custom.Extensions
         {
             foreach (FlockAgent agent in flockAgents)
             {
-                ((IShip)agent).SetColour(color);
+                ((IColourable)agent).SetColour(color);
             }
             return flockAgents;
         }

@@ -55,7 +55,7 @@ public class UIManager : MonoBehaviour
         {
             return;
         }
-        Vector3 mousePosition = CameraControl.Singleton.MousePositionWorld();
+        Vector3 mousePosition = CameraControl.Singleton.MouseToWorldPosition();
         if (ClosestPlanet(mousePosition, out Planet planet))
         {
             IPlanetAngle placable = selectedBuilding;
@@ -102,6 +102,7 @@ public class UIManager : MonoBehaviour
         if (buildingZone != null)
         {
             buildingZoneRenderer = Instantiate(buildingZone.prefab).GetComponent<SpriteRenderer>();
+            buildingZoneRenderer.name = buildingZone.name;
             selectedBuilding = buildingZoneRenderer.GetComponent<Building>();
         }
         else

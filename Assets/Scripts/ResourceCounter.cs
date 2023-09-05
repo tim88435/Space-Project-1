@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 [SelectionBase]
-public class ResourceCounter : MonoBehaviour, IHoverable
+public class ResourceCounter : MonoBehaviour, IHoverableUI
 {
     [SerializeField] private Text textComponent;
     [SerializeField] private Resource type;

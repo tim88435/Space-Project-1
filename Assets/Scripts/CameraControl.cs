@@ -32,7 +32,7 @@ public class CameraControl : MonoBehaviour
     [SerializeField] private Vector2 xCameraBounds = new Vector2(-200.0f, 200.0f);
     [SerializeField] private Vector2 yCameraBounds = new Vector2(-100.0f, 100.0f);
     private Vector2 directionInput = Vector2.zero;
-    private Vector3 mousePositionScreen = Vector3.zero;
+    public Vector3 mousePositionScreen { get; private set; } = Vector3.zero;
     private float scrollDelta = 0.0f;
     private bool isPanning = false;
     private float targetZoom = 0.0f;
@@ -70,10 +70,10 @@ public class CameraControl : MonoBehaviour
     private void Zoom()
     {
         targetZoom *= Mathf.Pow(zoomSpeed, scrollDelta);
-        Vector3 mousePositionWorld = MousePositionWorld();
+        Vector3 mousePositionWorld = MouseToWorldPosition();
         float blend = 1 - Mathf.Pow(0.5f, Time.unscaledDeltaTime * zoomUpdateSpeed);
         _camera.orthographicSize = Mathf.Lerp(_camera.orthographicSize, targetZoom, blend);
-        transform.position += mousePositionWorld - MousePositionWorld();
+        transform.position += mousePositionWorld - MouseToWorldPosition();
     }
     private void Move()
     {
@@ -82,15 +82,18 @@ public class CameraControl : MonoBehaviour
         position.Clamp2D(xCameraBounds, yCameraBounds);
         transform.position = position;
     }
-    public Vector3 MousePositionWorld()
+    public Vector3 MouseToWorldPosition()
     {
-        return MousePositionWorld(mousePositionScreen);
+        return ScreenPositionToWorld(mousePositionScreen);
     }
-    public Vector3 MousePositionWorld(Vector3 screenPosition)
+    public Vector3 ScreenPositionToWorld(Vector3 screenPosition)
     {
         return _camera.ScreenToWorldPoint(screenPosition).Flatten2D();
     }
-    public Vector3 MousePositionScreen() { return mousePositionScreen; }
+    public Vector2 WorldPositionToScreen(Vector3 worldPosition)
+    {
+        return _camera.WorldToScreenPoint(worldPosition).Flatten2D();
+    }
     private void OnMovement(InputValue inputValue)
     {
         directionInput = inputValue.Get<Vector2>();
@@ -109,7 +112,7 @@ public class CameraControl : MonoBehaviour
             return;
         }
         Vector3 position = transform.position;
-        position += (MousePositionWorld(mousePositionScreen) - MousePositionWorld(newMousePosition));
+        position += (ScreenPositionToWorld(mousePositionScreen) - ScreenPositionToWorld(newMousePosition));
         position.Clamp2D(xCameraBounds, yCameraBounds);
         transform.position = position;
         mousePositionScreen = newMousePosition;

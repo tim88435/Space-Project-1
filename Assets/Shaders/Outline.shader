@@ -10,7 +10,7 @@ Shader "Sprites/Outline"
         Tags
         {
             "Queue" = "Transparent"
-            //"RenderType" = "Transparent"
+            "RenderType" = "Transparent"
         }
 
         Pass
@@ -59,7 +59,7 @@ Shader "Sprites/Outline"
                 float z = (1.0 - abs(radius - 0.5) * _Thickness + 1.0 / _Thickness);
                 float alpha = smoothstep(0.5, 1.0, z);
                 col.a *= alpha;
-                col *= i.color * col.a;
+                col *= i.color * col.a * i.color.a;
                 return col;
             }
             ENDCG

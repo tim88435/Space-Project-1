@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: Default Prefab List
   m_EditorClassIdentifier: 
   healthBarPrefab: {fileID: 2208598402774641264, guid: 6ffb82223076b734cac0d7c1049b45e7, type: 3}
+  circlePrefab: {fileID: 290883871419986044, guid: 738a468d3c014f849b91dbe27bffce66, type: 3}
+  shipPrefab: {fileID: 564692489642200261, guid: 37d7cee443ad4fd4b8a1c156aea24b60, type: 3}

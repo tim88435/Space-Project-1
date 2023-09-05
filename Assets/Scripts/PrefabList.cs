@@ -5,4 +5,6 @@ using UnityEngine;
 public class PrefabList : ScriptableObject
 {
     public GameObject healthBarPrefab;
+    public GameObject circlePrefab;
+    public GameObject shipPrefab;
 }

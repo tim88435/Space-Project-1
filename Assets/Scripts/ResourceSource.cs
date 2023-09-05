@@ -14,23 +14,12 @@ public class ResourceSource : MonoBehaviour, IPlanetAngle, IHoverable
     public string Name => type.name + " Source";
 
     public string Description => type.Description;
-    void OnMouseEnter()
+    public void OnMouseEnter()
     {
         HoverObject.hoveredOver.Add(this);
     }
-    void OnMouseExit()
+    public void OnMouseExit()
     {
         HoverObject.hoveredOver.Remove(this);
-    }
-    void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
-    {
-        //not a UI element so this won't be called
-        Debug.Log("Resource Source getting OnPointerEnter Event!");
-    }
-
-    void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
-    {
-        //not a UI element so this won't be called
-        Debug.Log("Resource Source getting OnPointerExit Event!");
     }
 }

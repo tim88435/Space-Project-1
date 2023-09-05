@@ -56,7 +56,7 @@ Shader "Sprites/Circle"
                 float radius = distance(i.uv, float2(0.5, 0.5));
                 float alpha = smoothstep(0.5, 0.5 - radius * 0.003, radius);
                 col.a *= alpha;
-                col *= i.color * col.a;
+                col *= i.color * col.a * i.color.a;
                 return col;
             }
             ENDCG

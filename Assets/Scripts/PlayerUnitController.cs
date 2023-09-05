@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using Custom.Interfaces;
 using Custom.Extensions;
 using UnityEngine.EventSystems;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class PlayerUnitController : MonoBehaviour
 {
@@ -55,13 +56,11 @@ public class PlayerUnitController : MonoBehaviour
         if (selectionStartScreen != null)
         {
             UpdateSelectionBox();
-            healthBar.gameObject.SetActive(false);
-            healthBar.transform.position = CameraControl.Singleton.MousePositionWorld(selectionBox.transform.position);
-            healthBar.transform.localScale = Vector3.one * (selected.Count > 0 ? selected : finalSelected).Count;
+            UpdateSelectionHealthBar(selected);
             selected.SetColour(GameManager.Singleton.teamColours[1]);
             selected.ShowHealthBar(false);
             selected.Clear();
-            Collider2D[] selectedColliders2D = Physics2D.OverlapAreaAll(CameraControl.Singleton.MousePositionWorld((Vector2)selectionStartScreen), (Vector2)CameraControl.Singleton.MousePositionWorld(mousePositionScreen), (LayerMask)(1 << 7));
+            Collider2D[] selectedColliders2D = Physics2D.OverlapAreaAll(CameraControl.Singleton.ScreenPositionToWorld((Vector2)selectionStartScreen), (Vector2)CameraControl.Singleton.ScreenPositionToWorld(mousePositionScreen), (LayerMask)(1 << 7));
             GetAgents(selectedColliders2D, ref selected);
         }
         else
@@ -74,6 +73,23 @@ public class PlayerUnitController : MonoBehaviour
             MoveUnit();
         }
     }
+
+    private void UpdateSelectionHealthBar(List<FlockAgent> selected)
+    {
+        if (selected.Count == 0)
+        {
+            healthBar.gameObject.SetActive(false);
+            return;
+        }
+        healthBar.gameObject.SetActive(true);
+        Bounds healthBarBounds = GetSelectedBounds(selected);
+        healthBarBounds.size *= CameraControl.currentZoom * 0.1f + Mathf.Pow(0.91f, CameraControl.currentZoom);
+        healthBarBounds.center += Vector3.down * Mathf.Pow(0.99f, CameraControl.currentZoom);
+        healthBar.transform.position = healthBarBounds.center;
+        healthBar.transform.localScale = Vector2.one * healthBarBounds.size.magnitude;
+        healthBar.Set(selected.Average(x => x.Health / x.MaxHealth));
+    }
+
     private void LateUpdate()
     {
         if (specificSelection)
@@ -111,7 +127,7 @@ public class PlayerUnitController : MonoBehaviour
             }
             selectionBox.enabled = true;
             selectionStartScreen = mousePositionScreen;
-            Collider2D[] selectedColliders2D = Physics2D.OverlapPointAll(CameraControl.Singleton.MousePositionWorld((Vector2)selectionStartScreen), (LayerMask)((1 << 6)));
+            Collider2D[] selectedColliders2D = Physics2D.OverlapPointAll(CameraControl.Singleton.ScreenPositionToWorld((Vector2)selectionStartScreen), (LayerMask)((1 << 6)));
             selected.Clear();
             GetAgents(selectedColliders2D, ref selected);
             return;
@@ -160,7 +176,7 @@ public class PlayerUnitController : MonoBehaviour
     }
     private void MoveUnit()
     {
-        Collider2D[] selectedColliders2D = Physics2D.OverlapPointAll(CameraControl.Singleton.MousePositionWorld((Vector2)mousePositionScreen), (LayerMask)~(1 << 6));
+        Collider2D[] selectedColliders2D = Physics2D.OverlapPointAll(CameraControl.Singleton.ScreenPositionToWorld((Vector2)mousePositionScreen), (LayerMask)~(1 << 6));
         FlockAgent selectedTarget = null;
         for (int i = 0; i < selectedColliders2D.Length; i++)
         {
@@ -197,7 +213,7 @@ public class PlayerUnitController : MonoBehaviour
         {
             finalSelected[i].dogFighting = selectedTarget != null;
         }
-        Flock.SetDestination(CameraControl.Singleton.MousePositionWorld(mousePositionScreen), finalSelected);
+        Flock.SetDestination(CameraControl.Singleton.ScreenPositionToWorld(mousePositionScreen), finalSelected);
         moveSetCooldown = 0.1f;
         if (selectedTarget != null)
         {
@@ -235,7 +251,38 @@ public class PlayerUnitController : MonoBehaviour
         {
             return new Bounds(Vector3.zero, Vector3.zero);
         }
-        Vector4 limits = Vector4.zero;
-        return default;
+        Vector3 firstPosition = enumerable.First().transform.position;
+        Vector4 limits = new Vector4(firstPosition.x, firstPosition.x, firstPosition.y, firstPosition.y);
+        foreach (FlockAgent agent in enumerable)
+        {
+            limits.x = Mathf.Min(limits.x, agent.transform.position.x);
+            limits.y = Mathf.Max(limits.y, agent.transform.position.x);
+            limits.z = Mathf.Min(limits.z, agent.transform.position.y);
+            limits.w = Mathf.Max(limits.w, agent.transform.position.y);
+        }
+        //                                  average mid x               average mid y
+        Vector2 centre = new Vector2((limits.x + limits.y / 2), (limits.z + limits.w / 2));
+        Vector2 size = new Vector2((centre.x - limits.x), (centre.y - limits.z));
+        return new Bounds(centre, size);
+    }
+    private Bounds GetSelectedBounds(List<FlockAgent> list)
+    {
+        if (list.Count == 0)
+        {
+            return new Bounds();
+        }
+        Vector3 firstPosition = list[0].transform.position;
+        Vector4 limits = new Vector4(firstPosition.x, firstPosition.x, firstPosition.y, firstPosition.y);
+        for (int i = 0; i < list.Count; i++)
+        {
+            limits.x = Mathf.Min(limits.x, list[i].transform.position.x);
+            limits.y = Mathf.Max(limits.y, list[i].transform.position.x);
+            limits.z = Mathf.Min(limits.z, list[i].transform.position.y);
+            limits.w = Mathf.Max(limits.w, list[i].transform.position.y);
+        }
+        //                                  average mid x               average mid y
+        Vector2 centre = new Vector2((limits.x + limits.y) / 2, (limits.z + limits.w) / 2);
+        Vector2 size = new Vector2(centre.x - limits.x, centre.y - limits.z);
+        return new Bounds(centre, size);
     }
 }

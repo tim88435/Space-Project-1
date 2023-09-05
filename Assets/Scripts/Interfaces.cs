@@ -9,19 +9,17 @@ namespace Custom.Interfaces
     public interface ITeam
     {
         public int Team { get; set; }
-        public float MaxHealth { get; set; }
-        public float Health { get; set; }
     }
-    public interface IShip : ITeam
+    public interface IColourable : ITeam
     {
-        SpriteRenderer spriteRenderer { get; set; }
+        protected internal SpriteRenderer SpriteRenderer { get; set; }
         public void SetColour(Color colour)
         {
-            spriteRenderer.color = colour;
+            SpriteRenderer.color = colour;
         }
     }
     //TODO: add damage type
-    public interface IWeapon : ITeam
+    public interface IWeapon
     {
         float DamagePerHit { get; set; }
         float CooldownSeconds { get; set; }
@@ -30,6 +28,8 @@ namespace Custom.Interfaces
     }
     public interface IDamagable : ITeam//not used much?
     {
+        public float MaxHealth { get; set; }
+        public float Health { get; set; }
         /// <summary>
         /// Evasion of a ship between a value of 0 and 1
         /// </summary>
@@ -75,10 +75,8 @@ namespace Custom.Interfaces
             return Quaternion.Angle(transform.rotation, otherRotation) < edgeAngle + otherEdgeAngle;
         }
     }
-    public interface IHoverable : IPointerEnterHandler, IPointerExitHandler
+    public interface IHoverableUI : IHoverable, IPointerEnterHandler, IPointerExitHandler
     {
-        string Name { get; }
-        string Description { get; }
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
             HoverObject.hoveredOver.Add(this);
@@ -88,6 +86,11 @@ namespace Custom.Interfaces
         {
             HoverObject.hoveredOver.Remove(this);
         }
+    }
+    public interface IHoverable
+    {
+        string Name { get; }
+        string Description { get; }
         string GetHoverText()
         {
             string a = $"   <b>{Name}</b>\n";//three spaces for mouse

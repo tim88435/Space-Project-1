@@ -27,6 +27,7 @@ public class HoverObject : MonoBehaviour
     }
     public static List<IHoverable> hoveredOver = new List<IHoverable>();
     [SerializeField] private RectTransform hoverbox;
+    [SerializeField] private Image rangeIndicator;
     [SerializeField] private Text hoverText;
     //[SerializeField] private HealthBar healthBar;
     private FlockAgent lastSelectedShip;
@@ -47,6 +48,9 @@ public class HoverObject : MonoBehaviour
             hoverText.gameObject.SetActive(false);
             if (GetHoveredShip(out FlockAgent selectedShip))
             {
+                rangeIndicator.gameObject.SetActive(true);
+                rangeIndicator.rectTransform.position = CameraControl.Singleton.WorldPositionToScreen(selectedShip.transform.position);
+                rangeIndicator.rectTransform.sizeDelta = Vector2.one * (selectedShip.Range / CameraControl.currentZoom) * (Screen.height / rangeIndicator.canvas.scaleFactor);
                 if (selectedShip == lastSelectedShip)
                 {
                     lastSelectedShip.ShowHealthBar(true);
@@ -59,9 +63,11 @@ public class HoverObject : MonoBehaviour
                 return;
             }
             //HealthBarUpdate();
+            rangeIndicator.gameObject.SetActive(false);
             return;
         }
-        transform.position = CameraControl.Singleton.MousePositionScreen();
+        transform.position = CameraControl.Singleton.mousePositionScreen;
+        rangeIndicator.gameObject.SetActive(false);
         hoverbox.gameObject.SetActive(true);
         hoverText.gameObject.SetActive(true);
         //healthBar.gameObject.SetActive(false);
@@ -71,7 +77,7 @@ public class HoverObject : MonoBehaviour
     }
     private bool GetHoveredShip(out FlockAgent ship)
     {
-        Collider2D[] hoveredColliders = Physics2D.OverlapPointAll(CameraControl.Singleton.MousePositionWorld());
+        Collider2D[] hoveredColliders = Physics2D.OverlapPointAll(CameraControl.Singleton.MouseToWorldPosition());
         IEnumerable<FlockAgent> ships = hoveredColliders
             .Where(x => FlockAgent.ships.ContainsKey(x))
             .Select(x => FlockAgent.ships[x]);

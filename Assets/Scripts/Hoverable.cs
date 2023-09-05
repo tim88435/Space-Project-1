@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hoverable : MonoBehaviour, IHoverable
+public class Hoverable : MonoBehaviour, IHoverableUI
 {
     [SerializeField] private Object hoverable;
     private IHoverable _hoverable;
@@ -28,7 +28,7 @@ public class Hoverable : MonoBehaviour, IHoverable
         {
             if (hoverable is IHoverable)
             {
-                _hoverable = (IHoverable)(ScriptableObject)hoverable;
+                _hoverable = (IHoverable)hoverable;
                 return;
             }
         }

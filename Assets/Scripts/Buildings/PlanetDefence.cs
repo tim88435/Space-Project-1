@@ -12,6 +12,7 @@ public class PlanetDefence : Building, IWeapon
     public float CooldownSeconds { get; set; } = 1.0f;
     public float NextAttackTime { get; set; } = 0.0f;
     public float Range { get; set; } = 10.0f;
+
     private void Update()
     {
         if (NextAttackTime > Time.time)

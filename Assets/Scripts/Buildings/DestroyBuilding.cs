@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
-public class DestroyBuilding : MonoBehaviour, IHoverable
+public class DestroyBuilding : MonoBehaviour, IHoverableUI
 {
     public string Name { get; private set; } = "Destroy Target Building";
     public string Description { get; private set; } = "No refunds";
@@ -39,7 +39,7 @@ public class DestroyBuilding : MonoBehaviour, IHoverable
     }
     public void Update()
     {
-        Building selectedBuilding = Physics2D.OverlapPointAll(CameraControl.Singleton.MousePositionWorld())
+        Building selectedBuilding = Physics2D.OverlapPointAll(CameraControl.Singleton.MouseToWorldPosition())
             .Select(x => x.GetComponent<Building>())
             .Where(x => x != null)
             .FirstOrDefault(x => x.Team == 1);
@@ -58,7 +58,7 @@ public class DestroyBuilding : MonoBehaviour, IHoverable
         {
             return;
         }
-        Building selectedBuilding = Physics2D.OverlapPointAll(CameraControl.Singleton.MousePositionWorld())
+        Building selectedBuilding = Physics2D.OverlapPointAll(CameraControl.Singleton.MouseToWorldPosition())
             .Select(x => x.GetComponent<Building>())
             .Where(x => x != null)
             .FirstOrDefault(x => x.Team == 1);
@@ -82,7 +82,7 @@ public class DestroyBuilding : MonoBehaviour, IHoverable
     }
     private void OnMousePosition(InputValue inputValue)
     {
-        transform.position = CameraControl.Singleton.MousePositionScreen();
+        transform.position = CameraControl.Singleton.mousePositionScreen;
     }
     private void OnMove(InputValue inputValue)
     {

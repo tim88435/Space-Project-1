@@ -5,12 +5,12 @@ using Custom.Interfaces;
 using System.Linq;
 using System.Data;
 [SelectionBase]
-public class FlockAgent : MonoBehaviour, IShip, IDamagable, IWeapon
+public class FlockAgent : MonoBehaviour, IColourable, IDamagable, IWeapon
 {
     public static Dictionary<Collider2D, FlockAgent> ships { get; private set; } = new Dictionary<Collider2D, FlockAgent>();
     public bool dogFighting = true;
     public Vector3 lookEndDirection;
-    SpriteRenderer IShip.spriteRenderer { get; set; }
+    SpriteRenderer IColourable.SpriteRenderer { get; set; }
     [SerializeField] private int _team = 0;
     [System.NonSerialized] public Vector3 targetDestination = Vector3.back;
     private Vector2 velocity = Vector2.zero;
@@ -36,7 +36,7 @@ public class FlockAgent : MonoBehaviour, IShip, IDamagable, IWeapon
     {
         Team = Team;//set layer
         ships.Add(GetComponent<Collider2D>(), this);
-        ((IShip)this).spriteRenderer = GetComponent<SpriteRenderer>();
+        ((IColourable)this).SpriteRenderer = GetComponent<SpriteRenderer>();
     }
     private void OnDisable()
     {
@@ -52,7 +52,7 @@ public class FlockAgent : MonoBehaviour, IShip, IDamagable, IWeapon
     }
     private void Start()
     {
-        ((IShip)this).spriteRenderer.color = GameManager.Singleton.teamColours[Team];
+        ((IColourable)this).SetColour(GameManager.Singleton.teamColours[Team]);
         lookEndDirection = transform.up;
         if (targetDestination == Vector3.back)
         {

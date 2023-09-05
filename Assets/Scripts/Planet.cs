@@ -4,15 +4,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 [SelectionBase]
-public class Planet : MonoBehaviour, ITeam
+public class Planet : MonoBehaviour, ITeam, IHoverable
 {
     public int Team { get; set; } = 0;
-    public float Health { get; set; } = 100f;
-    public float MaxHealth { get; set; } = 100f;
+    private float health = 100f;
+    private float maxHealth = 100f;
     public float Radius { get { return transform.lossyScale.x; } }
 
+    public string Name { get { return ""; } }
+
+    public string Description { get { return ""; } }
+
     [SerializeField] private SpriteRenderer outlineRenderer;
-    [SerializeField] private GameObject circlePrefab;
     [HideInInspector] public List<Building> buildings = new List<Building>();
     [HideInInspector] public ResourceSource[] resources = new ResourceSource[0];
     private HealthBar healthBar;
@@ -36,28 +39,30 @@ public class Planet : MonoBehaviour, ITeam
     }
     private void Update()
     {
-        healthBar.gameObject.SetActive(Health != MaxHealth);
-        healthBar.Set(Health / MaxHealth);
+        healthBar.gameObject.SetActive(health != maxHealth);
+        healthBar.Set(health / maxHealth);
         FlockAgent[] shipsInRange = OrbitingShips();
         float healthChange = PlanetDamage(shipsInRange);
-        if (buildings.Count != 0)
-        {
-            buildings[0].Health = Mathf.Clamp(buildings[0].Health + healthChange * Time.deltaTime * 2.0f, 0.0f, 10.0f);
-            healthChange = Mathf.Max(healthChange, 0.0f);//if there are buildings, planet does not take damage
-        }
-        Health = Mathf.Clamp(Health + healthChange * Time.deltaTime, 0.0f, MaxHealth);
-        if (Health == 0)
+        health = Mathf.Clamp(health + healthChange * Time.deltaTime, 0.0f, maxHealth);
+        if (health == 0)
         {
             Team = shipsInRange//give to team with highest ships in orbit
                 .GroupBy(i => i.Team)
                 .OrderByDescending(grp => grp.Count())
                 .First().Key;
             SetTeamColour();
-            Instantiate(circlePrefab, transform.position, Quaternion.identity, transform)
+            Instantiate(GameManager.prefabList.circlePrefab, transform.position, Quaternion.identity, transform)
                 .GetComponent<SpriteRenderer>().color = GameManager.Singleton.TeamToColour(Team);
         }
     }
-
+    public void OnMouseEnter()
+    {
+        HoverObject.hoveredOver.Add(this);
+    }
+    public void OnMouseExit()
+    {
+        HoverObject.hoveredOver.Remove(this);
+    }
     private void SetTeamColour()
     {
         outlineRenderer.color = GameManager.Singleton.teamColours[Team];
@@ -71,20 +76,20 @@ public class Planet : MonoBehaviour, ITeam
     }
     private float PlanetDamage(FlockAgent[] flockAgents)
     {
-        if (MaxHealth <= 0)
+        if (maxHealth <= 0)
         {
             Debug.LogError("Max health is or below 0");
         }
         if (flockAgents.Length == 0)
         {
-            return (50.0f / MaxHealth);
+            return (50.0f / maxHealth);
         }
         float orbitingValue = 0;//negative is enemy forces, positive is friendly
         for (int i = 0; i < flockAgents.Length; i++)
         {
             orbitingValue += flockAgents[i].Team == Team ? 0.5f : -0.25f;
         }
-        orbitingValue = Mathf.Clamp(orbitingValue, -10.0f, 1.0f) * (50.0f / MaxHealth);
+        orbitingValue = Mathf.Clamp(orbitingValue, -10.0f, 1.0f) * (50.0f / maxHealth);
         return orbitingValue;
     }
     public void AddBuilding(Building building)
