@@ -31,7 +31,6 @@ public class UIManager : MonoBehaviour
     SpriteRenderer buildingZoneRenderer;
     Building selectedBuilding;
     SpriteRenderer lastCollidedBuildingChildRenderer;
-    private bool possiblePlacement = false;
     private bool isTryingToPlace = false;
     public static bool multiplePlace = false;
     public static bool isHoveringOverUI = false;
@@ -59,26 +58,22 @@ public class UIManager : MonoBehaviour
         if (ClosestPlanet(mousePosition, out Planet planet))
         {
             IPlanetAngle placable = selectedBuilding;
-            placable.SetEdgeAngle(buildingZoneRenderer.transform.lossyScale.x / 0.5f, planet.Radius);
+            placable.SetEdgeAngle(buildingZoneRenderer.transform.lossyScale.x / 0.5f, planet.Diameter);
             Vector3 buildingPositionFromPlanet = (mousePosition - planet.transform.position).normalized * planet.ZoneDistanceFromPlanetCentre(selectedBuilding.transform.lossyScale.x);
             buildingZoneRenderer.transform.position = planet.transform.position + buildingPositionFromPlanet;
             buildingZoneRenderer.transform.rotation = Quaternion.LookRotation(Vector3.forward, buildingPositionFromPlanet);
             if (AnotherBuildingIsColliding(selectedBuilding,planet, out lastCollidedBuildingChildRenderer))
             {
                 lastCollidedBuildingChildRenderer.color = halfred;
-                possiblePlacement = false;
                 return;
             }
             if (!selectedBuilding.ResourceCheck(planet))
             {
-                possiblePlacement = false;
                 return;
             }
-            possiblePlacement = true;
             TryPlace(planet);
             return;
         }
-        possiblePlacement = false;
         buildingZoneRenderer.transform.position = mousePosition;
     }
     public static void TogglePause()
@@ -139,20 +134,13 @@ public class UIManager : MonoBehaviour
         {
             return;
         }
-        if (!possiblePlacement)
-        {
-            return;
-        }
         if (isHoveringOverUI)
         {
             SelectBuilding(null);
             return;
         }
-        if (possiblePlacement)
-        {
-            PlaceBuilding(planet);
-            return;
-        }
+        PlaceBuilding(planet);
+        return;
     }
     private bool ClosestPlanet(Vector3 position, out Planet planet)
     {

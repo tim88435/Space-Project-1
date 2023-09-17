@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿/*
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
-/*
 namespace InfallibleCode.Completed//TODO: add this to the ships
 {
     public class BuildingManager : MonoBehaviour

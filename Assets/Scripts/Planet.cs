@@ -6,10 +6,11 @@ using System.Linq;
 [SelectionBase]
 public class Planet : MonoBehaviour, ITeam, IHoverable
 {
+    public static List<Planet> instances = new List<Planet>();
     public int Team { get; set; } = 0;
     private float health = 100f;
     private float maxHealth = 100f;
-    public float Radius { get { return transform.lossyScale.x; } }
+    public float Diameter { get { return transform.lossyScale.x; } }
 
     public string Name { get { return ""; } }
 
@@ -26,6 +27,11 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         {
             Debug.LogWarning($"Outline renderer not attached to {gameObject.name}");
         }
+        instances.Add(this);
+    }
+    private void OnDisable()
+    {
+        instances.Remove(this);
     }
     private void Start()
     {
@@ -100,10 +106,10 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         }
         buildings.Add(building);
     }
-    public bool BuildingsIntersecting(Building building, out Building[] buildings)
+    public bool BuildingsIntersecting(Building buildingToCheck, out Building[] buildingsCollidered)
     {
-        buildings = this.buildings.Where(x => ((IPlanetAngle)x).IsIntersecting(building)).ToArray();
-        return buildings.Length > 0;
+        buildingsCollidered = buildings.Where(x => ((IPlanetAngle)x).IsIntersecting(buildingToCheck)).ToArray();
+        return buildingsCollidered.Length > 0;
     }
     private void SetResources()
     {
@@ -111,7 +117,7 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         {
             return;
         }
-        resources = new ResourceSource[(int)(Radius / 1.5f)];
+        resources = new ResourceSource[(int)(Diameter / 1.5f)];
         for (int i = 0; i < resources.Length; i++)
         {
             GameManager.ResourceData resourceData = GameManager.Singleton.resourceData[Random.Range(0, GameManager.Singleton.resourceData.Length)];
@@ -130,7 +136,7 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
                     resource.transform.parent = transform;
                     resources[i] = resource;
                     IPlanetAngle placable = resource;
-                    placable.SetEdgeAngle(resource.transform.lossyScale.x / 0.5f, Radius);
+                    placable.SetEdgeAngle(resource.transform.lossyScale.x / 0.5f, Diameter);
                     break;
                 }
             }
@@ -138,7 +144,7 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
     }
     public float ZoneDistanceFromPlanetCentre(float width)//TODO: fix distance
     {
-        return Mathf.Sqrt((Radius * Radius - width * width) / 4.0f) + width * 0.5f - 0.02f;
+        return Mathf.Sqrt((Diameter * Diameter - width * width) / 4.0f) + width * 0.5f - 0.02f;
     }
     private void SetTeam()
     {

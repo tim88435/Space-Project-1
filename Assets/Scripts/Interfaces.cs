@@ -91,10 +91,14 @@ namespace Custom.Interfaces
     {
         string Name { get; }
         string Description { get; }
-        string GetHoverText()
+        string GetHoverText()// TODO: test this
         {
             string a = $"   <b>{Name}</b>\n";//three spaces for mouse
             a += Description;
+            if (a == "   <b></b>\n")
+            {
+                //a = string.Empty;
+            }
             return a;
         }
     }
