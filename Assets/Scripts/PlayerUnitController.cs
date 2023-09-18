@@ -28,8 +28,8 @@ public class PlayerUnitController : MonoBehaviour
             }
         }
     }
-    [SerializeField] private Image selectionBox;
-    private Canvas canvas; // for scale factor
+    private Image selectionBox;
+    private Canvas canvas;
     //both are lists because stuff can die
     public List<FlockAgent> selected = new List<FlockAgent>();
     public List<FlockAgent> finalSelected = new List<FlockAgent>();
@@ -50,6 +50,7 @@ public class PlayerUnitController : MonoBehaviour
     private void Start()
     {
         if (healthBar == null) { healthBar = Instantiate(GameManager.prefabList.healthBarPrefab).GetComponent<HealthBar>(); }
+        if (selectionBox == null) { selectionBox = Instantiate(GameManager.prefabList.selectionBoxPrefab, canvas.transform).GetComponent<Image>(); }
     }
     private void Update()
     {

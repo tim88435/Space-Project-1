@@ -19,8 +19,7 @@ public abstract class Building : MonoBehaviour, IHoverable, IPlanetAngle, ITeam
     {
         HoverObject.hoveredOver.Remove(this);
     }
-
-    public virtual bool ResourceCheck(Planet planet)
+    public virtual bool ResourceCheck(Planet planet, Quaternion rotation, float width)
     {
         return true;
     }

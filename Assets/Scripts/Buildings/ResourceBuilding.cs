@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Custom.Interfaces;
-using System.Numerics;
 
 public class ResourceBuilding : Building
 {
@@ -13,11 +12,12 @@ public class ResourceBuilding : Building
     {
         type.Value += Time.deltaTime * baseAmount;
     }
-    public override bool ResourceCheck(Planet planet)
+    public override bool ResourceCheck(Planet planet, Quaternion rotation, float width)
     {
+        edgeAngle = Mathf.Asin(width / 2 / (planet.Diameter / 2)) * Mathf.Rad2Deg;
         return planet.resources
             .Where(x => x != null)
-            .Where(x => ((IPlanetAngle)this).IsIntersecting(x))
+            .Where(x => ((IPlanetAngle)x).IsIntersecting(rotation, edgeAngle))
             .Any(x => x.type == type);
     }
 }

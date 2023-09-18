@@ -6,7 +6,6 @@ using System.Linq;
 [SelectionBase]
 public class Planet : MonoBehaviour, ITeam, IHoverable
 {
-    public static List<Planet> instances = new List<Planet>();
     public int Team { get; set; } = 0;
     private float health = 100f;
     private float maxHealth = 100f;
@@ -27,11 +26,6 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         {
             Debug.LogWarning($"Outline renderer not attached to {gameObject.name}");
         }
-        instances.Add(this);
-    }
-    private void OnDisable()
-    {
-        instances.Remove(this);
     }
     private void Start()
     {
@@ -111,6 +105,11 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         buildingsCollidered = buildings.Where(x => ((IPlanetAngle)x).IsIntersecting(buildingToCheck)).ToArray();
         return buildingsCollidered.Length > 0;
     }
+    public bool AnythingIntersecting(Quaternion rotation, float width)
+    {
+        float edgeAngle = Mathf.Asin(width / 2 / (Diameter / 2)) * Mathf.Rad2Deg;
+        return buildings.Any(x => ((IPlanetAngle)x).IsIntersecting(rotation, width));
+    }
     private void SetResources()
     {
         if (GameManager.Singleton.resourceData.Length == 0)
@@ -121,11 +120,11 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         for (int i = 0; i < resources.Length; i++)
         {
             GameManager.ResourceData resourceData = GameManager.Singleton.resourceData[Random.Range(0, GameManager.Singleton.resourceData.Length)];
-            float width = resourceData.resourcePrefab.transform.lossyScale.x;
+            float edgeAngle = Mathf.Asin(resourceData.resourcePrefab.transform.lossyScale.x / 2 / (Diameter / 2)) * Mathf.Rad2Deg;
             for (int t = 0; t < 10; t++)//try 10 times
             {
                 Quaternion randomRotation = Quaternion.Euler(0, 0, Random.Range(0f, 360f));
-                if (resources.Where(x => x != null).Any(x => ((IPlanetAngle)x).IsIntersecting(randomRotation, width)))
+                if (resources.Where(x => x != null).Any(x => ((IPlanetAngle)x).IsIntersecting(randomRotation, edgeAngle)))
                 {
                     continue;
                 }
@@ -150,9 +149,17 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
     {
         FlockAgent[] shipsInRange = OrbitingShips();
         if (shipsInRange.Length == 0) return;
-        Team = shipsInRange//give to team with highest ships in orbit
+        int newTeamID = shipsInRange//give to team with highest ships in orbit
                 .GroupBy(i => i.Team)
                 .OrderByDescending(grp => grp.Count())
                 .First().Key;
+        if (newTeamID == Team)
+        {
+            return;
+        }
+        ITeam team = this;
+        team.AI?.ownedPlanets.Remove(this);
+        Team = newTeamID;
+        team.AI?.ownedPlanets.Insert(0, this);
     }
 }

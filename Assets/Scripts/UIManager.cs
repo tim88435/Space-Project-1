@@ -67,7 +67,7 @@ public class UIManager : MonoBehaviour
                 lastCollidedBuildingChildRenderer.color = halfred;
                 return;
             }
-            if (!selectedBuilding.ResourceCheck(planet))
+            if (!selectedBuilding.ResourceCheck(planet, selectedBuilding.transform.rotation, selectedBuilding.transform.localScale.x))
             {
                 return;
             }

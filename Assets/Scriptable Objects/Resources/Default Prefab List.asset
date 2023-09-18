@@ -15,3 +15,8 @@ MonoBehaviour:
   healthBarPrefab: {fileID: 2208598402774641264, guid: 6ffb82223076b734cac0d7c1049b45e7, type: 3}
   circlePrefab: {fileID: 290883871419986044, guid: 738a468d3c014f849b91dbe27bffce66, type: 3}
   shipPrefab: {fileID: 564692489642200261, guid: 37d7cee443ad4fd4b8a1c156aea24b60, type: 3}
+  selectionBoxPrefab: {fileID: 3385508661869456019, guid: 3ae0602518ed4eb4db95dfb73225633c, type: 3}
+  buildingZones:
+  - {fileID: 11400000, guid: 25a2e26042a7bf6499eccb16208fafd9, type: 2}
+  - {fileID: 11400000, guid: 08802545f4a3fa94eaa205ed286d5bae, type: 2}
+  - {fileID: 11400000, guid: b061973b4ddfb2a47bbef6beef5ef71f, type: 2}

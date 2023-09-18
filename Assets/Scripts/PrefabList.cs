@@ -7,4 +7,6 @@ public class PrefabList : ScriptableObject
     public GameObject healthBarPrefab;
     public GameObject circlePrefab;
     public GameObject shipPrefab;
+    public GameObject selectionBoxPrefab;
+    public BuildingZone[] buildingZones = new BuildingZone[3];
 }

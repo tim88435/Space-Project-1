@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,6 +10,17 @@ namespace Custom.Interfaces
     public interface ITeam
     {
         public int Team { get; set; }
+        public TeamAI AI
+        {
+            get
+            {
+                if (TeamAI.AIList.Keys.Contains(Team))
+                {
+                    return TeamAI.AIList[Team];
+                }
+                return null;
+            }
+        }
     }
     public interface IColourable : ITeam
     {
@@ -93,11 +105,10 @@ namespace Custom.Interfaces
         string Description { get; }
         string GetHoverText()// TODO: test this
         {
-            string a = $"   <b>{Name}</b>\n";//three spaces for mouse
-            a += Description;
+            string a = $"   <b>{Name}</b>\n{Description}";//three spaces for mouse
             if (a == "   <b></b>\n")
             {
-                //a = string.Empty;
+                a = string.Empty;
             }
             return a;
         }
