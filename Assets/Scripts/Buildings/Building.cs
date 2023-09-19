@@ -10,7 +10,7 @@ public abstract class Building : MonoBehaviour, IHoverable, IPlanetAngle, ITeam
     public string Name { get; }
 
     public string Description { get; }
-    public int Team { get; set; } = 0;
+    public int TeamID { get; set; } = 0;
     public void OnMouseEnter()
     {
         HoverObject.hoveredOver.Add(this);

@@ -166,7 +166,7 @@ public class UIManager : MonoBehaviour
         {
             return false;
         }
-        if (planet.Team != 1)
+        if (planet.TeamID != 1)
         {
             return false;
         }
@@ -181,7 +181,7 @@ public class UIManager : MonoBehaviour
         //building stuff
         planet.AddBuilding(selectedBuilding);
         selectedBuilding.enabled = true;
-        selectedBuilding.Team = 1;
+        selectedBuilding.TeamID = 1;
         selectedBuilding.transform.parent = planet.transform;
         buildingZoneRenderer.color = GameManager.Singleton.teamColours[1];
         Transform previousBuildingTransform = buildingZoneRenderer.transform;

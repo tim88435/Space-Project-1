@@ -42,7 +42,7 @@ public class DestroyBuilding : MonoBehaviour, IHoverableUI
         Building selectedBuilding = Physics2D.OverlapPointAll(CameraControl.Singleton.MouseToWorldPosition())
             .Select(x => x.GetComponent<Building>())
             .Where(x => x != null)
-            .FirstOrDefault(x => x.Team == 1);
+            .FirstOrDefault(x => x.TeamID == 1);
         if (selectedBuilding == null)
         {
             Name = "Destroy Target Building";
@@ -61,7 +61,7 @@ public class DestroyBuilding : MonoBehaviour, IHoverableUI
         Building selectedBuilding = Physics2D.OverlapPointAll(CameraControl.Singleton.MouseToWorldPosition())
             .Select(x => x.GetComponent<Building>())
             .Where(x => x != null)
-            .FirstOrDefault(x => x.Team == 1);
+            .FirstOrDefault(x => x.TeamID == 1);
         if (selectedBuilding == null)
         {
             if (!UIManager.multiplePlace)

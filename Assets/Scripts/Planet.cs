@@ -6,7 +6,7 @@ using System.Linq;
 [SelectionBase]
 public class Planet : MonoBehaviour, ITeam, IHoverable
 {
-    public int Team { get; set; } = 0;
+    public int TeamID { get; set; } = 0;
     private float health = 100f;
     private float maxHealth = 100f;
     public float Diameter { get { return transform.lossyScale.x; } }
@@ -46,13 +46,13 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         health = Mathf.Clamp(health + healthChange * Time.deltaTime, 0.0f, maxHealth);
         if (health == 0)
         {
-            Team = shipsInRange//give to team with highest ships in orbit
-                .GroupBy(i => i.Team)
+            TeamID = shipsInRange//give to team with highest ships in orbit
+                .GroupBy(i => i.TeamID)
                 .OrderByDescending(grp => grp.Count())
                 .First().Key;
             SetTeamColour();
             Instantiate(GameManager.prefabList.circlePrefab, transform.position, Quaternion.identity, transform)
-                .GetComponent<SpriteRenderer>().color = GameManager.Singleton.TeamToColour(Team);
+                .GetComponent<SpriteRenderer>().color = GameManager.Singleton.TeamToColour(TeamID);
         }
     }
     public void OnMouseEnter()
@@ -65,7 +65,7 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
     }
     private void SetTeamColour()
     {
-        outlineRenderer.color = GameManager.Singleton.teamColours[Team];
+        outlineRenderer.color = GameManager.Singleton.teamColours[TeamID];
     }
     private FlockAgent[] OrbitingShips()
     {
@@ -87,7 +87,7 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         float orbitingValue = 0;//negative is enemy forces, positive is friendly
         for (int i = 0; i < flockAgents.Length; i++)
         {
-            orbitingValue += flockAgents[i].Team == Team ? 0.5f : -0.25f;
+            orbitingValue += flockAgents[i].TeamID == TeamID ? 0.5f : -0.25f;
         }
         orbitingValue = Mathf.Clamp(orbitingValue, -10.0f, 1.0f) * (50.0f / maxHealth);
         return orbitingValue;
@@ -150,16 +150,16 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         FlockAgent[] shipsInRange = OrbitingShips();
         if (shipsInRange.Length == 0) return;
         int newTeamID = shipsInRange//give to team with highest ships in orbit
-                .GroupBy(i => i.Team)
+                .GroupBy(i => i.TeamID)
                 .OrderByDescending(grp => grp.Count())
                 .First().Key;
-        if (newTeamID == Team)
+        if (newTeamID == TeamID)
         {
             return;
         }
         ITeam team = this;
         team.AI?.ownedPlanets.Remove(this);
-        Team = newTeamID;
+        TeamID = newTeamID;
         team.AI?.ownedPlanets.Insert(0, this);
     }
 }

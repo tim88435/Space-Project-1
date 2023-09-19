@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Resources/New Resource")]
 public class Resource : ScriptableObject
 {
+
     [SerializeField] private float _max = 9999.0f;
     public float Max
     {
@@ -28,4 +29,5 @@ public class Resource : ScriptableObject
     {
         get => _description;
     }
+
 }

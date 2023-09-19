@@ -6,11 +6,11 @@ using Custom.Interfaces;
 
 public class ResourceBuilding : Building
 {
-    [SerializeField] Resource type;
+    [SerializeField] public Resource resourceType;
     [SerializeField] private float baseAmount = 0.1f;
     private void Update()
     {
-        type.Value += Time.deltaTime * baseAmount;
+        resourceType.Value += Time.deltaTime * baseAmount;
     }
     public override bool ResourceCheck(Planet planet, Quaternion rotation, float width)
     {
@@ -18,6 +18,6 @@ public class ResourceBuilding : Building
         return planet.resources
             .Where(x => x != null)
             .Where(x => ((IPlanetAngle)x).IsIntersecting(rotation, edgeAngle))
-            .Any(x => x.type == type);
+            .Any(x => x.type == resourceType);
     }
 }

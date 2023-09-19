@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 
 public abstract class AIAction
 {
+    public float weight;
     public abstract void Execute();
 }
 public class AttackAction : AIAction

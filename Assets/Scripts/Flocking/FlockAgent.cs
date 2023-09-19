@@ -15,13 +15,13 @@ public class FlockAgent : MonoBehaviour, IColourable, IDamagable, IWeapon
     [System.NonSerialized] public Vector3 targetDestination = Vector3.back;
     private Vector2 velocity = Vector2.zero;
     private HealthBar healthBar;
-    public int Team
+    public int TeamID
     {
         get { return _team; }
         set
         {
             _team = value;
-            gameObject.layer = 6 + ((ITeam)this).Team;
+            gameObject.layer = 6 + ((ITeam)this).TeamID;
         }
     }
     public float Health { get; set; } = 10f;
@@ -34,7 +34,7 @@ public class FlockAgent : MonoBehaviour, IColourable, IDamagable, IWeapon
 
     private void OnEnable()
     {
-        Team = Team;//set layer
+        TeamID = TeamID;//set layer
         ships.Add(GetComponent<Collider2D>(), this);
         ((IColourable)this).SpriteRenderer = GetComponent<SpriteRenderer>();
     }
@@ -52,7 +52,7 @@ public class FlockAgent : MonoBehaviour, IColourable, IDamagable, IWeapon
     }
     private void Start()
     {
-        ((IColourable)this).SetColour(GameManager.Singleton.teamColours[Team]);
+        ((IColourable)this).SetColour(GameManager.Singleton.teamColours[TeamID]);
         lookEndDirection = transform.up;
         if (targetDestination == Vector3.back)
         {
@@ -70,11 +70,11 @@ public class FlockAgent : MonoBehaviour, IColourable, IDamagable, IWeapon
             .Select(y => ships[y]);
         if (NextAttackTime < Time.time)
         {
-            AttackAgent(shipsInRange.FirstOrDefault(x => (Vector3.Distance(transform.position, x.transform.position) < Range) && x.Team != Team));
+            AttackAgent(shipsInRange.FirstOrDefault(x => (Vector3.Distance(transform.position, x.transform.position) < Range) && x.TeamID != TeamID));
         }
         if (dogFighting)
         {
-            if (shipsInRange.Any(x => x.Team != Team))
+            if (shipsInRange.Any(x => x.TeamID != TeamID))
             {
                 DogFightVelocity(Range * 2, shipsInRange);
                 MoveForward();
@@ -108,8 +108,8 @@ public class FlockAgent : MonoBehaviour, IColourable, IDamagable, IWeapon
     private void DrawLaser(Vector3 hitPosition)
     {
         LineRenderer lineRenderer = new GameObject().AddComponent<LineRenderer>();
-        lineRenderer.startColor = GameManager.Singleton.teamColours[Team];
-        lineRenderer.endColor = GameManager.Singleton.teamColours[Team];
+        lineRenderer.startColor = GameManager.Singleton.teamColours[TeamID];
+        lineRenderer.endColor = GameManager.Singleton.teamColours[TeamID];
         lineRenderer.startWidth = 0.05f;
         lineRenderer.endWidth = 0.05f;
         lineRenderer.material = GameManager.Singleton.defaultLineMaterial;
@@ -122,8 +122,8 @@ public class FlockAgent : MonoBehaviour, IColourable, IDamagable, IWeapon
         Vector2 positionMove =
             GameManager.Singleton.flockBehaviour.CalculateMove(
             this,
-            shipsInRange.Where(x => x.Team == Team).ToArray(),
-            shipsInRange.Where(x => x.Team != Team).ToArray()
+            shipsInRange.Where(x => x.TeamID == TeamID).ToArray(),
+            shipsInRange.Where(x => x.TeamID != TeamID).ToArray()
             );
         float blend = 1 - Mathf.Pow(0.5f, Time.deltaTime);
         velocity = Vector2.Lerp(velocity, positionMove.normalized * 3.0f, blend);

@@ -185,7 +185,7 @@ public class PlayerUnitController : MonoBehaviour
             {
                 continue;
             }
-            if (FlockAgent.ships[selectedColliders2D[i]].Team == 1)
+            if (FlockAgent.ships[selectedColliders2D[i]].TeamID == 1)
             {
                 continue;
             }

@@ -9,16 +9,12 @@ namespace Custom.Interfaces
 {
     public interface ITeam
     {
-        public int Team { get; set; }
+        public Team Team { get; set; }
         public TeamAI AI
         {
             get
             {
-                if (TeamAI.AIList.Keys.Contains(Team))
-                {
-                    return TeamAI.AIList[Team];
-                }
-                return null;
+                return Team?.TeamAI;
             }
         }
     }

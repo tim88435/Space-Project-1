@@ -22,7 +22,7 @@ public class PlanetDefence : Building, IWeapon
         FlockAgent enemyShipInRange = Physics2D.OverlapCircleAll(transform.position, Range)
             .Where(x => FlockAgent.ships.ContainsKey(x))// && FlockAgent.ships[x].Team != Team &&)
             .Select(x => FlockAgent.ships[x])
-            .Where(x => x.Team != Team)
+            .Where(x => x.TeamID != TeamID)
             .Where(x => Vector3.Distance(x.transform.position, transform.position) < Range)
             .FirstOrDefault();
         if (enemyShipInRange == null)
@@ -41,8 +41,8 @@ public class PlanetDefence : Building, IWeapon
     private void DrawLaser(Vector3 hitPosition)
     {
         LineRenderer lineRenderer = new GameObject().AddComponent<LineRenderer>();
-        lineRenderer.startColor = GameManager.Singleton.teamColours[Team];
-        lineRenderer.endColor = GameManager.Singleton.teamColours[Team];
+        lineRenderer.startColor = GameManager.Singleton.teamColours[TeamID];
+        lineRenderer.endColor = GameManager.Singleton.teamColours[TeamID];
         lineRenderer.startWidth = 0.05f;
         lineRenderer.endWidth = 0.05f;
         lineRenderer.material = GameManager.Singleton.defaultLineMaterial;

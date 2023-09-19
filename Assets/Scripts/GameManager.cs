@@ -97,7 +97,7 @@ public class GameManager : MonoBehaviour
     */
     public Color TeamToColour(ITeam Team)
     {
-        return TeamToColour(Team.Team);
+        return TeamToColour(Team.TeamID);
     }
     public Color TeamToColour(int team)
     {

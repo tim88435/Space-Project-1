@@ -23,7 +23,7 @@ public class ShipyardBuilding : Building
             return;
         }
         FlockAgent newShip = Instantiate(GameManager.prefabList.shipPrefab, transform.position, Quaternion.identity).GetComponent<FlockAgent>();
-        newShip.Team = Team;
+        newShip.TeamID = TeamID;
         newShip.targetDestination = transform.parent.position;
         shipResource.Value -= requiredResourceAmount;
         DelayNextBuildTime();

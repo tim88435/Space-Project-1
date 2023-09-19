@@ -6,25 +6,28 @@ using UnityEngine;
 
 public class TeamAI : MonoBehaviour, ITeam
 {
-    public static Dictionary<int, TeamAI> AIList { get; private set; } = new Dictionary<int, TeamAI>();
-    public int Team { get; set; }
     public List<Planet> ownedPlanets = new List<Planet>();
     public List<FlockAgent> ownedShips = new List<FlockAgent>();
     private float actionTime = 0;
     [SerializeField] private float actionCooldownSeconds = 7.5f;
+    private int TeamID;
+
+    public Team Team
+    {
+        get
+        {
+
+            return null;
+        }
+        set
+        {
+
+        }
+    }
+
     private void Start()
     {
         actionTime = Time.time;
-        if (AIList.Keys.Contains(Team))
-        {
-            if (AIList[Team] != this)
-            {
-                Debug.LogWarning("Duplicate AI assinged to same team\nDeleting duplicate");
-                Destroy(this);
-                return;
-            }
-        }
-        AIList.Add(Team, this);
     }
     private void Update()
     {
@@ -35,10 +38,6 @@ public class TeamAI : MonoBehaviour, ITeam
         actionTime = GetNextActionTime();
         //try action
         AIAction[] aIActions = GetAllAIActions();
-    }
-    private void OnDestroy()
-    {
-        AIList.Remove(Team);
     }
     private float GetNextActionTime()
     {
@@ -89,6 +88,15 @@ public class TeamAI : MonoBehaviour, ITeam
             Vector3 buildingPosition = (rotation * Vector3.up - planet.transform.position).normalized * planet.ZoneDistanceFromPlanetCentre(buildingZone.prefab.transform.lossyScale.x);
             buildingPosition += planet.transform.position;
             aIAction = new BuildAction(buildingZone, planet, buildingPosition);
+
+            //weights
+            float weight = 1;
+            if (building is ResourceBuilding resourceBuilding)
+            {
+                weight = resourceBuilding.resourceType.Value;
+            }
+
+
             return true;
         }
         return false;
