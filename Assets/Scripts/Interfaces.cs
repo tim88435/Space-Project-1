@@ -9,12 +9,12 @@ namespace Custom.Interfaces
 {
     public interface ITeam
     {
-        public Team Team { get; set; }
+        public int TeamID { get; set; }
         public TeamAI AI
         {
             get
             {
-                return Team?.TeamAI;
+                return TeamAI.All.GetValueOrDefault(TeamID);
             }
         }
     }
@@ -107,6 +107,14 @@ namespace Custom.Interfaces
                 a = string.Empty;
             }
             return a;
+        }
+    }
+    public interface IResourceConteriner
+    {
+        public ResourceContainer Resources { get; }
+        public class ResourceContainer
+        {
+            public Resource Durasteel { get;}
         }
     }
 }

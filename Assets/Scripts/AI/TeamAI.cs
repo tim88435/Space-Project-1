@@ -4,30 +4,28 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class TeamAI : MonoBehaviour, ITeam
+public class TeamAI : MonoBehaviour, ITeam, IResourceConteriner
 {
+    public int TeamID { get; set; }
+    public static Dictionary<int , TeamAI> All = new Dictionary<int, TeamAI>();
     public List<Planet> ownedPlanets = new List<Planet>();
     public List<FlockAgent> ownedShips = new List<FlockAgent>();
     private float actionTime = 0;
     [SerializeField] private float actionCooldownSeconds = 7.5f;
-    private int TeamID;
-
-    public Team Team
-    {
-        get
-        {
-
-            return null;
-        }
-        set
-        {
-
-        }
-    }
-
+    public IResourceConteriner.ResourceContainer Resources { get; }
     private void Start()
     {
         actionTime = Time.time;
+        if (All.ContainsKey(TeamID))
+        {
+            if (All[TeamID] != this)
+            {
+                Debug.LogWarning($"TeamAI assinged to team {TeamID} already exists\nDeleting duplicate");
+                Destroy(this);
+                return;
+            }
+        }
+        All.Add(TeamID, this);
     }
     private void Update()
     {
@@ -38,6 +36,10 @@ public class TeamAI : MonoBehaviour, ITeam
         actionTime = GetNextActionTime();
         //try action
         AIAction[] aIActions = GetAllAIActions();
+    }
+    private void OnDestroy()
+    {
+        All.Remove(TeamID);
     }
     private float GetNextActionTime()
     {

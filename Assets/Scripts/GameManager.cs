@@ -31,7 +31,9 @@ public class GameManager : MonoBehaviour
         public GameObject resourcePrefab;
         [Range(0, 1)] public float chance;
     }
-    public static PrefabList prefabList;
+    [HideInInspector] public static PrefabList prefabList;
+    [SerializeField] private Resource[] _resourceList = new Resource[0];
+    public Resource[] ResourceList { get => _resourceList; private set => _resourceList = value; }
     public Color[] teamColours = new Color[0];
     public ResourceData[] resourceData;
     public Material defaultLineMaterial;
@@ -52,9 +54,6 @@ public class GameManager : MonoBehaviour
         {
             AllResources[i].Value = 5.0f;
         }
-    }
-    private void Update()
-    {
     }
     /*
     private bool GetHoveredHealthObjects(out ITeam[] teamObjects, out Transform[] transforms)
