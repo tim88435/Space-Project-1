@@ -1,3 +1,4 @@
+using Custom.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,7 @@ public class ShipyardBuilding : Building
 {
     private float nextShipBuildTime = 0.0f;
     [SerializeField] private float shipBuildCooldown = 30.0f;
-    [SerializeField] private Resource shipResource;
+    [SerializeField] private ResourceType shipResource;
     [SerializeField] private float requiredResourceAmount = 10f;
     private void Start()
     {
@@ -14,7 +15,7 @@ public class ShipyardBuilding : Building
     }
     private void Update()
     {
-        if (shipResource.Value < requiredResourceAmount)
+        if (((ITeam)this).Resources[shipResource] < requiredResourceAmount)
         {
             DelayNextBuildTime();
         }
@@ -25,7 +26,7 @@ public class ShipyardBuilding : Building
         FlockAgent newShip = Instantiate(GameManager.prefabList.shipPrefab, transform.position, Quaternion.identity).GetComponent<FlockAgent>();
         newShip.TeamID = TeamID;
         newShip.targetDestination = transform.parent.position;
-        shipResource.Value -= requiredResourceAmount;
+        ((ITeam)this).Resources[shipResource] -= requiredResourceAmount;
         DelayNextBuildTime();
     }
     private void DelayNextBuildTime()

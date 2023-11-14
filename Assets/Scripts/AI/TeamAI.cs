@@ -4,34 +4,46 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class TeamAI : MonoBehaviour, ITeam, IResourceConteriner
+public class TeamAI : MonoBehaviour, ITeamController
 {
     public int TeamID { get; set; }
-    public static Dictionary<int , TeamAI> All = new Dictionary<int, TeamAI>();
     public List<Planet> ownedPlanets = new List<Planet>();
     public List<FlockAgent> ownedShips = new List<FlockAgent>();
     private float actionTime = 0;
     [SerializeField] private float actionCooldownSeconds = 7.5f;
-    public IResourceConteriner.ResourceContainer Resources { get; }
+    private Dictionary<ResourceType, float> _resources;
+    public Dictionary<ResourceType, float> resources
+    {
+        get
+        {
+            if (_resources == null)
+            {
+                _resources = ResourceType.GetNewResourceList();
+            }
+            return _resources;
+        }
+        set { _resources = value; }
+    }
+
     private void Start()
     {
         actionTime = Time.time;
-        if (All.ContainsKey(TeamID))
+        if (ITeamController.teamControllers.ContainsKey(TeamID))
         {
-            if (All[TeamID] != this)
+            if (ITeamController.teamControllers[TeamID] != this)
             {
                 Debug.LogWarning($"TeamAI assinged to team {TeamID} already exists\nDeleting duplicate");
                 Destroy(this);
                 return;
             }
         }
-        All.Add(TeamID, this);
+        ITeamController.teamControllers.Add(TeamID, this);
     }
     private void Update()
     {
         if (actionTime > Time.time)
         {
-
+            return;
         }
         actionTime = GetNextActionTime();
         //try action
@@ -39,7 +51,7 @@ public class TeamAI : MonoBehaviour, ITeam, IResourceConteriner
     }
     private void OnDestroy()
     {
-        All.Remove(TeamID);
+        ITeamController.teamControllers.Remove(TeamID);
     }
     private float GetNextActionTime()
     {
@@ -95,7 +107,8 @@ public class TeamAI : MonoBehaviour, ITeam, IResourceConteriner
             float weight = 1;
             if (building is ResourceBuilding resourceBuilding)
             {
-                weight = resourceBuilding.resourceType.Value;
+                //TODO: weights
+                //weight = resourceBuilding.resourceType;
             }
 
 

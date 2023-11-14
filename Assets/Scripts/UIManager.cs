@@ -1,11 +1,9 @@
 using Custom.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -26,11 +24,13 @@ public class UIManager : MonoBehaviour
             }
         }
     }
-    public static bool BuildingSelected { get { return Singleton.buildingZoneSelected != null; } }
-    BuildingZone buildingZoneSelected;
-    SpriteRenderer buildingZoneRenderer;
-    Building selectedBuilding;
-    SpriteRenderer lastCollidedBuildingChildRenderer;
+    //selection
+    public static bool BuildingSelected { get { return Singleton._zoneSelected != null; } }
+    BuildingZone    _zoneSelected;//selected stuff
+    SpriteRenderer  _rendererSelected;//renderer to change the colour
+    Building        _buildingSelected;
+
+    SpriteRenderer lastCollidedBuildingChildRenderer;//building background
     private bool isTryingToPlace = false;
     public static bool multiplePlace = false;
     public static bool isHoveringOverUI = false;
@@ -50,31 +50,33 @@ public class UIManager : MonoBehaviour
         {
             lastCollidedBuildingChildRenderer.color = GameManager.Singleton.teamColours[1];
         }
-        if (buildingZoneRenderer == null)
+        if (_rendererSelected == null)
         {
             return;
         }
+        _rendererSelected.color = halfred;
         Vector3 mousePosition = CameraControl.Singleton.MouseToWorldPosition();
-        if (ClosestPlanet(mousePosition, out Planet planet))
+        if (!GetClosestPlanet(mousePosition, out Planet planet))
         {
-            IPlanetAngle placable = selectedBuilding;
-            placable.SetEdgeAngle(buildingZoneRenderer.transform.lossyScale.x / 0.5f, planet.Diameter);
-            Vector3 buildingPositionFromPlanet = (mousePosition - planet.transform.position).normalized * planet.ZoneDistanceFromPlanetCentre(selectedBuilding.transform.lossyScale.x);
-            buildingZoneRenderer.transform.position = planet.transform.position + buildingPositionFromPlanet;
-            buildingZoneRenderer.transform.rotation = Quaternion.LookRotation(Vector3.forward, buildingPositionFromPlanet);
-            if (AnotherBuildingIsColliding(selectedBuilding,planet, out lastCollidedBuildingChildRenderer))
-            {
-                lastCollidedBuildingChildRenderer.color = halfred;
-                return;
-            }
-            if (!selectedBuilding.ResourceCheck(planet, selectedBuilding.transform.rotation, selectedBuilding.transform.localScale.x))
-            {
-                return;
-            }
-            TryPlace(planet);
+            _rendererSelected.transform.position = mousePosition;
             return;
         }
-        buildingZoneRenderer.transform.position = mousePosition;
+        IPlanetAngle placable = _buildingSelected;
+        placable.SetEdgeAngle(_rendererSelected.transform.lossyScale.x / 0.5f, planet.Diameter);
+        Vector3 buildingPositionFromPlanet = (mousePosition - planet.transform.position).normalized * planet.ZoneDistanceFromPlanetCentre(_buildingSelected.transform.lossyScale.x);
+        _rendererSelected.transform.position = planet.transform.position + buildingPositionFromPlanet;
+        _rendererSelected.transform.rotation = Quaternion.LookRotation(Vector3.forward, buildingPositionFromPlanet);
+        if (AnotherBuildingIsColliding(_buildingSelected, planet, out lastCollidedBuildingChildRenderer))
+        {
+            lastCollidedBuildingChildRenderer.color = halfred;
+            return;
+        }
+        if (!_buildingSelected.ResourceCheck(planet, _buildingSelected.transform.rotation, _buildingSelected.transform.localScale.x))
+        {
+            return;
+        }
+        _rendererSelected.color = GameManager.Singleton.teamColours[1];
+        TryPlace(planet);
     }
     public static void TogglePause()
     {
@@ -89,22 +91,22 @@ public class UIManager : MonoBehaviour
     }
     public void SelectBuilding(BuildingZone buildingZone)
     {
-        if (buildingZoneRenderer != null)
+        if (_rendererSelected != null)
         {
-            Destroy(buildingZoneRenderer.gameObject);
+            Destroy(_rendererSelected.gameObject);
         }
-        buildingZoneSelected = buildingZone;
+        _zoneSelected = buildingZone;
         if (buildingZone != null)
         {
-            buildingZoneRenderer = Instantiate(buildingZone.prefab).GetComponent<SpriteRenderer>();
-            buildingZoneRenderer.name = buildingZone.name;
-            selectedBuilding = buildingZoneRenderer.GetComponent<Building>();
+            _rendererSelected = Instantiate(buildingZone.prefab).GetComponent<SpriteRenderer>();
+            _rendererSelected.name = buildingZone.name;
+            _buildingSelected = _rendererSelected.GetComponent<Building>();
         }
         else
         {
-            if (buildingZoneRenderer != null)
+            if (_rendererSelected != null)
             {
-                buildingZoneRenderer.enabled = false;
+                _rendererSelected.enabled = false;
             }
         }
     }
@@ -115,18 +117,13 @@ public class UIManager : MonoBehaviour
             SelectBuilding(null);
         }
     }
-    private void OnDeselect(InputValue inputValue)
-    {
-        //if (!inputValue.isPressed) { return; }
-        //PlayerUnitController.DeselectAllFleets();
-    }
     private void OnSelect(InputValue inputValue)
     {
         isTryingToPlace = inputValue.isPressed;
     }
     private void TryPlace(Planet planet)
     {
-        if (buildingZoneSelected == null)
+        if (_zoneSelected == null)
         {
             return;
         }
@@ -142,10 +139,10 @@ public class UIManager : MonoBehaviour
         PlaceBuilding(planet);
         return;
     }
-    private bool ClosestPlanet(Vector3 position, out Planet planet)
+    private bool GetClosestPlanet(Vector3 position, out Planet planet, float radius = 3.0f)
     {
         planet = null;
-        Collider2D[] closeColliders = Physics2D.OverlapCircleAll(position, 3.0f);
+        Collider2D[] closeColliders = Physics2D.OverlapCircleAll(position, radius);
         float distance = float.MaxValue;
         for (int i = 0; i < closeColliders.Length; i++)
         {
@@ -174,26 +171,26 @@ public class UIManager : MonoBehaviour
     }
     private void PlaceBuilding(Planet planet)
     {
-        if (buildingZoneSelected == null)
+        if (_zoneSelected == null)
         {
             return;
         }
         //building stuff
-        planet.AddBuilding(selectedBuilding);
-        selectedBuilding.enabled = true;
-        selectedBuilding.TeamID = 1;
-        selectedBuilding.transform.parent = planet.transform;
-        buildingZoneRenderer.color = GameManager.Singleton.teamColours[1];
-        Transform previousBuildingTransform = buildingZoneRenderer.transform;
-        buildingZoneRenderer = null;
+        planet.AddBuilding(_buildingSelected);
+        _buildingSelected.enabled = true;
+        _buildingSelected.TeamID = 1;
+        _buildingSelected.transform.parent = planet.transform;
+        _rendererSelected.color = GameManager.Singleton.teamColours[1];
+        Transform previousBuildingTransform = _rendererSelected.transform;
+        _rendererSelected = null;
         if (!multiplePlace)
         {
-            buildingZoneSelected = null;
+            _zoneSelected = null;
             return;
         }
-        SelectBuilding(buildingZoneSelected);
-        buildingZoneRenderer.transform.position = previousBuildingTransform.position;
-        buildingZoneRenderer.transform.rotation = previousBuildingTransform.rotation;
+        SelectBuilding(_zoneSelected);
+        _rendererSelected.transform.position = previousBuildingTransform.position;
+        _rendererSelected.transform.rotation = previousBuildingTransform.rotation;
     }
     private bool AnotherBuildingIsColliding(Building building, Planet planet, out SpriteRenderer spriteRenderer)
     {

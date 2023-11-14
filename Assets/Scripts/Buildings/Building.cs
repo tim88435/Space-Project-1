@@ -7,9 +7,9 @@ public abstract class Building : MonoBehaviour, IHoverable, IPlanetAngle, ITeam
 {
     public float edgeAngle { get; set; } = 0.0f;
 
-    public string Name { get; }
+    public virtual string Name { get => name; }
 
-    public string Description { get; }
+    public virtual string Description { get => ""; }
     public int TeamID { get; set; } = 0;
     public void OnMouseEnter()
     {

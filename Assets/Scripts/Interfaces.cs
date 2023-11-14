@@ -10,11 +10,23 @@ namespace Custom.Interfaces
     public interface ITeam
     {
         public int TeamID { get; set; }
-        public TeamAI AI
+        public ITeamController teamController
         {
             get
             {
-                return TeamAI.All.GetValueOrDefault(TeamID);
+                ITeamController.teamControllers.TryGetValue(TeamID, out ITeamController teamController);
+                return teamController;
+            }
+        }
+        public Dictionary<ResourceType, float> Resources
+        {
+            get
+            {
+                if (ITeamController.teamControllers.TryGetValue(TeamID, out ITeamController teamController))
+                {
+                    return teamController.resources;
+                }
+                return null;
             }
         }
     }
@@ -101,20 +113,15 @@ namespace Custom.Interfaces
         string Description { get; }
         string GetHoverText()// TODO: test this
         {
-            string a = $"   <b>{Name}</b>\n{Description}";//three spaces for mouse
-            if (a == "   <b></b>\n")
-            {
-                a = string.Empty;
-            }
+            string a = Name == string.Empty ? "" : $"<b>{ Name}</b>";
+            a += Description == string.Empty ? "" : $"\n{Description}";
+            a = a == string.Empty ? "" : $"   {a}";//three spaces for mouse
             return a;
         }
     }
-    public interface IResourceConteriner
+    public interface ITeamController : ITeam
     {
-        public ResourceContainer Resources { get; }
-        public class ResourceContainer
-        {
-            public Resource Durasteel { get;}
-        }
+        public static Dictionary<int, ITeamController> teamControllers = new Dictionary<int, ITeamController>();
+        public Dictionary<ResourceType, float> resources { get; set; }
     }
 }

@@ -32,8 +32,6 @@ public class GameManager : MonoBehaviour
         [Range(0, 1)] public float chance;
     }
     [HideInInspector] public static PrefabList prefabList;
-    [SerializeField] private Resource[] _resourceList = new Resource[0];
-    public Resource[] ResourceList { get => _resourceList; private set => _resourceList = value; }
     public Color[] teamColours = new Color[0];
     public ResourceData[] resourceData;
     public Material defaultLineMaterial;
@@ -49,11 +47,6 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 0.0f;
         Application.targetFrameRate = 60;
-        Resource[] AllResources = Resources.FindObjectsOfTypeAll<Resource>();
-        for (int i = 0; i < AllResources.Length; i++)
-        {
-            AllResources[i].Value = 5.0f;
-        }
     }
     /*
     private bool GetHoveredHealthObjects(out ITeam[] teamObjects, out Transform[] transforms)

@@ -8,12 +8,12 @@ using UnityEngine.UI;
 [SelectionBase]
 public class ResourceSource : MonoBehaviour, IPlanetAngle, IHoverable
 {
-    public Resource.Type type;
+    public ResourceType type;
     public float edgeAngle { get; set; } = 0.0f;
 
-    public string Name => type + " Source";
+    public string Name => type.name + " Source";
 
-    public string Description => type.Description;
+    public string Description => type.description;
     public void OnMouseEnter()
     {
         HoverObject.hoveredOver.Add(this);

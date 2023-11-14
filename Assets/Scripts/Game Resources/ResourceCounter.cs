@@ -1,16 +1,17 @@
 using Custom.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 [SelectionBase]
 public class ResourceCounter : MonoBehaviour, IHoverableUI
 {
     [SerializeField] private Text textComponent;
-    [SerializeField] private Resource type;
+    [SerializeField] private ResourceType type;
 
-    public string Name { get => type?.name ?? "Unnamed Resource"; }
-    public string Description { get => type?.Description ?? "Describled Resource"; }
+    public string Name { get => type?.name ?? "No Resource"; }
+    public string Description { get => type?.description ?? $"No Resource attached to {GetType().Name} on {gameObject.name}"; }
 
     private void OnEnable()
     {
@@ -39,6 +40,6 @@ public class ResourceCounter : MonoBehaviour, IHoverableUI
         {
             return;
         }
-        textComponent.text = ((int)type.Value).ToString();
+        textComponent.text = ((int)ITeamController.teamControllers[1].resources[type]).ToString();
     }
 }

@@ -1270,6 +1270,7 @@ GameObject:
   - component: {fileID: 360204017}
   - component: {fileID: 360204020}
   - component: {fileID: 360204022}
+  - component: {fileID: 360204023}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1451,6 +1452,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 360204012}
   m_CullTransparentMesh: 1
+--- !u!114 &360204023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 360204012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48763b7ce0e796941a933101a4c25f0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &397703095
 GameObject:
   m_ObjectHideFlags: 0
@@ -9265,7 +9278,7 @@ PrefabInstance:
     - target: {fileID: 5705560100220896808, guid: fb236a97b50d38344935baa216c91aef, type: 3}
       propertyPath: type
       value: 
-      objectReference: {fileID: 11400000, guid: 2120669f1b3b61c4f9f77acaaaa78229, type: 2}
+      objectReference: {fileID: 11400000, guid: c8be8875430559749942afd1f45e2993, type: 2}
     - target: {fileID: 6285394967350749322, guid: fb236a97b50d38344935baa216c91aef, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

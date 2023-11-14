@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Custom.Interfaces;
+using Unity.VisualScripting;
 
 public class ResourceBuilding : Building
 {
-    [SerializeField] public Resource resourceType;
+    [SerializeField] public ResourceType resourceType;
     [SerializeField] private float baseAmount = 0.1f;
     private void Update()
     {
-        resourceType.Value += Time.deltaTime * baseAmount;
+        ((ITeam)this).Resources[resourceType] += Time.deltaTime * baseAmount;
     }
     public override bool ResourceCheck(Planet planet, Quaternion rotation, float width)
     {

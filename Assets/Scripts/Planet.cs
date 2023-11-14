@@ -130,7 +130,7 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
                 }
                 else
                 {
-                    Vector3 buildingPositionFromPlanet = randomRotation * Vector3.up * (ZoneDistanceFromPlanetCentre(resourceData.resourcePrefab.transform.lossyScale.x));
+                    Vector3 buildingPositionFromPlanet = randomRotation * Vector3.up * ZoneDistanceFromPlanetCentre(resourceData.resourcePrefab.transform.lossyScale.x);
                     ResourceSource resource = Instantiate(resourceData.resourcePrefab, transform.position + buildingPositionFromPlanet, randomRotation).GetComponent<ResourceSource>();
                     resource.transform.parent = transform;
                     resources[i] = resource;
@@ -157,9 +157,27 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         {
             return;
         }
+        
         ITeam team = this;
-        team.AI?.ownedPlanets.Remove(this);
+        (team.teamController as TeamAI)?.ownedPlanets.Remove(this);
         TeamID = newTeamID;
-        team.AI?.ownedPlanets.Insert(0, this);
+        (team.teamController as TeamAI)?.ownedPlanets.Insert(0, this);
+    }
+    public Vector3 SnapToPoint(Vector3 inputPosition, float angleRequired,float distance)
+    {
+        //TODO: finish
+        //save vector3s to array for each planet
+        float requiredAngle = Quaternion.LookRotation(Vector3.forward, inputPosition - transform.position).eulerAngles.z;
+        Building building = 
+        buildings
+            .OrderBy(x => x.transform.rotation.eulerAngles.z)
+            .FirstOrDefault();
+        Building building2 =
+        buildings
+            .OrderBy(x => x.transform.rotation.eulerAngles.z)
+            .Reverse()
+            .FirstOrDefault();
+
+        return default;
     }
 }

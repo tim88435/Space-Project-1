@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Custom.Interfaces;
+using UnityEditor;
+using UnityEditor.VersionControl;
 
 namespace Custom.Extensions
 {
@@ -49,6 +51,24 @@ namespace Custom.Extensions
                 agent.ShowHealthBar(shouldShow);
             }
             return flockAgents;
+        }
+        public static List<T> FindAssetsByType<T>() where T : UnityEngine.Object
+        {
+            List<T> assets = new List<T>();
+
+            string[] guids = AssetDatabase.FindAssets("t:" + typeof(T).Name);
+
+            for (int i = 0; i < guids.Length; i++)
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
+                T asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
+
+                if (asset != null)
+                {
+                    assets.Add(asset);
+                }
+            }
+            return assets;
         }
     }
     public class GenericListComparer<T>
