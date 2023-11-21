@@ -113,7 +113,7 @@ namespace Custom.Interfaces
         string Description { get; }
         string GetHoverText()// TODO: test this
         {
-            string a = Name == string.Empty ? "" : $"<b>{ Name}</b>";
+            string a = Name == string.Empty ? "" : $"<b>{   Name}</b>";
             a += Description == string.Empty ? "" : $"\n{Description}";
             a = a == string.Empty ? "" : $"   {a}";//three spaces for mouse
             return a;
@@ -123,5 +123,15 @@ namespace Custom.Interfaces
     {
         public static Dictionary<int, ITeamController> teamControllers = new Dictionary<int, ITeamController>();
         public Dictionary<ResourceType, float> resources { get; set; }
+        public static Dictionary<ResourceType, float> GetNewResourceList()
+        {
+            Dictionary<ResourceType, float> newList = new Dictionary<ResourceType, float>();
+            ResourceType[] resourceTypes = Extensions.FindAssetsByType<ResourceType>().ToArray();
+            for (int i = 0; i < resourceTypes.Length; i++)
+            {
+                newList.Add(resourceTypes[i], 0);
+            }
+            return newList;
+        }
     }
 }

@@ -13,7 +13,7 @@ public class Player : MonoBehaviour, ITeamController
         {
             if (_resources == null)
             {
-                _resources = ResourceType.GetNewResourceList();
+                _resources = ITeamController.GetNewResourceList();
             }
             return _resources;
         }

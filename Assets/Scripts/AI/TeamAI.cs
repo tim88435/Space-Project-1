@@ -6,7 +6,8 @@ using UnityEngine;
 
 public class TeamAI : MonoBehaviour, ITeamController
 {
-    public int TeamID { get; set; }
+    [SerializeField] private int _teamID = 2;
+    public int TeamID { get => _teamID; set => _teamID = value; }
     public List<Planet> ownedPlanets = new List<Planet>();
     public List<FlockAgent> ownedShips = new List<FlockAgent>();
     private float actionTime = 0;
@@ -18,7 +19,7 @@ public class TeamAI : MonoBehaviour, ITeamController
         {
             if (_resources == null)
             {
-                _resources = ResourceType.GetNewResourceList();
+                _resources = ITeamController.GetNewResourceList();
             }
             return _resources;
         }

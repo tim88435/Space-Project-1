@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Custom.Interfaces;
 using UnityEditor;
-using UnityEditor.VersionControl;
 
-namespace Custom.Extensions
+namespace Custom
 {
     public static class Extensions
     {
@@ -70,13 +69,45 @@ namespace Custom.Extensions
             }
             return assets;
         }
-    }
-    public class GenericListComparer<T>
-    {
-        internal static bool Compare(List<T> firstCollection, List<T> secondCollection)
+        public static T AbsHighest<T>(params T[] input) where T : IConvertible
         {
-            return firstCollection.TrueForAll(secondCollection.Contains) &&
-                   secondCollection.TrueForAll(firstCollection.Contains);
+            if (input.Length == 0)
+            {
+                throw new InvalidOperationException("input is empty");
+            }
+            T highest = input[0];
+            float absHighestFloat = Convert.ToSingle(input[0]);
+            //starts from one!!
+            for (int i = 1; i < input.Length; i++)
+            {
+                float current = Mathf.Abs(Convert.ToSingle(input[i]));
+                if (absHighestFloat.CompareTo(current) < 0)
+                {
+                    highest = input[i];
+                    absHighestFloat = current;
+                }
+            }
+            return highest;
+        }
+        public static T AbsLowest<T>(params T[] input) where T : IConvertible
+        {
+            if (input.Length == 0)
+            {
+                throw new InvalidOperationException("input is empty");
+            }
+            T highest = input[0];
+            float absHighestFloat = Convert.ToSingle(input[0]);
+            //starts from one!!
+            for (int i = 1; i < input.Length; i++)
+            {
+                float current = Mathf.Abs(Convert.ToSingle(input[i]));
+                if (absHighestFloat.CompareTo(current) > 0)
+                {
+                    highest = input[i];
+                    absHighestFloat = current;
+                }
+            }
+            return highest;
         }
     }
 }

@@ -94,6 +94,10 @@ public class UIManager : MonoBehaviour
         if (_rendererSelected != null)
         {
             Destroy(_rendererSelected.gameObject);
+            if (_buildingSelected && HoverObject.hoveredOver.Contains(_buildingSelected))
+            {
+                HoverObject.hoveredOver.Remove(_buildingSelected);
+            }
         }
         _zoneSelected = buildingZone;
         if (buildingZone != null)

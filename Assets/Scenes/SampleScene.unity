@@ -1271,6 +1271,7 @@ GameObject:
   - component: {fileID: 360204020}
   - component: {fileID: 360204022}
   - component: {fileID: 360204023}
+  - component: {fileID: 360204024}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1464,6 +1465,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48763b7ce0e796941a933101a4c25f0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &360204024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 360204012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f48dae26f492ace4a86f8951a74089c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _teamID: 2
+  ownedPlanets: []
+  ownedShips: []
+  actionCooldownSeconds: 7.5
 --- !u!1 &397703095
 GameObject:
   m_ObjectHideFlags: 0

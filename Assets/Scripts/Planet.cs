@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Custom;
+
 [SelectionBase]
 public class Planet : MonoBehaviour, ITeam, IHoverable
 {
@@ -39,6 +41,7 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
     }
     private void Update()
     {
+        //Debug.Log(EmptySpaceAt(0, 10, out _));
         healthBar.gameObject.SetActive(health != maxHealth);
         healthBar.Set(health / maxHealth);
         FlockAgent[] shipsInRange = OrbitingShips();
@@ -179,5 +182,46 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
             .FirstOrDefault();
 
         return default;
+    }
+    public bool EmptySpaceAt(float desiredAngle, float edgeAngle, out float outAngle)
+    {
+        if (buildings.Count == 0)
+        {
+            outAngle = desiredAngle;
+            return true;
+        }
+        if (buildings.Count == 1)
+        {//may need to reverse
+            if (!IsWithin(buildings[0].transform.rotation.z + buildings[0].edgeAngle, buildings[0].transform.rotation.z - buildings[0].edgeAngle, desiredAngle))
+            {
+                outAngle = desiredAngle;
+                return true;
+            }
+            outAngle = buildings[0].transform.rotation.z + buildings[0].edgeAngle * (buildings[0].transform.rotation.z - desiredAngle > 0 ? 1 : -1);
+            return true;
+        }
+        for (int i = 0; i++ < buildings.Count;)
+        {
+            int j = i + 1 < buildings.Count ? i + 1 : 0;
+            float spaceAngle = SpaceBetween(buildings[i].transform.rotation.z + buildings[i].edgeAngle, buildings[i].transform.rotation.z + buildings[i].edgeAngle);
+            if (spaceAngle < edgeAngle * 2.0f)
+            {
+                continue;
+            }
+            outAngle = buildings[i].transform.rotation.z + buildings[i].edgeAngle + Mathf.Clamp(spaceAngle, 0, 0);//TODO: finish this
+            return true;
+        }
+        outAngle = default;
+        return false;
+    }
+    private bool IsWithin(float counterClockwise, float clockwise, float angle)
+    {
+        float differenceLeft = (angle - counterClockwise + 360) % 360;
+        float differenceRight = (clockwise - angle + 360) % 360;
+        return differenceLeft + differenceRight < 360;
+    }
+    private float SpaceBetween(float counterClockwise, float clockwise)
+    {
+        return (clockwise - counterClockwise + 360) % 360;
     }
 }

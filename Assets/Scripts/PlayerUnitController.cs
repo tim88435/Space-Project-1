@@ -4,10 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using Custom.Interfaces;
-using Custom.Extensions;
-using UnityEngine.EventSystems;
-using static UnityEngine.EventSystems.EventTrigger;
+using Custom;
 
 public class PlayerUnitController : MonoBehaviour
 {
