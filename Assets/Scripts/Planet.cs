@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Custom;
+using UnityEngine.UIElements;
+using Unity.VisualScripting;
 
 [SelectionBase]
 public class Planet : MonoBehaviour, ITeam, IHoverable
@@ -200,18 +202,29 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
             outAngle = buildings[0].transform.rotation.z + buildings[0].edgeAngle * (buildings[0].transform.rotation.z - desiredAngle > 0 ? 1 : -1);
             return true;
         }
+        outAngle = desiredAngle + 180.0f % 360;//TODO: change this?
         for (int i = 0; i++ < buildings.Count;)
         {
             int j = i + 1 < buildings.Count ? i + 1 : 0;
-            float spaceAngle = SpaceBetween(buildings[i].transform.rotation.z + buildings[i].edgeAngle, buildings[i].transform.rotation.z + buildings[i].edgeAngle);
-            if (spaceAngle < edgeAngle * 2.0f)
+            (float, float) angles = (buildings[i].transform.rotation.z + buildings[i].edgeAngle, buildings[i].transform.rotation.z + buildings[i].edgeAngle);
+            if (SpaceBetween(angles.Item1, angles.Item2) < edgeAngle * 2.0f)
             {
                 continue;
             }
-            outAngle = buildings[i].transform.rotation.z + buildings[i].edgeAngle + Mathf.Clamp(spaceAngle, 0, 0);//TODO: finish this
+            IEnumerable<int> a = new int[0];
+            
+            float possibleAngle = Mathf.Clamp(desiredAngle, angles.Item1, angles.Item2);
+            if (possibleAngle == desiredAngle)
+            {
+                outAngle = desiredAngle;
+                return true;
+            }
+            if ((possibleAngle + 180.0f + 360.0f) % 360.0f - 180.0f < 1.0f)//TODO: finish this
+            {
+
+            }
             return true;
         }
-        outAngle = default;
         return false;
     }
     private bool IsWithin(float counterClockwise, float clockwise, float angle)
@@ -223,5 +236,23 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
     private float SpaceBetween(float counterClockwise, float clockwise)
     {
         return (clockwise - counterClockwise + 360) % 360;
+    }
+    private void Foo()
+    {
+        int a = 1;
+
+        if (a > Bar())
+        {
+            a = Bar();
+        }
+
+        a = a > Bar() ? Bar() : a;
+
+        int b = Bar();
+        a = a > b ? b : a;
+    }
+    private int Bar()
+    {
+        return 2;
     }
 }
