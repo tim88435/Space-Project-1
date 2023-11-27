@@ -189,18 +189,19 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         for (int i = 0; i < buildings.Count; i++)
         {
             int j = i + 1 < buildings.Count ? i + 1 : 0;
-            //Debug.Log($"i = {i}   j = {j} buildings.Count = {buildings.Count}");
             (float, float) angles = (buildings[i].transform.rotation.eulerAngles.z + buildings[i].edgeAngle, buildings[j].transform.rotation.eulerAngles.z - buildings[j].edgeAngle);
-            if (SpaceBetween(angles.Item1, angles.Item2) < edgeAngle * 2.0f)
+            if (SpaceBetween(angles.Item1 + edgeAngle, angles.Item2 - edgeAngle) < edgeAngle * 2.0f || SpaceBetween(angles.Item1, angles.Item2) % 360.0f <= 0)
             {
-                //Debug.Log($"No space between {buildings[j]} and {buildings[i]} ({SpaceBetween(angles.Item1, angles.Item2)} < {edgeAngle * 2.0f})");
+                //Debug.Log($"No space between {buildings[i]} and {buildings[j]} ({SpaceBetween(angles.Item1, angles.Item2)} < {edgeAngle * 2.0f})");
                 continue;
             }
-            //Debug.Log(SpaceBetween(angles.Item1, angles.Item2));
+            //Debug.Log(i);
+            //Debug.Log($"{buildings[i].transform.rotation.eulerAngles.z} + {buildings[i].edgeAngle} + {edgeAngle} = {angles.Item1}");
+            //Debug.Log(angles.Item1 + "   " + angles.Item2 + "    " + edgeAngle);
 
-            float possibleAngle = Clamp(desiredAngle, angles.Item1, angles.Item2);
+            float possibleAngle = Clamp(desiredAngle, angles.Item1 + edgeAngle, angles.Item2 - edgeAngle);
 
-            //Debug.Log(possibleAngle);
+            Debug.Log(possibleAngle + "      " + desiredAngle);
             //Debug.Log(possibleAngle);
             //Debug.Log($"{desiredAngle}, {angles.Item1}, {angles.Item2} = {possibleAngle}");
             if (possibleAngle == desiredAngle)
@@ -209,7 +210,7 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
                 Debug.Log("Huh3");
                 return true;
             }
-            if (Distance(possibleAngle, desiredAngle) > Distance(possibleAngle, outAngle))
+            if (Mathf.Abs(Distance(possibleAngle, desiredAngle)) < Mathf.Abs(Distance(possibleAngle, outAngle)))
             {
                 outAngle = possibleAngle;
                 isPlacable = true;
@@ -241,12 +242,12 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
     }
     private float Clamp(float value, float min, float max)
     {
-        Debug.Log(((min - value + 360.0f) % 360.0f));
         if (IsWithin(min, max, value))
         {
             return value;
         }
-        return value + Extensions.AbsLowest((value - max + 360.0f) % 360.0f, (min - value + 360.0f) % 360.0f);
+        //Debug.Log(Extensions.AbsLowest(-(value - max + 360.0f) % 360.0f, (min - value + 360.0f) % 360.0f));
+        return value + Extensions.AbsLowest(-((value - max + 360.0f) % 360.0f), (min - value + 360.0f) % 360.0f);
         float difference1 = Extensions.AbsHighest(((value - max + 360.0f + 180.0f) % 360.0f - 180.0f), -((min - value + 360.0f + 180.0f) % 360.0f - 180.0f), 0.0f);
         //Debug.Log($"Extensions.AbsHighest({(value - max + 360.0f + 180.0f) % 360.0f - 180.0f}, {(min - value + 360.0f + 180.0f) % 360.0f - 180.0f}, 0.0f) = {difference1}");
         //float difference = Extensions.AbsLowest((max - value + 360.0f + 180.0f) % 360.0f - 180.0f, ((min - value + 360.0f + 180.0f) % 360.0f - 180.0f));
