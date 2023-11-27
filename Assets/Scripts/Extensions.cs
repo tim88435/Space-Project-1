@@ -76,7 +76,7 @@ namespace Custom
                 throw new InvalidOperationException("input is empty");
             }
             T highest = input[0];
-            float absHighestFloat = Convert.ToSingle(input[0]);
+            float absHighestFloat = Mathf.Abs(Convert.ToSingle(input[0]));
             //starts from one!!
             for (int i = 1; i < input.Length; i++)
             {
@@ -95,19 +95,19 @@ namespace Custom
             {
                 throw new InvalidOperationException("input is empty");
             }
-            T highest = input[0];
-            float absHighestFloat = Convert.ToSingle(input[0]);
+            T lowest = input[0];
+            float absLowestFloat = Mathf.Abs(Convert.ToSingle(input[0]));
             //starts from one!!
             for (int i = 1; i < input.Length; i++)
             {
                 float current = Mathf.Abs(Convert.ToSingle(input[i]));
-                if (absHighestFloat.CompareTo(current) > 0)
+                if (absLowestFloat.CompareTo(current) > 0)
                 {
-                    highest = input[i];
-                    absHighestFloat = current;
+                    lowest = input[i];
+                    absLowestFloat = current;
                 }
             }
-            return highest;
+            return lowest;
         }
         public static Vector3 ToEuler(this Vector3 input)
         {

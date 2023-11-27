@@ -197,10 +197,12 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
                 continue;
             }
             //Debug.Log(SpaceBetween(angles.Item1, angles.Item2));
+
             float possibleAngle = Clamp(desiredAngle, angles.Item1, angles.Item2);
 
-
-            Debug.Log($"{desiredAngle}, {angles.Item1}, {angles.Item2} = {possibleAngle}");
+            //Debug.Log(possibleAngle);
+            //Debug.Log(possibleAngle);
+            //Debug.Log($"{desiredAngle}, {angles.Item1}, {angles.Item2} = {possibleAngle}");
             if (possibleAngle == desiredAngle)
             {
                 outAngle = desiredAngle;
@@ -218,7 +220,7 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         {
             outAngle = desiredAngle;
         }
-        Debug.Log("Huh4 " + isPlacable);
+        //Debug.Log("Huh4 " + isPlacable);
         return isPlacable;
     }
     private bool IsWithin(float counterClockwise, float clockwise, float angle)
@@ -239,7 +241,22 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
     }
     private float Clamp(float value, float min, float max)
     {
-        float difference = Extensions.AbsHighest((max - value + 360) % 360, (min - value + 360) % 360);
-        return value + difference;
+        Debug.Log(((min - value + 360.0f) % 360.0f));
+        if (IsWithin(min, max, value))
+        {
+            return value;
+        }
+        return value + Extensions.AbsLowest((value - max + 360.0f) % 360.0f, (min - value + 360.0f) % 360.0f);
+        float difference1 = Extensions.AbsHighest(((value - max + 360.0f + 180.0f) % 360.0f - 180.0f), -((min - value + 360.0f + 180.0f) % 360.0f - 180.0f), 0.0f);
+        //Debug.Log($"Extensions.AbsHighest({(value - max + 360.0f + 180.0f) % 360.0f - 180.0f}, {(min - value + 360.0f + 180.0f) % 360.0f - 180.0f}, 0.0f) = {difference1}");
+        //float difference = Extensions.AbsLowest((max - value + 360.0f + 180.0f) % 360.0f - 180.0f, ((min - value + 360.0f + 180.0f) % 360.0f - 180.0f));
+        //Debug.Log($"Extensions.AbsLowest({(max - value + 360.0f + 180.0f) % 360.0f - 180.0f}, {((min - value + 360.0f + 180.0f) % 360.0f - 180.0f)}) = {difference}");
+        //Debug.Log($"{value} + {difference1} -> {value + difference1}");
+        //Debug.Log(min.ToString() + "      "+ max + "      " + value);
+        //Debug.Log(value + Extensions.AbsHighest(value - max, min - value));
+        //Debug.Log($"{value - max} - {min - value} - {0.0f}");
+        //return value + Extensions.AbsHighest(value - max, min - value, 0.0f);
+        //Debug.Log(difference1);
+        return value - difference1;
     }
 }
