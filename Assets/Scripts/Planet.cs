@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Custom;
-using UnityEngine.UIElements;
-using Unity.VisualScripting;
 
 [SelectionBase]
 public class Planet : MonoBehaviour, ITeam, IHoverable
@@ -168,23 +166,6 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         TeamID = newTeamID;
         (team.teamController as TeamAI)?.ownedPlanets.Insert(0, this);
     }
-    public Vector3 SnapToPoint(Vector3 inputPosition, float angleRequired,float distance)
-    {
-        //TODO: finish
-        //save vector3s to array for each planet
-        float requiredAngle = Quaternion.LookRotation(Vector3.forward, inputPosition - transform.position).eulerAngles.z;
-        Building building = 
-        buildings
-            .OrderBy(x => x.transform.rotation.eulerAngles.z)
-            .FirstOrDefault();
-        Building building2 =
-        buildings
-            .OrderBy(x => x.transform.rotation.eulerAngles.z)
-            .Reverse()
-            .FirstOrDefault();
-
-        return default;
-    }
     public bool EmptySpaceAt(float desiredAngle, float edgeAngle, out float outAngle)
     {
         if (buildings.Count == 0)
@@ -193,39 +174,52 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
             return true;
         }
         if (buildings.Count == 1)
-        {//may need to reverse
-            if (!IsWithin(buildings[0].transform.rotation.z + buildings[0].edgeAngle, buildings[0].transform.rotation.z - buildings[0].edgeAngle, desiredAngle))
+        {
+            if (!IsWithin(buildings[0].transform.rotation.eulerAngles.z - buildings[0].edgeAngle - edgeAngle, buildings[0].transform.rotation.eulerAngles.z + buildings[0].edgeAngle + edgeAngle, desiredAngle))
             {
                 outAngle = desiredAngle;
                 return true;
             }
-            outAngle = buildings[0].transform.rotation.z + buildings[0].edgeAngle * (buildings[0].transform.rotation.z - desiredAngle > 0 ? 1 : -1);
+            outAngle = buildings[0].transform.rotation.eulerAngles.z - buildings[0].edgeAngle * (buildings[0].transform.rotation.eulerAngles.z - desiredAngle > 0 ? 2 : -2);//*2 since edge angle is half or width
             return true;
         }
-        outAngle = desiredAngle + 180.0f % 360;//TODO: change this?
-        for (int i = 0; i++ < buildings.Count;)
+        buildings = buildings.OrderBy(x => x.transform.rotation.eulerAngles.z).ToList();
+        bool isPlacable = false;
+        outAngle = desiredAngle + 180.0f % 360;//opposite of desired
+        for (int i = 0; i < buildings.Count; i++)
         {
             int j = i + 1 < buildings.Count ? i + 1 : 0;
-            (float, float) angles = (buildings[i].transform.rotation.z + buildings[i].edgeAngle, buildings[i].transform.rotation.z + buildings[i].edgeAngle);
+            //Debug.Log($"i = {i}   j = {j} buildings.Count = {buildings.Count}");
+            (float, float) angles = (buildings[i].transform.rotation.eulerAngles.z + buildings[i].edgeAngle, buildings[j].transform.rotation.eulerAngles.z - buildings[j].edgeAngle);
             if (SpaceBetween(angles.Item1, angles.Item2) < edgeAngle * 2.0f)
             {
+                //Debug.Log($"No space between {buildings[j]} and {buildings[i]} ({SpaceBetween(angles.Item1, angles.Item2)} < {edgeAngle * 2.0f})");
                 continue;
             }
-            IEnumerable<int> a = new int[0];
-            
-            float possibleAngle = Mathf.Clamp(desiredAngle, angles.Item1, angles.Item2);
+            //Debug.Log(SpaceBetween(angles.Item1, angles.Item2));
+            float possibleAngle = Clamp(desiredAngle, angles.Item1, angles.Item2);
+
+
+            Debug.Log($"{desiredAngle}, {angles.Item1}, {angles.Item2} = {possibleAngle}");
             if (possibleAngle == desiredAngle)
             {
                 outAngle = desiredAngle;
+                Debug.Log("Huh3");
                 return true;
             }
-            if ((possibleAngle + 180.0f + 360.0f) % 360.0f - 180.0f < 1.0f)//TODO: finish this
+            if (Distance(possibleAngle, desiredAngle) > Distance(possibleAngle, outAngle))
             {
-
+                outAngle = possibleAngle;
+                isPlacable = true;
+                continue;
             }
-            return true;
         }
-        return false;
+        if (!isPlacable)
+        {
+            outAngle = desiredAngle;
+        }
+        Debug.Log("Huh4 " + isPlacable);
+        return isPlacable;
     }
     private bool IsWithin(float counterClockwise, float clockwise, float angle)
     {
@@ -237,22 +231,15 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
     {
         return (clockwise - counterClockwise + 360) % 360;
     }
-    private void Foo()
+    private float Distance(float angle1, float angle2)//https://stackoverflow.com/questions/28036652/finding-the-shortest-distance-between-two-angles
     {
-        int a = 1;
+        float diff = (angle2 - angle1 + 180) % 360 - 180;
+        return diff < -180 ? diff + 360 : diff;
 
-        if (a > Bar())
-        {
-            a = Bar();
-        }
-
-        a = a > Bar() ? Bar() : a;
-
-        int b = Bar();
-        a = a > b ? b : a;
     }
-    private int Bar()
+    private float Clamp(float value, float min, float max)
     {
-        return 2;
+        float difference = Extensions.AbsHighest((max - value + 360) % 360, (min - value + 360) % 360);
+        return value + difference;
     }
 }

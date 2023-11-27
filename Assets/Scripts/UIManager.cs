@@ -1,3 +1,4 @@
+using Custom;
 using Custom.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
@@ -63,12 +64,13 @@ public class UIManager : MonoBehaviour
         }
         IPlanetAngle placable = _buildingSelected;
         placable.SetEdgeAngle(_rendererSelected.transform.lossyScale.x / 0.5f, planet.Diameter);
-        Vector3 buildingPositionFromPlanet = (mousePosition - planet.transform.position).normalized * planet.ZoneDistanceFromPlanetCentre(_buildingSelected.transform.lossyScale.x);
+        bool spaceExists = planet.EmptySpaceAt((mousePosition - planet.transform.position).ToEuler().z, placable.edgeAngle, out float angle);
+        Vector3 buildingPositionFromPlanet = Quaternion.Euler(Vector3.forward * angle) * Vector3.up * planet.ZoneDistanceFromPlanetCentre(_buildingSelected.transform.lossyScale.x);
         _rendererSelected.transform.position = planet.transform.position + buildingPositionFromPlanet;
         _rendererSelected.transform.rotation = Quaternion.LookRotation(Vector3.forward, buildingPositionFromPlanet);
-        if (AnotherBuildingIsColliding(_buildingSelected, planet, out lastCollidedBuildingChildRenderer))
+        if (!spaceExists)//AnotherBuildingIsColliding(_buildingSelected, planet, out lastCollidedBuildingChildRenderer))
         {
-            lastCollidedBuildingChildRenderer.color = halfred;
+            //lastCollidedBuildingChildRenderer.color = halfred;
             return;
         }
         if (!_buildingSelected.ResourceCheck(planet, _buildingSelected.transform.rotation, _buildingSelected.transform.localScale.x))
@@ -77,6 +79,47 @@ public class UIManager : MonoBehaviour
         }
         _rendererSelected.color = GameManager.Singleton.teamColours[1];
         TryPlace(planet);
+    }
+    private void TryPlace(Planet planet)
+    {
+        if (_zoneSelected == null)
+        {
+            return;
+        }
+        if (!isTryingToPlace)
+        {
+            return;
+        }
+        if (isHoveringOverUI)
+        {
+            SelectBuilding(null);
+            return;
+        }
+        PlaceBuilding(planet);
+        return;
+    }
+    private bool AnotherBuildingIsColliding(Building building, Planet planet, out SpriteRenderer spriteRenderer)
+    {
+        if (planet.BuildingsIntersecting(building, out Building[] outBuildings))
+        {
+            if (lastCollidedBuildingChildRenderer == null)
+            {
+                spriteRenderer = outBuildings[0].GetComponent<SpriteRenderer>();
+                return true;
+            }
+            for (int i = 0; i < outBuildings.Length; i++)
+            {
+                if (outBuildings[i].transform == lastCollidedBuildingChildRenderer.transform.parent)
+                {
+                    spriteRenderer = lastCollidedBuildingChildRenderer;
+                    return true;
+                }
+            }
+            spriteRenderer = outBuildings[0].GetComponent<SpriteRenderer>();
+            return true;
+        }
+        spriteRenderer = null;
+        return false;
     }
     public static void TogglePause()
     {
@@ -124,24 +167,6 @@ public class UIManager : MonoBehaviour
     private void OnSelect(InputValue inputValue)
     {
         isTryingToPlace = inputValue.isPressed;
-    }
-    private void TryPlace(Planet planet)
-    {
-        if (_zoneSelected == null)
-        {
-            return;
-        }
-        if (!isTryingToPlace)
-        {
-            return;
-        }
-        if (isHoveringOverUI)
-        {
-            SelectBuilding(null);
-            return;
-        }
-        PlaceBuilding(planet);
-        return;
     }
     private bool GetClosestPlanet(Vector3 position, out Planet planet, float radius = 3.0f)
     {
@@ -195,29 +220,6 @@ public class UIManager : MonoBehaviour
         SelectBuilding(_zoneSelected);
         _rendererSelected.transform.position = previousBuildingTransform.position;
         _rendererSelected.transform.rotation = previousBuildingTransform.rotation;
-    }
-    private bool AnotherBuildingIsColliding(Building building, Planet planet, out SpriteRenderer spriteRenderer)
-    {
-        if (planet.BuildingsIntersecting(building, out Building[] outBuildings))
-        {
-            if (lastCollidedBuildingChildRenderer == null)
-            {
-                spriteRenderer = outBuildings[0].GetComponent<SpriteRenderer>();
-                return true;
-            }
-            for (int i = 0; i < outBuildings.Length; i++)
-            {
-                if (outBuildings[i].transform == lastCollidedBuildingChildRenderer.transform.parent)
-                {
-                    spriteRenderer = lastCollidedBuildingChildRenderer;
-                    return true;
-                }
-            }
-            spriteRenderer = outBuildings[0].GetComponent<SpriteRenderer>();
-            return true;
-        }
-        spriteRenderer = null;
-        return false;
     }
     private void OnSpecificSelect(InputValue inputValue)
     {

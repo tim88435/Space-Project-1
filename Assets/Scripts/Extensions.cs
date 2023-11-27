@@ -109,5 +109,9 @@ namespace Custom
             }
             return highest;
         }
+        public static Vector3 ToEuler(this Vector3 input)
+        {
+            return Quaternion.LookRotation(Vector3.forward, input).eulerAngles;
+        }
     }
 }
