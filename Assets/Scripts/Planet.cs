@@ -4,10 +4,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Custom;
+using AI;
 
 [SelectionBase]
 public class Planet : MonoBehaviour, ITeam, IHoverable
 {
+    struct Edge
+    {
+        public Edge(float basePos, float edgeDistance, bool isLeft)
+            {
+            this.basePos = basePos;
+            corner = basePos + edgeDistance * (isLeft ? 1 : -1);
+            edgeAngle = edgeDistance;
+            }
+        internal float basePos;
+        internal float corner;
+        internal float edgeAngle;
+    }
     public int TeamID { get; set; } = 0;
     private float health = 100f;
     private float maxHealth = 100f;
@@ -162,9 +175,9 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         }
         
         ITeam team = this;
-        (team.teamController as TeamAI)?.ownedPlanets.Remove(this);
+        (team.teamController as TeamAI)?.PlanetLost(this);
         TeamID = newTeamID;
-        (team.teamController as TeamAI)?.ownedPlanets.Insert(0, this);
+        (team.teamController as TeamAI)?.PlanetGained(this);
     }
     public bool EmptySpaceAt(float desiredAngle, float edgeAngle, out float outAngle)
     {
@@ -175,12 +188,7 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         }
         if (buildings.Count == 1)
         {
-            if (!IsWithin(buildings[0].transform.rotation.eulerAngles.z - buildings[0].edgeAngle - edgeAngle, buildings[0].transform.rotation.eulerAngles.z + buildings[0].edgeAngle + edgeAngle, desiredAngle))
-            {
-                outAngle = desiredAngle;
-                return true;
-            }
-            outAngle = buildings[0].transform.rotation.eulerAngles.z - buildings[0].edgeAngle * (buildings[0].transform.rotation.eulerAngles.z - desiredAngle > 0 ? 2 : -2);//*2 since edge angle is half or width
+            outAngle = Clamp(desiredAngle, buildings[0].transform.rotation.eulerAngles.z + buildings[0].edgeAngle + edgeAngle, buildings[0].transform.rotation.eulerAngles.z - buildings[0].edgeAngle - edgeAngle);
             return true;
         }
         buildings = buildings.OrderBy(x => x.transform.rotation.eulerAngles.z).ToList();
@@ -189,28 +197,19 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         for (int i = 0; i < buildings.Count; i++)
         {
             int j = i + 1 < buildings.Count ? i + 1 : 0;
-            (float, float) angles = (buildings[i].transform.rotation.eulerAngles.z + buildings[i].edgeAngle, buildings[j].transform.rotation.eulerAngles.z - buildings[j].edgeAngle);
-            if (SpaceBetween(angles.Item1 + edgeAngle, angles.Item2 - edgeAngle) < edgeAngle * 2.0f || SpaceBetween(angles.Item1, angles.Item2) % 360.0f <= 0)
+            if (SpaceBetween(buildings[i].transform.rotation.eulerAngles.z, buildings[j].transform.rotation.eulerAngles.z) < edgeAngle * 2.0f + buildings[i].edgeAngle + buildings[j].edgeAngle)
             {
-                //Debug.Log($"No space between {buildings[i]} and {buildings[j]} ({SpaceBetween(angles.Item1, angles.Item2)} < {edgeAngle * 2.0f})");
                 continue;
             }
-            //Debug.Log(i);
-            //Debug.Log($"{buildings[i].transform.rotation.eulerAngles.z} + {buildings[i].edgeAngle} + {edgeAngle} = {angles.Item1}");
-            //Debug.Log(angles.Item1 + "   " + angles.Item2 + "    " + edgeAngle);
 
-            float possibleAngle = Clamp(desiredAngle, angles.Item1 + edgeAngle, angles.Item2 - edgeAngle);
-
-            Debug.Log(possibleAngle + "      " + desiredAngle);
-            //Debug.Log(possibleAngle);
-            //Debug.Log($"{desiredAngle}, {angles.Item1}, {angles.Item2} = {possibleAngle}");
+            float possibleAngle = Clamp(desiredAngle, buildings[i].transform.rotation.eulerAngles.z + buildings[i].edgeAngle + edgeAngle, buildings[j].transform.rotation.eulerAngles.z - buildings[j].edgeAngle - edgeAngle);
             if (possibleAngle == desiredAngle)
             {
                 outAngle = desiredAngle;
                 Debug.Log("Huh3");
                 return true;
             }
-            if (Mathf.Abs(Distance(possibleAngle, desiredAngle)) < Mathf.Abs(Distance(possibleAngle, outAngle)))
+            if (Mathf.Abs(Distance(possibleAngle, desiredAngle)) < Mathf.Abs(Distance(desiredAngle, outAngle)))
             {
                 outAngle = possibleAngle;
                 isPlacable = true;
@@ -221,13 +220,20 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         {
             outAngle = desiredAngle;
         }
-        //Debug.Log("Huh4 " + isPlacable);
         return isPlacable;
     }
     private bool IsWithin(float counterClockwise, float clockwise, float angle)
     {
         float differenceLeft = (angle - counterClockwise + 360) % 360;
         float differenceRight = (clockwise - angle + 360) % 360;
+        if (differenceLeft < 0)
+        {
+            differenceLeft += 360.0f;
+        }
+        if (differenceRight < 0)
+        {
+            differenceRight += 360.0f;
+        }
         return differenceLeft + differenceRight < 360;
     }
     private float SpaceBetween(float counterClockwise, float clockwise)
@@ -238,7 +244,6 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
     {
         float diff = (angle2 - angle1 + 180) % 360 - 180;
         return diff < -180 ? diff + 360 : diff;
-
     }
     private float Clamp(float value, float min, float max)
     {
@@ -246,18 +251,6 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         {
             return value;
         }
-        //Debug.Log(Extensions.AbsLowest(-(value - max + 360.0f) % 360.0f, (min - value + 360.0f) % 360.0f));
-        return value + Extensions.AbsLowest(-((value - max + 360.0f) % 360.0f), (min - value + 360.0f) % 360.0f);
-        float difference1 = Extensions.AbsHighest(((value - max + 360.0f + 180.0f) % 360.0f - 180.0f), -((min - value + 360.0f + 180.0f) % 360.0f - 180.0f), 0.0f);
-        //Debug.Log($"Extensions.AbsHighest({(value - max + 360.0f + 180.0f) % 360.0f - 180.0f}, {(min - value + 360.0f + 180.0f) % 360.0f - 180.0f}, 0.0f) = {difference1}");
-        //float difference = Extensions.AbsLowest((max - value + 360.0f + 180.0f) % 360.0f - 180.0f, ((min - value + 360.0f + 180.0f) % 360.0f - 180.0f));
-        //Debug.Log($"Extensions.AbsLowest({(max - value + 360.0f + 180.0f) % 360.0f - 180.0f}, {((min - value + 360.0f + 180.0f) % 360.0f - 180.0f)}) = {difference}");
-        //Debug.Log($"{value} + {difference1} -> {value + difference1}");
-        //Debug.Log(min.ToString() + "      "+ max + "      " + value);
-        //Debug.Log(value + Extensions.AbsHighest(value - max, min - value));
-        //Debug.Log($"{value - max} - {min - value} - {0.0f}");
-        //return value + Extensions.AbsHighest(value - max, min - value, 0.0f);
-        //Debug.Log(difference1);
-        return value - difference1;
+        return value + Extensions.AbsLowest(Mathf.DeltaAngle(value, max), Mathf.DeltaAngle(value, min));
     }
 }

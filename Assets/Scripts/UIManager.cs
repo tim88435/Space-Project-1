@@ -31,7 +31,6 @@ public class UIManager : MonoBehaviour
     SpriteRenderer  _rendererSelected;//renderer to change the colour
     Building        _buildingSelected;
 
-    SpriteRenderer lastCollidedBuildingChildRenderer;//building background
     private bool isTryingToPlace = false;
     public static bool multiplePlace = false;
     public static bool isHoveringOverUI = false;
@@ -47,10 +46,6 @@ public class UIManager : MonoBehaviour
     private void Update()
     {
         isHoveringOverUI = EventSystem.current.IsPointerOverGameObject();
-        if (lastCollidedBuildingChildRenderer != null)
-        {
-            lastCollidedBuildingChildRenderer.color = GameManager.Singleton.teamColours[1];
-        }
         if (_rendererSelected == null)
         {
             return;
@@ -67,10 +62,9 @@ public class UIManager : MonoBehaviour
         bool spaceExists = planet.EmptySpaceAt((mousePosition - planet.transform.position).ToEuler().z, placable.edgeAngle, out float angle);
         Vector3 buildingPositionFromPlanet = Quaternion.Euler(Vector3.forward * angle) * Vector3.up * planet.ZoneDistanceFromPlanetCentre(_buildingSelected.transform.lossyScale.x);
         _rendererSelected.transform.position = planet.transform.position + buildingPositionFromPlanet;
-        _rendererSelected.transform.rotation = Quaternion.LookRotation(Vector3.forward, buildingPositionFromPlanet);
-        if (!spaceExists)//AnotherBuildingIsColliding(_buildingSelected, planet, out lastCollidedBuildingChildRenderer))
+        _rendererSelected.transform.rotation = Quaternion.Euler(Vector3.forward * angle);
+        if (!spaceExists)
         {
-            //lastCollidedBuildingChildRenderer.color = halfred;
             return;
         }
         if (!_buildingSelected.ResourceCheck(planet, _buildingSelected.transform.rotation, _buildingSelected.transform.localScale.x))
@@ -90,6 +84,7 @@ public class UIManager : MonoBehaviour
         {
             return;
         }
+        //isTryingToPlace =false;
         if (isHoveringOverUI)
         {
             SelectBuilding(null);
@@ -97,29 +92,6 @@ public class UIManager : MonoBehaviour
         }
         PlaceBuilding(planet);
         return;
-    }
-    private bool AnotherBuildingIsColliding(Building building, Planet planet, out SpriteRenderer spriteRenderer)
-    {
-        if (planet.BuildingsIntersecting(building, out Building[] outBuildings))
-        {
-            if (lastCollidedBuildingChildRenderer == null)
-            {
-                spriteRenderer = outBuildings[0].GetComponent<SpriteRenderer>();
-                return true;
-            }
-            for (int i = 0; i < outBuildings.Length; i++)
-            {
-                if (outBuildings[i].transform == lastCollidedBuildingChildRenderer.transform.parent)
-                {
-                    spriteRenderer = lastCollidedBuildingChildRenderer;
-                    return true;
-                }
-            }
-            spriteRenderer = outBuildings[0].GetComponent<SpriteRenderer>();
-            return true;
-        }
-        spriteRenderer = null;
-        return false;
     }
     public static void TogglePause()
     {
@@ -148,6 +120,7 @@ public class UIManager : MonoBehaviour
             _rendererSelected = Instantiate(buildingZone.prefab).GetComponent<SpriteRenderer>();
             _rendererSelected.name = buildingZone.name;
             _buildingSelected = _rendererSelected.GetComponent<Building>();
+            _buildingSelected.TeamID = 1;
         }
         else
         {
@@ -207,14 +180,13 @@ public class UIManager : MonoBehaviour
         //building stuff
         planet.AddBuilding(_buildingSelected);
         _buildingSelected.enabled = true;
-        _buildingSelected.TeamID = 1;
         _buildingSelected.transform.parent = planet.transform;
         _rendererSelected.color = GameManager.Singleton.teamColours[1];
         Transform previousBuildingTransform = _rendererSelected.transform;
         _rendererSelected = null;
         if (!multiplePlace)
         {
-            _zoneSelected = null;
+            SelectBuilding(null);
             return;
         }
         SelectBuilding(_zoneSelected);
