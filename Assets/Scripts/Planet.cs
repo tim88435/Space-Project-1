@@ -206,7 +206,6 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
             if (possibleAngle == desiredAngle)
             {
                 outAngle = desiredAngle;
-                Debug.Log("Huh3");
                 return true;
             }
             if (Mathf.Abs(Distance(possibleAngle, desiredAngle)) < Mathf.Abs(Distance(desiredAngle, outAngle)))

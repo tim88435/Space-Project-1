@@ -67,7 +67,6 @@ namespace AI
             ((IPlanetAngle)currentBuilding).SetEdgeAngle(currentBuilding.transform.lossyScale.x / 2, planet.transform.lossyScale.x / 2);
             while (planet.EmptySpaceAt(0, currentBuilding.edgeAngle, out float position))
             {
-
                 break;//TODO
             }
         }
