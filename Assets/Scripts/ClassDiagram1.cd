@@ -1,0 +1,316 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="AI.AIAction">
+    <Position X="18.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\AI\AIAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AI.AttackAction">
+    <Position X="19.25" Y="2.75" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAQAAAAAIAAAAAAAAAAAAAAAAAAAQAA=</HashCode>
+      <FileName>Assets\Scripts\AI\AIAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AI.BuildAction">
+    <Position X="13.5" Y="2.75" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAAAQAAAAAAAAAAAAAgAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\AI\AIAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AI.TeamAI" BaseTypeListCollapsed="true">
+    <Position X="25.5" Y="16" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>QAQDAAAAAiAwACAAAEggAAACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\AI\TeamAI.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Building">
+    <Position X="7.5" Y="15.75" Width="4.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAABgBAAAQCEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Buildings\Building.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="BuildingZone" BaseTypeListCollapsed="true">
+    <Position X="19.5" Y="8.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAEAAAAAAYAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Buildings\BuildingZone.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="DestroyBuilding" BaseTypeListCollapsed="true">
+    <Position X="16.75" Y="17" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAgABAAAAAAAAQAAQAAAAEIAAAABAAAKEA=</HashCode>
+      <FileName>Assets\Scripts\Buildings\DestroyBuilding.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PlanetDefence">
+    <Position X="4.25" Y="18.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAACAAABAAAAAAAAAAAAAAIgAAAIAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Buildings\PlanetDefence.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ResourceBuilding">
+    <Position X="8.25" Y="19.75" Width="4.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAABAAgAAAAACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Buildings\ResourceBuilding.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShipyardBuilding">
+    <Position X="13.5" Y="19.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAIAACAAAAAAAAAIAEAIAAAAAAAAAIAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Buildings\ShipyardBuilding.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CameraControl">
+    <Position X="36.5" Y="11.75" Width="4" />
+    <TypeIdentifier>
+      <HashCode>gBQIAAAAEKiACAAAFAEAIBwAAAEAAAMCAAAEAKJACEA=</HashCode>
+      <FileName>Assets\Scripts\CameraControl.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circle">
+    <Position X="24.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAACAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Circle.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AvoidanceBehaviour">
+    <Position X="16.5" Y="13.5" Width="6" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAAAABEACAAAAAAAAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Flocking\AvoidanceBehaviour.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CompositeBehaviour">
+    <Position X="23.25" Y="13.5" Width="6" />
+    <NestedTypes>
+      <Struct Name="CompositeBehaviour.BehaviourGroup" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\Scripts\Flocking\CompositeBehaviour.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAABAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Flocking\CompositeBehaviour.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Flock">
+    <Position X="24" Y="0.75" Width="5.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA=</HashCode>
+      <FileName>Assets\Scripts\Flocking\Flock.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FlockAgent" BaseTypeListCollapsed="true">
+    <Position X="24" Y="3.25" Width="5" />
+    <TypeIdentifier>
+      <HashCode>AAQAigAAACAQCAAABAACAAACCIFggABIgARAIAAQCgA=</HashCode>
+      <FileName>Assets\Scripts\Flocking\FlockAgent.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="FlockBehaviour">
+    <Position X="14" Y="11.75" Width="6" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Flocking\FlockBehaviour.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StayInRadiusBehaviour">
+    <Position X="10" Y="13.5" Width="5.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAABAAAAAAAAEAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Flocking\StayInRadiusBehaviour.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ResourceCounter" BaseTypeListCollapsed="true">
+    <Position X="13.5" Y="15.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAhAAAAAAAAAAQAAAABAAAAAAAAAAAACAA=</HashCode>
+      <FileName>Assets\Scripts\Game Resources\ResourceCounter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ResourceSource" BaseTypeListCollapsed="true">
+    <Position X="21.5" Y="9.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAABABAAAQAEAABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Game Resources\ResourceSource.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ResourceType">
+    <Position X="8.25" Y="11.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAIAAAAAAAABAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Game Resources\ResourceType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameManager">
+    <Position X="4" Y="12.25" Width="3" />
+    <NestedTypes>
+      <Struct Name="GameManager.ResourceData" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\Scripts\GameManager.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>QAAAIAAAACAAQBAAAAFAAEAAQAgACAEAAAAAAAAQCAA=</HashCode>
+      <FileName>Assets\Scripts\GameManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HealthBar">
+    <Position X="30.5" Y="0.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAEAABCAAAAAAAAAAAAAAAAAAAAAAAAAACAg=</HashCode>
+      <FileName>Assets\Scripts\HealthBar.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hoverable" BaseTypeListCollapsed="true">
+    <Position X="33.75" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAgAAAAAAEAAAQAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Hoverable.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="HoverObject">
+    <Position X="15.5" Y="7.75" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAACABAAAAgCEAAQAAAMAAAAEAAAAAAAAACAA=</HashCode>
+      <FileName>Assets\Scripts\HoverObject.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Planet" BaseTypeListCollapsed="true">
+    <Position X="30" Y="11.5" Width="5.75" />
+    <NestedTypes>
+      <Struct Name="Planet.Edge" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\Scripts\Planet.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>EAQCAAAJACAgAiAAAIFBAAQCUABCAABAEAEBAACSCAg=</HashCode>
+      <FileName>Assets\Scripts\Planet.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Player" BaseTypeListCollapsed="true">
+    <Position X="19.5" Y="5.75" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAiAAACAAAAAAAAACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Player.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PlayerUnitController">
+    <Position X="35.75" Y="3" Width="5" />
+    <TypeIdentifier>
+      <HashCode>ACQAAyQBAyAAAAAAEEEAIACSAAABAAEAAAAAYgYQKEE=</HashCode>
+      <FileName>Assets\Scripts\PlayerUnitController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PrefabList">
+    <Position X="37" Y="0.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AEEAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECAA=</HashCode>
+      <FileName>Assets\Scripts\PrefabList.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Star">
+    <Position X="26.75" Y="10.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAIQCAAAAQAAAAEAABCAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Star.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UIManager">
+    <Position X="30" Y="3.5" Width="5.25" />
+    <TypeIdentifier>
+      <HashCode>BAQASAAAACAAEAAgEQEACgAUAEACAAEAIAAAVFABKAA=</HashCode>
+      <FileName>Assets\Scripts\UIManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UnitIcons">
+    <Position X="21.75" Y="16.25" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAIAAACAAEAAAAAAAAAAAAEBAAAQAAAAAACAA=</HashCode>
+      <FileName>Assets\Scripts\UnitIcons.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Custom.Interfaces.ITeam">
+    <Position X="8" Y="6.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAAAIAAAAAAACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Interfaces.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Custom.Interfaces.IColourable">
+    <Position X="11.75" Y="8.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAIAA=</HashCode>
+      <FileName>Assets\Scripts\Interfaces.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Custom.Interfaces.IWeapon">
+    <Position X="9.75" Y="3" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAABAAAAAAAAAAAAAAAgAAAIAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Interfaces.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Custom.Interfaces.IDamagable">
+    <Position X="4.75" Y="8.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>gAAAiAAAAAAACAAAAAAAAAAAAABAAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Interfaces.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Custom.Interfaces.IPlanetAngle">
+    <Position X="12.5" Y="5.25" Width="4.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAhAAAAAAAAAAEAAAAAAAAAAAAAEA=</HashCode>
+      <FileName>Assets\Scripts\Interfaces.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Custom.Interfaces.IHoverableUI">
+    <Position X="4.5" Y="3.75" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Interfaces.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Custom.Interfaces.IHoverable">
+    <Position X="6" Y="0.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAQAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Interfaces.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Custom.Interfaces.ITeamController">
+    <Position X="7.75" Y="8.5" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACAIAABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Interfaces.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

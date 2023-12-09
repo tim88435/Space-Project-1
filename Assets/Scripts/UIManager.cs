@@ -1,10 +1,12 @@
 using Custom;
 using Custom.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -31,6 +33,7 @@ public class UIManager : MonoBehaviour
     SpriteRenderer  _rendererSelected;//renderer to change the colour
     Building        _buildingSelected;
 
+    [SerializeField] private GameObject _pauseMenu;
     private bool isTryingToPlace = false;
     public static bool multiplePlace = false;
     public static bool isHoveringOverUI = false;
@@ -99,6 +102,7 @@ public class UIManager : MonoBehaviour
     }
     private void OnPause(InputValue inputValue)
     {
+        if (_pauseMenu.activeSelf) return;
         if (inputValue.isPressed)
         {
             TogglePause();
@@ -196,5 +200,30 @@ public class UIManager : MonoBehaviour
     private void OnSpecificSelect(InputValue inputValue)
     {
         multiplePlace = inputValue.isPressed;
+    }
+    private void OnPauseMenu(InputValue inputValue)
+    {
+        if (!inputValue.isPressed) return;
+        if (!CameraControl.enableCamera && !_pauseMenu.activeSelf) return;
+        bool setPaused = !_pauseMenu.activeSelf;
+        _pauseMenu.SetActive(setPaused);
+        GameManager.Singleton.SetTimeScale(setPaused ? 0 : 1);
+        GameManager.Singleton.EnableCameraControl(!setPaused);
+    }
+    public void LoadScene(int sceneID)
+    {
+        SceneManager.LoadScene(sceneID);
+    }
+    public void ReloadCurrentScene()
+    {
+        int index = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(index);
+    }
+    public void Exit()
+    {
+        Application.Quit();
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.ExitPlaymode();
+#endif
     }
 }

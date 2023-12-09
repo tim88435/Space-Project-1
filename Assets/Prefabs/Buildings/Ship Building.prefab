@@ -100,7 +100,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shipBuildCooldown: 30
-  shipResource: {fileID: 11400000, guid: c8be8875430559749942afd1f45e2993, type: 2}
+  shipResource: {fileID: 11400000, guid: 2120669f1b3b61c4f9f77acaaaa78229, type: 2}
   requiredResourceAmount: 10
 --- !u!61 &5810041386685128458
 BoxCollider2D:

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Custom.Interfaces;
 using UnityEditor;
+using System.Linq;
 
 namespace Custom
 {
@@ -50,24 +51,6 @@ namespace Custom
                 agent.ShowHealthBar(shouldShow);
             }
             return flockAgents;
-        }
-        public static List<T> FindAssetsByType<T>() where T : UnityEngine.Object
-        {
-            List<T> assets = new List<T>();
-
-            string[] guids = AssetDatabase.FindAssets("t:" + typeof(T).Name);
-
-            for (int i = 0; i < guids.Length; i++)
-            {
-                string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
-                T asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
-
-                if (asset != null)
-                {
-                    assets.Add(asset);
-                }
-            }
-            return assets;
         }
         public static T AbsHighest<T>(params T[] input) where T : IConvertible
         {

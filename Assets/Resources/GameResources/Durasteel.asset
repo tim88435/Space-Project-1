@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a1b31c92cdde1f45a1333759f9e0934, type: 3}
+  m_Script: {fileID: 11500000, guid: 313c2a0aa1d7b4d44a73aaa3e5dfaf21, type: 3}
   m_Name: Durasteel
   m_EditorClassIdentifier: 
-  _max: 9999
-  _value: 5
-  _description: Used to make ships, collected by durasteel mines
+  sprite: {fileID: 0}
+  description: Used to make ships, collected by durasteel mines

@@ -126,7 +126,7 @@ namespace Custom.Interfaces
         public static Dictionary<ResourceType, float> GetNewResourceList()
         {
             Dictionary<ResourceType, float> newList = new Dictionary<ResourceType, float>();
-            ResourceType[] resourceTypes = Extensions.FindAssetsByType<ResourceType>().ToArray();
+            ResourceType[] resourceTypes = UnityEngine.Resources.LoadAll<ResourceType>("GameResources");
             for (int i = 0; i < resourceTypes.Length; i++)
             {
                 newList.Add(resourceTypes[i], 0);

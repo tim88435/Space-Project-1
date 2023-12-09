@@ -62,7 +62,7 @@ namespace AI
         }
         public void PlanetGained(Planet planet)
         {
-            BuildingZone[] allBuildingZones = Extensions.FindAssetsByType<BuildingZone>().ToArray();
+            BuildingZone[] allBuildingZones = Resources.LoadAll<BuildingZone>("Buildings");
             Building currentBuilding = GameObject.Instantiate(allBuildingZones[1].prefab, planet.transform).GetComponent<Building>();
             ((IPlanetAngle)currentBuilding).SetEdgeAngle(currentBuilding.transform.lossyScale.x / 2, planet.transform.lossyScale.x / 2);
             while (planet.EmptySpaceAt(0, currentBuilding.edgeAngle, out float position))
