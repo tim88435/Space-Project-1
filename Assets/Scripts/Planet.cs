@@ -152,7 +152,7 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
                     resources[i] = resource;
                     IPlanetAngle placable = resource;
 
-                    placable.SetEdgeAngle(resource.transform.lossyScale.x / 0.5f, Diameter);
+                    placable.SetEdgeAngle(Diameter);
                     break;
                 }
             }

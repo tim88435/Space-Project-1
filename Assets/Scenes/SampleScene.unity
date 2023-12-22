@@ -5788,6 +5788,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1414788331459180084, guid: f3ef3d69db8a86a44ac8166363b57335, type: 3}
   m_PrefabInstance: {fileID: 354189045}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1323123973 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3909208596066517736, guid: f3ef3d69db8a86a44ac8166363b57335, type: 3}
+  m_PrefabInstance: {fileID: 354189045}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323123967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58acf9bd96aefe04d935d8e173548006, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1337750750
 GameObject:
   m_ObjectHideFlags: 0
@@ -6062,7 +6073,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a15067df524af44f9e4d269617f5dce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverable: {fileID: 1323123967}
+  hoverable: {fileID: 1323123973}
 --- !u!114 &1373523590
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7266,7 +7277,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hoverbox: {fileID: 1798472726}
-  rangeIndicator: {fileID: 1732866265}
+  rangeIndicator: {fileID: 1732866266}
   hoverText: {fileID: 397703097}
 --- !u!1001 &1570931561
 PrefabInstance:

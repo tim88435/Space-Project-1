@@ -61,7 +61,7 @@ public class UIManager : MonoBehaviour
             return;
         }
         IPlanetAngle placable = _buildingSelected;
-        placable.SetEdgeAngle(_rendererSelected.transform.lossyScale.x / 0.5f, planet.Diameter);
+        placable.SetEdgeAngle(planet.Diameter);
         bool spaceExists = planet.EmptySpaceAt((mousePosition - planet.transform.position).ToEuler().z, placable.edgeAngle, out float angle);
         Vector3 buildingPositionFromPlanet = Quaternion.Euler(Vector3.forward * angle) * Vector3.up * planet.ZoneDistanceFromPlanetCentre(_buildingSelected.transform.lossyScale.x);
         _rendererSelected.transform.position = planet.transform.position + buildingPositionFromPlanet;
@@ -70,7 +70,7 @@ public class UIManager : MonoBehaviour
         {
             return;
         }
-        if (!_buildingSelected.ResourceCheck(planet, _buildingSelected.transform.rotation, _buildingSelected.transform.localScale.x))
+        if (!_buildingSelected.ResourceCheck(planet, _buildingSelected.transform.rotation))
         {
             return;
         }

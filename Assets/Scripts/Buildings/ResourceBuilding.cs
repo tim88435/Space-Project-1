@@ -13,9 +13,9 @@ public class ResourceBuilding : Building
     {
         ((ITeam)this).Resources[resourceType] += Time.deltaTime * baseAmount;
     }
-    public override bool ResourceCheck(Planet planet, Quaternion rotation, float width)
+    public override bool ResourceCheck(Planet planet, Quaternion rotation)
     {
-        edgeAngle = Mathf.Asin(width / 2 / (planet.Diameter / 2)) * Mathf.Rad2Deg;
+        edgeAngle = Mathf.Asin(transform.lossyScale.x / 2 / (planet.Diameter / 2)) * Mathf.Rad2Deg;
         return planet.resources
             .Where(x => x != null)
             .Where(x => ((IPlanetAngle)x).IsIntersecting(rotation, edgeAngle))

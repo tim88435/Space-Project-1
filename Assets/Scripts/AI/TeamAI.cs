@@ -1,6 +1,4 @@
-using Custom;
 using Custom.Interfaces;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -63,16 +61,47 @@ namespace AI
         public void PlanetGained(Planet planet)
         {
             BuildingZone[] allBuildingZones = Resources.LoadAll<BuildingZone>("Buildings");
-            Building currentBuilding = GameObject.Instantiate(allBuildingZones[1].prefab, planet.transform).GetComponent<Building>();
-            ((IPlanetAngle)currentBuilding).SetEdgeAngle(currentBuilding.transform.lossyScale.x / 2, planet.transform.lossyScale.x / 2);
-            while (planet.EmptySpaceAt(0, currentBuilding.edgeAngle, out float position))
+            allBuildingZones = allBuildingZones.OrderByDescending(x => OrderOnType(x)).ToArray();
+            //TODO
+            while (true)
             {
-                break;//TODO
+                foreach (BuildingZone zone in allBuildingZones)
+                {
+                    float edgeAngle = Mathf.Asin(zone.prefab.transform.lossyScale.x / planet.transform.lossyScale.x / 2.0f) * Mathf.Rad2Deg;
+                    if (!planet.EmptySpaceAt(0, edgeAngle, out float outAngle))
+                    {
+                        continue;
+                    }
+                    if (!zone.prefab.GetComponent<Building>().ResourceCheck(planet, Quaternion.Euler(Vector3.forward * outAngle)))
+                    {
+                        continue;
+                    }
+                    Instantiate(zone.prefab);
+                    //placed a building, now try build another building
+                    goto Placed;
+                }
+                //tried to place every building and faled
+                break;
+                Placed:;
             }
         }
         public void PlanetLost(Planet planet)
         {
             actions.RemoveAll(x => (x as BuildAction)?.building.transform.parent == planet.transform);
+        }
+        private static int OrderOnType(BuildingZone zone)
+        {
+            Building building = zone.prefab.GetComponent<Building>();
+            switch (building)
+            {
+                //this is pretty arbitrary
+                //TODO: Rework AI build order weights
+                case PlanetDefence: return 1;
+                case ShipyardBuilding: return 3;
+                case ResourceBuilding: return 5;//this will never happen since shipyards will be built instead
+                default:
+                    throw new System.NotImplementedException($"Building of type {building.GetType()} not implemented in build order");
+            }
         }
     }
 }

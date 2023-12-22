@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Custom.Interfaces;
-using UnityEditor;
-using System.Linq;
 
 namespace Custom
 {

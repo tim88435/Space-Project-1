@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -82,9 +81,9 @@ namespace Custom.Interfaces
     {
         float edgeAngle { get; set; }
         public Transform transform { get; }//what? this works????
-        public void SetEdgeAngle(float buildingWidth, float planetRadius)
+        public void SetEdgeAngle(float planetRadius)
         {
-            edgeAngle = Mathf.Asin(buildingWidth / 2 / planetRadius) * Mathf.Rad2Deg;
+            edgeAngle = Mathf.Asin(transform.lossyScale.x / planetRadius) * Mathf.Rad2Deg;
         }
         public bool IsIntersecting(IPlanetAngle other)
         {

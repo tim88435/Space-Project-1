@@ -6,33 +6,24 @@ using UnityEngine;
 public class Hoverable : MonoBehaviour, IHoverableUI
 {
     [SerializeField] private Object hoverable;
-    private IHoverable _hoverable;
-    public string Name => _hoverable?.Name ?? "No Name";
-    public string Description => _hoverable?.Description ?? "No Description";
+    public string Name => ((IHoverable)hoverable)?.Name ?? "No Name";
+    public string Description => ((IHoverable)hoverable)?.Description ?? "No Description";
     private void OnValidate()
     {
-        if (hoverable == null)
+        if (hoverable is IHoverable)
         {
-            _hoverable = null;
             return;
         }
-        if (hoverable is GameObject)
+        if (hoverable is not GameObject)
         {
-            if (!((GameObject)hoverable).TryGetComponent(out _hoverable))
-            {
-                hoverable = null;
-            }
+            hoverable = null;
             return;
         }
-        if (hoverable is ScriptableObject)
+        if ((hoverable as GameObject).TryGetComponent(out IHoverable a))
         {
-            if (hoverable is IHoverable)
-            {
-                _hoverable = (IHoverable)hoverable;
-                return;
-            }
+            hoverable = a as Object;
+            return;
         }
         hoverable = null;
-        _hoverable = null;
     }
 }
