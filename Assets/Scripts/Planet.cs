@@ -44,8 +44,8 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
     }
     private void Start()
     {
-        SetTeam();
-        SetTeamColour();
+        SetTeam(GetTeamIdByProxy());
+        UpdateTeamColour();
         transform.localScale = Vector3.one * (Random.Range(1.0f, 10.0f) + Random.Range(1.0f, 10.0f));
         SetResources();
         healthBar = Instantiate(GameManager.prefabList.healthBarPrefab, transform.position, Quaternion.identity).GetComponent<HealthBar>();
@@ -54,19 +54,16 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
     }
     private void Update()
     {
-        //Debug.Log(EmptySpaceAt(0, 10, out _));
         healthBar.gameObject.SetActive(health != maxHealth);
         healthBar.Set(health / maxHealth);
-        FlockAgent[] shipsInRange = OrbitingShips();
+        FlockAgent[] shipsInRange = GetOrbitingShips();
         float healthChange = PlanetDamage(shipsInRange);
         health = Mathf.Clamp(health + healthChange * Time.deltaTime, 0.0f, maxHealth);
         if (health == 0)
         {
-            TeamID = shipsInRange//give to team with highest ships in orbit
-                .GroupBy(i => i.TeamID)
-                .OrderByDescending(grp => grp.Count())
-                .First().Key;
-            SetTeamColour();
+            RemoveBuildings(buildings.ToArray());
+            SetTeam(GetTeamIdByProxy());
+            UpdateTeamColour();
             Instantiate(GameManager.prefabList.circlePrefab, transform.position, Quaternion.identity, transform)
                 .GetComponent<SpriteRenderer>().color = GameManager.Singleton.TeamToColour(TeamID);
         }
@@ -79,11 +76,11 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
     {
         HoverObject.hoveredOver.Remove(this);
     }
-    private void SetTeamColour()
+    private void UpdateTeamColour()
     {
         outlineRenderer.color = GameManager.Singleton.teamColours[TeamID];
     }
-    private FlockAgent[] OrbitingShips()
+    private FlockAgent[] GetOrbitingShips()
     {
         return Physics2D.OverlapCircleAll(transform.position, transform.lossyScale.x)//assume it's a circle, right?
             .Where(x => FlockAgent.ships.ContainsKey(x))
@@ -107,6 +104,23 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         }
         orbitingValue = Mathf.Clamp(orbitingValue, -10.0f, 1.0f) * (50.0f / maxHealth);
         return orbitingValue;
+    }
+    public void RemoveBuildings(params Building[] buildings)
+    {
+        for (int i = 0; i < buildings.Length; i++)
+        {
+            //not sure whether to check if parent/in list
+            //for now, one is fine?
+            if (buildings[i].transform.parent != this && this.buildings.Contains(buildings[i]))
+            {
+                continue;
+            }
+            if (this.buildings.Contains(buildings[i]))
+            {
+                this.buildings.Remove(buildings[i]);
+            }
+            Destroy(buildings[i].gameObject);
+        }
     }
     public void AddBuilding(Building building)
     {
@@ -139,20 +153,21 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
             float edgeAngle = Mathf.Asin(resourceData.resourcePrefab.transform.lossyScale.x / 2 / (Diameter / 2)) * Mathf.Rad2Deg;
             for (int t = 0; t < 10; t++)//try 10 times
             {
-                Quaternion randomRotation = Quaternion.Euler(0, 0, Random.Range(0f, 360f));
-                if (resources.Where(x => x != null).Any(x => ((IPlanetAngle)x).IsIntersecting(randomRotation, edgeAngle)))
+                float randomRotation = Random.Range(0f, 360f);
+                if (resources.Where(x => x != null).Any(x => ((IPlanetAngle)x).IsIntersecting(Quaternion.Euler(0, 0, randomRotation), edgeAngle)))
                 {
                     continue;
                 }
                 else
                 {
-                    Vector3 buildingPositionFromPlanet = randomRotation * Vector3.up * ZoneDistanceFromPlanetCentre(resourceData.resourcePrefab.transform.lossyScale.x);
-                    ResourceSource resource = Instantiate(resourceData.resourcePrefab, transform.position + buildingPositionFromPlanet, randomRotation).GetComponent<ResourceSource>();
+                    ResourceSource resource = Instantiate(resourceData.resourcePrefab).GetComponent<ResourceSource>();
                     resource.transform.parent = transform;
-                    resources[i] = resource;
                     IPlanetAngle placable = resource;
-
+                    placable.Place(this, randomRotation);
                     placable.SetEdgeAngle(Diameter);
+
+                    resources[i] = resource;
+
                     break;
                 }
             }
@@ -162,23 +177,27 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
     {
         return Mathf.Sqrt((Diameter * Diameter - width * width) / 4.0f) + width * 0.5f - 0.02f;
     }
-    private void SetTeam()
+    private void SetTeam(int teamID)
     {
-        FlockAgent[] shipsInRange = OrbitingShips();
-        if (shipsInRange.Length == 0) return;
-        int newTeamID = shipsInRange//give to team with highest ships in orbit
-                .GroupBy(i => i.TeamID)
-                .OrderByDescending(grp => grp.Count())
-                .First().Key;
-        if (newTeamID == TeamID)
+        if (teamID == TeamID)
         {
             return;
         }
-        
+
         ITeam team = this;
         (team.teamController as TeamAI)?.PlanetLost(this);
-        TeamID = newTeamID;
+        TeamID = teamID;
         (team.teamController as TeamAI)?.PlanetGained(this);
+    }
+    //team with highest ships in orbit
+    private int GetTeamIdByProxy()
+    {
+        FlockAgent[] shipsInRange = GetOrbitingShips();
+        if (shipsInRange.Length == 0) return 0;
+        return shipsInRange
+                .GroupBy(i => i.TeamID)
+                .OrderByDescending(grp => grp.Count())
+                .First().Key;
     }
     public bool EmptySpaceAt(float desiredAngle, float edgeAngle, out float outAngle)
     {

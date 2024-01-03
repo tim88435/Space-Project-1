@@ -76,11 +76,19 @@ namespace AI
                     {
                         continue;
                     }
-                    Instantiate(zone.prefab);
+                    Building placedZone = Instantiate(zone.prefab).GetComponent<Building>();
+                    //placedZone.transform.parent = planet.transform;
+                    placedZone.gameObject.SetActive(true);//TODO: debug, change to false!!
+                    IPlanetAngle planetAngle = placedZone;
+                    planetAngle.Place(planet, edgeAngle);
+                    planetAngle.SetEdgeAngle(planet.Diameter);
+                    planet.AddBuilding(placedZone);
+                    placedZone.GetComponent<SpriteRenderer>().color = GameManager.Singleton.TeamToColour(TeamID);
+
                     //placed a building, now try build another building
                     goto Placed;
                 }
-                //tried to place every building and faled
+                //tried to place every building and failed
                 break;
                 Placed:;
             }

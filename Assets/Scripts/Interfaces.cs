@@ -81,9 +81,15 @@ namespace Custom.Interfaces
     {
         float edgeAngle { get; set; }
         public Transform transform { get; }//what? this works????
-        public void SetEdgeAngle(float planetRadius)
+        public void SetEdgeAngle(float planetDiameter)
         {
-            edgeAngle = Mathf.Asin(transform.lossyScale.x / planetRadius) * Mathf.Rad2Deg;
+            edgeAngle = Mathf.Asin(transform.lossyScale.x / planetDiameter) * Mathf.Rad2Deg;
+        }
+        void Place(Planet planet, float angle)
+        {
+            Vector3 buildingPositionFromPlanet = Quaternion.Euler(Vector3.forward * angle) * Vector3.up * planet.ZoneDistanceFromPlanetCentre(transform.lossyScale.x);
+            transform.position = planet.transform.position + buildingPositionFromPlanet;
+            transform.rotation = Quaternion.Euler(Vector3.forward * angle);
         }
         public bool IsIntersecting(IPlanetAngle other)
         {

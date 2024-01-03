@@ -124,6 +124,7 @@ public class UIManager : MonoBehaviour
             _rendererSelected = Instantiate(buildingZone.prefab).GetComponent<SpriteRenderer>();
             _rendererSelected.name = buildingZone.name;
             _buildingSelected = _rendererSelected.GetComponent<Building>();
+            _buildingSelected.enabled = false;
             _buildingSelected.TeamID = 1;
         }
         else
