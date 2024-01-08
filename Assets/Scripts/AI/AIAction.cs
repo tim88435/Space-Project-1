@@ -32,21 +32,13 @@ namespace AI
         public BuildAction(Building building)
         {
             this.building = building;
+            weight = TeamAI.OrderOnType(building);//TODO: change to be more dynamic
         }
         internal Building building;
         public override void Execute()
         {
             building.enabled = true;
-            //Build(buildingZone, planet, position);
-        }
-        public void Build(BuildingZone buildingZone, Planet planet, Vector3 position)
-        {
-            Building newBuilding = GameObject.Instantiate(buildingZone.prefab, planet.transform).GetComponent<Building>();
-            newBuilding.transform.position = position;
-            Vector3 buildingPositionFromPlanet = (position - planet.transform.position).normalized * planet.ZoneDistanceFromPlanetCentre(newBuilding.transform.lossyScale.x);
-            newBuilding.transform.position = planet.transform.position + buildingPositionFromPlanet;
-            newBuilding.transform.rotation = Quaternion.LookRotation(Vector3.forward, buildingPositionFromPlanet);
-            newBuilding.enabled = true;
+            building.gameObject.SetActive(true);
         }
     }
 }

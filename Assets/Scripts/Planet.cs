@@ -44,10 +44,10 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
     }
     private void Start()
     {
-        SetTeam(GetTeamIdByProxy());
-        UpdateTeamColour();
         transform.localScale = Vector3.one * (Random.Range(1.0f, 10.0f) + Random.Range(1.0f, 10.0f));
         SetResources();
+        SetTeam(GetTeamIdByProxy());
+        UpdateTeamColour();
         healthBar = Instantiate(GameManager.prefabList.healthBarPrefab, transform.position, Quaternion.identity).GetComponent<HealthBar>();
         healthBar.transform.localScale = transform.localScale;
         healthBar.transform.parent = transform;
@@ -111,10 +111,17 @@ public class Planet : MonoBehaviour, ITeam, IHoverable
         {
             //not sure whether to check if parent/in list
             //for now, one is fine?
-            if (buildings[i].transform.parent != this && this.buildings.Contains(buildings[i]))
+            if (buildings[i].transform.parent != this && !this.buildings.Contains(buildings[i]))
             {
                 continue;
             }
+
+            TeamAI teamAI = (buildings[i] as ITeam)?.teamController as TeamAI;
+            if (teamAI)
+            {
+                teamAI.BuildingDestroyed(buildings[i]);
+            }
+
             if (this.buildings.Contains(buildings[i]))
             {
                 this.buildings.Remove(buildings[i]);

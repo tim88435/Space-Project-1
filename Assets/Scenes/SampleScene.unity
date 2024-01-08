@@ -1692,7 +1692,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _teamID: 2
   ownedShips: []
-  actionCooldownSeconds: 7.5
+  actionCooldownSeconds: 3
 --- !u!1 &397703095
 GameObject:
   m_ObjectHideFlags: 0

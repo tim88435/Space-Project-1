@@ -39,6 +39,10 @@ public class ResourceCounter : MonoBehaviour, IHoverableUI
         {
             return;
         }
+        if (!ITeamController.teamControllers.ContainsKey(1))//if player isn't in the scene (e.g. debug scene)
+        {
+            return;
+        }
         textComponent.text = ((int)ITeamController.teamControllers[1].resources[type]).ToString();
     }
 }

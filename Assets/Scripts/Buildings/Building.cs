@@ -1,4 +1,6 @@
+using AI;
 using Custom.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,5 +24,14 @@ public abstract class Building : MonoBehaviour, IHoverable, IPlanetAngle, ITeam
     public virtual bool ResourceCheck(Planet planet, Quaternion rotation)
     {
         return true;
+    }
+    protected virtual void OnDestroy()
+    {
+        ITeam team = this;
+        TeamAI teamAI = team.teamController as TeamAI;
+        if (teamAI != null)
+        {
+            teamAI.BuildingDestroyed(this);
+        }
     }
 }

@@ -1,3 +1,4 @@
+using Custom;
 using Custom.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,20 +27,23 @@ namespace AI
             }
             set { _resources = value; }
         }
-
-        private void Start()
+        private void Validate()
         {
-            actionTime = Time.time;
             if (ITeamController.teamControllers.ContainsKey(TeamID))
             {
                 if (ITeamController.teamControllers[TeamID] != this)
                 {
                     Debug.LogWarning($"TeamAI assinged to team {TeamID} already exists\nDeleting duplicate");
-                    Destroy(this);
-                    return;
+                    Destroy(gameObject);
                 }
+                return;
             }
             ITeamController.teamControllers.Add(TeamID, this);
+        }
+        private void Start()
+        {
+            Validate();
+            actionTime = GetNextActionTime();
         }
         private void Update()
         {
@@ -49,6 +53,12 @@ namespace AI
             }
             actionTime = GetNextActionTime();
             //try action
+            AIAction selectedAction = actions.MaxBy(x => x.weight);
+            if (selectedAction != null)
+            {
+                selectedAction.Execute();
+                actions.Remove(selectedAction);
+            }
         }
         private void OnDestroy()
         {
@@ -61,13 +71,14 @@ namespace AI
         public void PlanetGained(Planet planet)
         {
             BuildingZone[] allBuildingZones = Resources.LoadAll<BuildingZone>("Buildings");
-            allBuildingZones = allBuildingZones.OrderByDescending(x => OrderOnType(x)).ToArray();
+            allBuildingZones = allBuildingZones.OrderByDescending(x => OrderOnType(x.prefab.GetComponent<Building>())).ToArray();//TODO: remove GetComponent for speed
             //TODO
             while (true)
             {
                 foreach (BuildingZone zone in allBuildingZones)
                 {
-                    float edgeAngle = Mathf.Asin(zone.prefab.transform.lossyScale.x / planet.transform.lossyScale.x / 2.0f) * Mathf.Rad2Deg;
+                    //edgeAngle =     Mathf.Asin(transform.lossyScale.x / planetDiameter                                  ) * Mathf.Rad2Deg;
+                    float edgeAngle = Mathf.Asin(zone.prefab.transform.lossyScale.x / planet.transform.lossyScale.x) * Mathf.Rad2Deg;
                     if (!planet.EmptySpaceAt(0, edgeAngle, out float outAngle))
                     {
                         continue;
@@ -76,14 +87,18 @@ namespace AI
                     {
                         continue;
                     }
-                    Building placedZone = Instantiate(zone.prefab).GetComponent<Building>();
-                    //placedZone.transform.parent = planet.transform;
-                    placedZone.gameObject.SetActive(true);//TODO: debug, change to false!!
-                    IPlanetAngle planetAngle = placedZone;
-                    planetAngle.Place(planet, edgeAngle);
+                    Building placedBuilding = Instantiate(zone.prefab).GetComponent<Building>();
+                    placedBuilding.gameObject.name = zone.name;
+                    placedBuilding.transform.parent = planet.transform;
+                    placedBuilding.gameObject.SetActive(false);
+                    placedBuilding.TeamID = TeamID;
+                    IPlanetAngle planetAngle = placedBuilding;
+                    planetAngle.Place(planet, outAngle);
                     planetAngle.SetEdgeAngle(planet.Diameter);
-                    planet.AddBuilding(placedZone);
-                    placedZone.GetComponent<SpriteRenderer>().color = GameManager.Singleton.TeamToColour(TeamID);
+                    planet.AddBuilding(placedBuilding);
+                    placedBuilding.GetComponent<SpriteRenderer>().color = GameManager.Singleton.TeamToColour(TeamID);
+
+                    actions.Add(new BuildAction(placedBuilding));//add to build queue
 
                     //placed a building, now try build another building
                     goto Placed;
@@ -95,11 +110,19 @@ namespace AI
         }
         public void PlanetLost(Planet planet)
         {
-            actions.RemoveAll(x => (x as BuildAction)?.building.transform.parent == planet.transform);
+            //actions.RemoveAll(x => (x as BuildAction)?.building == null);
+            actions.RemoveAll(x => planet.buildings.Contains((x as BuildAction)?.building));
         }
-        private static int OrderOnType(BuildingZone zone)
+        public void BuildingDestroyed(Building building)
         {
-            Building building = zone.prefab.GetComponent<Building>();
+            actions.RemoveAll(x => (x as BuildAction)?.building == building);
+        }
+        public static int OrderByType(BuildingZone zone)
+        {
+            return OrderOnType(zone.prefab.GetComponent<Building>());
+        }
+        public static int OrderOnType(Building building)
+        {
             switch (building)
             {
                 //this is pretty arbitrary
